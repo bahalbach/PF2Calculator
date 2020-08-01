@@ -14,24 +14,31 @@ class CollapsableInput extends React.Component {
     }
 
     render() {
-        if (this.state.collapseView) {
+        // if (this.state.collapseView) {
             return (
                 <div className="CollapsableInput">
-                    <div onClick={this.handleClick}>
+                    <div 
+                        className="CollapsableInputDescription"
+                        onClick={this.handleClick}
+                    >
                         {this.props.description}
                     </div>
+                        {this.state.collapseView ? "" : this.props.listInput}
                 </div>
             );
-        } else {
-            return (
-                <div className="CollapsableInput">
-                    <div onClick={this.handleClick}>
-                        {this.props.description}
-                    </div>
-                    {this.props.listInput}
-                </div>
-            );
-        }
+        // } else {
+            // return (
+            //     <div className="CollapsableInput">
+            //         <div 
+            //             className="CollapsableInputDescription"
+            //             onClick={this.handleClick}
+            //         >
+            //             {this.props.description}
+            //         </div>
+            //         {this.props.listInput}
+            //     </div>
+            // );
+        // }
     }
 }
 

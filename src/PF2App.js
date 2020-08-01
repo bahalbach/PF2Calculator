@@ -71,47 +71,50 @@ class PF2App extends React.Component {
             targetInfo: {
                 selectedLevel: 3
             },
-            effects: [
-                {
-                    proficiency: new Proficiency(1, 1, 5, 13),
-                    attackAbilityScore: new AbilityScore(18, [true, true, true, true], 17),
-                    damageAbilityScore: new AbilityScore(),
-                }
+            routines: [
+                [
+                    {
+                        proficiency: new Proficiency(1, 1, 5, 13),
+                        attackAbilityScore: new AbilityScore(18, [true, true, true, true], 17),
+                        damageAbilityScore: new AbilityScore(),
+                    }
+                ]
             ],
+            selectedRoutine: 0,
             selectedEffect: 0,
         };
-        this.handleProficiencyChange = this.handleProficiencyChange.bind(this);
-        this.handleAbilityScoreChange = this.handleAbilityScoreChange.bind(this);
+        // this.handleProficiencyChange = this.handleProficiencyChange.bind(this);
+        // this.handleAbilityScoreChange = this.handleAbilityScoreChange.bind(this);
         this.handleEffectChange = this.handleEffectChange.bind(this);
     }
 
-  
 
-    handleProficiencyChange(key, event) {
-        const currentProf = this.state.effects[this.state.selectedEffect].proficiency;
-        const newProf = currentProf.createUpdated(key, event);
-        const selected = this.state.selectedEffect;
-        const newEffects = update(this.state.effects, {
-            [selected]: { proficiency: { $set: newProf } }
-        });
-        this.setState({ effects: newEffects });
-    }
 
-    handleAbilityScoreChange(isAttack, key, event) {
-        const currentEffect = this.state.effects[this.state.selectedEffect];
-        const currentScore = (isAttack ? currentEffect.attackAbilityScore : currentEffect.damageAbilityScore);
-        const effectProperty = (isAttack ? "attackAbilityScore" : "damageAbilityScore");
-        let newScore = currentScore.createUpdated(key, event);
+    // handleProficiencyChange(key, event) {
+    //     const currentProf = this.state.routines[this.state.selectedRoutine][this.state.selectedEffect].proficiency;
+    //     const newProf = currentProf.createUpdated(key, event);
+    //     const selected = this.state.selectedEffect;
+    //     const newEffects = update(this.state.effects, {
+    //         [selected]: { proficiency: { $set: newProf } }
+    //     });
+    //     this.setState({ effects: newEffects });
+    // }
 
-        const newEffects = update(this.state.effects, {
-            [this.state.selectedEffect]: { [effectProperty]: { $set: newScore } }
-        });
+    // handleAbilityScoreChange(isAttack, key, event) {
+    //     const currentEffect = this.state.effects[this.state.selectedEffect];
+    //     const currentScore = (isAttack ? currentEffect.attackAbilityScore : currentEffect.damageAbilityScore);
+    //     const effectProperty = (isAttack ? "attackAbilityScore" : "damageAbilityScore");
+    //     let newScore = currentScore.createUpdated(key, event);
 
-        this.setState({ effects: newEffects });
-    }
+    //     const newEffects = update(this.state.effects, {
+    //         [this.state.selectedEffect]: { [effectProperty]: { $set: newScore } }
+    //     });
+
+    //     this.setState({ effects: newEffects });
+    // }
 
     handleEffectChange(propertyName, key, event) {
-        const currentEffect = this.state.effects[this.state.selectedEffect];
+        const currentEffect = this.state.routines[this.state.selectedRoutine][this.state.selectedEffect];
         const currentPropertyValue = currentEffect[propertyName];
         const newPropertyValue = currentPropertyValue.createUpdated(key, event);
 
@@ -124,18 +127,22 @@ class PF2App extends React.Component {
         //         break;
         // }
 
-        const newEffects = update(this.state.effects, {
-            [this.state.selectedEffect]: { [propertyName]: { $set: newPropertyValue } }
+        const newRoutines = update(this.state.routines, {
+            [this.state.selectedRoutine]: {
+                [this.state.selectedEffect]: { 
+                    [propertyName]: { $set: newPropertyValue } 
+                }
+            }
         });
 
-        this.setState({ effects: newEffects });
+        this.setState({ routines: newRoutines });
     }
 
     render() {
         return (
             <div className="PF2App">
                 <EffectInput
-                    effect={this.state.effects[this.state.selectedEffect]}
+                    effect={this.state.routines[this.state.selectedRoutine][this.state.selectedEffect]}
                     selectedLevel={this.state.targetInfo.selectedLevel}
                     onEffectChange={this.handleEffectChange}
                 />
