@@ -1,5 +1,4 @@
 import React from 'react';
-import AbilityScore from './AbilityScore';
 import LevelSelection from './LevelSelection';
 
 function AbilityScoreInput(props) {
@@ -57,7 +56,6 @@ function AbilityScoreInput(props) {
             value={apexLevel} onChange={props.onChange.bind(null,"apex")}
         />
     );
-    
 
     return (
         <div className="AbilityScoreInput">

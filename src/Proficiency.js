@@ -56,6 +56,18 @@ class Proficiency {
         return this.usedProficiencies;
     }
 
+    isFighter() {
+        return this.proficiencies.every((val, index) => val === [1, 1, 1, 5, 13][index]);
+    }
+    isMartial() {
+        return this.proficiencies.every((val, index) => val === [1, 1, 5, 13, null][index]);
+    }
+    isCaster() {
+        return this.proficiencies.every((val, index) => val === [1, 1, 11, null, null][index]);
+    }
+    isAlchemist() {
+        return this.proficiencies.every((val, index) => val === [1, 1, 7, null, null][index]);
+    }
     getDescription(level) {
         let profDesc = " ";
         if (level) {
@@ -71,15 +83,20 @@ class Proficiency {
     }
 
     createUpdated(key, event) {
-        let newProf;
-        switch(key) {
+        switch (key) {
             case "initial":
-                newProf = Proficiency.newProficiencyWithIntial(event.target.value, this);
-                break;
+                return Proficiency.newProficiencyWithIntial(event.target.value, this);
+            case "fighter":
+                return new Proficiency(1, 1, 1, 5, 13);
+            case "martial":
+                return new Proficiency(1, 1, 5, 13, null);
+            case "caster":
+                return new Proficiency(1, 1, 11, null, null);
+            case "alchemist":
+                return new Proficiency(1, 1, 7, null, null);
             default:
-                newProf = Proficiency.newProficiencyWithChangedLevel(key, parseInt(event.target.value), this);
+                return Proficiency.newProficiencyWithChangedLevel(key, parseInt(event.target.value), this);
         }
-        return newProf;
     }
 
     static toName(profValue) {

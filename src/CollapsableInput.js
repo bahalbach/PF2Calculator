@@ -4,7 +4,7 @@ class CollapsableInput extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            collapseView: false,
+            collapseView: true,
         };
         this.handleClick = this.handleClick.bind(this);
     }
@@ -26,19 +26,6 @@ class CollapsableInput extends React.Component {
                         {this.state.collapseView ? "" : this.props.listInput}
                 </div>
             );
-        // } else {
-            // return (
-            //     <div className="CollapsableInput">
-            //         <div 
-            //             className="CollapsableInputDescription"
-            //             onClick={this.handleClick}
-            //         >
-            //             {this.props.description}
-            //         </div>
-            //         {this.props.listInput}
-            //     </div>
-            // );
-        // }
     }
 }
 

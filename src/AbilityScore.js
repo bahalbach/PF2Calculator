@@ -1,30 +1,30 @@
 const MAX_LEVEL = 20;
 
 class AbilityScore {
-    constructor(initial=10, boosts=[false,false,false,false], apexLevel=null) {
+    constructor(initial = 10, boosts = [false, false, false, false], apexLevel = null) {
         this.initial = initial;
         this.boosts = boosts;
         this.apexLevel = apexLevel;
 
         this.scoreArray = [initial];
-        let currentScore=initial;
+        let currentScore = initial;
         let scoreWithApex;
-        
-        for(let i = 2; i<=MAX_LEVEL;i++) {
-            if ((i===5 &&  boosts[0]) || (i===10 &&  boosts[1]) || (i===15 &&  boosts[2]) || (i===20 &&  boosts[3])) 
-                currentScore < 18 ? currentScore+=2 : currentScore += 1;
-            (apexLevel && i >= apexLevel) ? (scoreWithApex=Math.max(18,currentScore+2)) : scoreWithApex=currentScore;
+
+        for (let i = 2; i <= MAX_LEVEL; i++) {
+            if ((i === 5 && boosts[0]) || (i === 10 && boosts[1]) || (i === 15 && boosts[2]) || (i === 20 && boosts[3]))
+                currentScore < 18 ? currentScore += 2 : currentScore += 1;
+            (apexLevel && i >= apexLevel) ? (scoreWithApex = Math.max(18, currentScore + 2)) : scoreWithApex = currentScore;
             this.scoreArray.push(scoreWithApex);
         }
         this.maxScore = scoreWithApex;
     }
 
     get(level) {
-        return this.scoreArray[level-1];
+        return this.scoreArray[level - 1];
     }
 
     getMod(level) {
-        return parseInt((this.scoreArray[level-1]-10)/2);
+        return parseInt((this.scoreArray[level - 1] - 10) / 2);
     }
 
     getInitial() {
@@ -39,6 +39,54 @@ class AbilityScore {
 
     getScores() {
         return [this.initial, ...this.boosts, this.apexLevel];
+    }
+
+    is18a() {
+        if (this.initial !== 18) return false;
+        if (this.boosts[0] !== true) return false;
+        if (this.boosts[1] !== true) return false;
+        if (this.boosts[2] !== true) return false;
+        if (this.boosts[3] !== true) return false;
+        if (this.apexLevel !== 17) return false;
+        return true;
+    }
+
+    is16a() {
+        if (this.initial !== 16) return false;
+        if (this.boosts[0] !== true) return false;
+        if (this.boosts[1] !== true) return false;
+        if (this.boosts[2] !== true) return false;
+        if (this.apexLevel !== 17) return false;
+        return true;
+    }
+
+    is16pp() {
+        if (this.initial !== 16) return false;
+        if (this.boosts[0] !== true) return false;
+        if (this.boosts[1] !== true) return false;
+        if (this.boosts[2] !== true) return false;
+        if (this.apexLevel !== null) return false;
+        return true;
+    }
+
+    is14p() {
+        if (this.initial !== 14) return false;
+        if (this.boosts[0] !== true) return false;
+        if (this.boosts[1] !== true) return false;
+        if (this.boosts[2] !== false) return false;
+        if (this.boosts[3] !== false) return false;
+        if (this.apexLevel !== null) return false;
+        return true;
+    }
+
+    is10() {
+        if (this.initial !== 10) return false;
+        if (this.boosts[0] !== false) return false;
+        if (this.boosts[1] !== false) return false;
+        if (this.boosts[2] !== false) return false;
+        if (this.boosts[3] !== false) return false;
+        if (this.apexLevel !== null) return false;
+        return true;
     }
 
     getDescription(level) {
@@ -56,7 +104,18 @@ class AbilityScore {
         let newInitial = this.initial;
         let newBoosts = this.boosts.slice();
         let newApexLevel = this.apexLevel;
-        switch(key) {
+        switch (key) {
+            case "18a":
+                return new AbilityScore(18, [true, true, true, true], 17);
+            case "16a":
+                return new AbilityScore(16, [true, true, true, false], 17);
+            case "16++":
+                return new AbilityScore(16, [true, true, true, false], null);
+            case "14+":
+                return new AbilityScore(14, [true, true, false, false], null);
+            case "10":
+                return new AbilityScore(10, [false, false, false, false], null);
+
             case "initial":
                 newInitial = parseInt(event.target.value);
                 break;
@@ -67,14 +126,14 @@ class AbilityScore {
                 newBoosts[key] = event.target.checked;
                 break;
             case "apex":
-                let value=event.target.value;
-                if (value==="never") value=null;
+                let value = event.target.value;
+                if (value === "never") value = null;
                 newApexLevel = value;
                 break;
             default:
                 console.error("Unhandled ability score");
         }
-        return new AbilityScore(newInitial, newBoosts,newApexLevel);
+        return new AbilityScore(newInitial, newBoosts, newApexLevel);
     }
 }
 /*
