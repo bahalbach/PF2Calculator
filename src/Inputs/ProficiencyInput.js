@@ -89,6 +89,7 @@ function ProficiencyInputList(props) {
 }
 
 function WeaponProficiencyInput(props) {
+    // props: effect, onEffectChange, selectedLevel
     return (
         <div className="InputGroup WeaponProficiencyInput">
             <ProficiencyPresets

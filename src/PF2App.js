@@ -12,8 +12,8 @@ import ItemBonus from './Model/ItemBonus.js';
 
 import MAPInput from './Inputs/MAPInput.js';
 import OverrideInput from './Inputs/OverrideInput.js';
-import {WeaponProficiencyInput} from './Inputs/ProficiencyInput.js';
-import {AttackAbilityScoreInput, DamageAbilityScoreInput } from './Inputs/AbilityScoreInput.js';
+import { WeaponProficiencyInput } from './Inputs/ProficiencyInput.js';
+import { AttackAbilityScoreInput, DamageAbilityScoreInput } from './Inputs/AbilityScoreInput.js';
 import ItemBonusInput from './Inputs/ItemBonusInput.js';
 import ModifierInput from './Inputs/ModifierInput.js';
 
@@ -54,6 +54,11 @@ function totalBonusDescription(effect, level) {
         initial = effect.attackAbilityScore.getMod(1) + effect.proficiency.get(1) + effect.itemBonus.get(1);
         final = effect.attackAbilityScore.getMod(20) + effect.proficiency.get(20) + effect.itemBonus.get(20);
     }
+    if (level) {
+        levelTotal += effect.MAP.get(level);
+    }
+    initial += effect.MAP.get(1);
+    final  += effect.MAP.get(20);
 
     if (effect.useMiscModifiers.isTrue()) {
         if (level) {
@@ -105,35 +110,46 @@ function StrikeInput(props) {
                         <OverrideInput
                             effect={props.effect}
                             onEffectChange={props.onEffectChange}
+                            selectedLevel={props.selectedLevel}
                         />
                         <WeaponProficiencyInput
                             effect={props.effect}
                             onEffectChange={props.onEffectChange}
+                            selectedLevel={props.selectedLevel}
                         />
 
                         <AttackAbilityScoreInput
                             effect={props.effect}
                             onChange={props.onEffectChange.bind(null, "attackAbilityScore")}
+                            selectedLevel={props.selectedLevel}
                         />
 
-                        <ItemBonusInput 
+                        <ItemBonusInput
                             effect={props.effect}
                             onChange={props.onEffectChange.bind(null, "itemBonus")}
+                            selectedLevel={props.selectedLevel}
                         />
 
-                        <ModifierInput 
+                        <ModifierInput
                             effect={props.effect}
                             onEffectChange={props.onEffectChange}
+                            selectedLevel={props.selectedLevel}
                         />
-                        
+
 
                     </div>
                 }
+                after={
+                    <MAPInput
+                        effect={props.effect}
+                        onChange={props.onEffectChange.bind(null, "MAP")}
+                        selectedLevel={props.selectedLevel}
+
+                    />
+                }
             />
-            <MAPInput 
-                effect={props.effect}
-                onChange={props.onEffectChange.bind(null, "MAP")}
-            />
+
+
 
             <DamageAbilityScoreInput
                 effect={props.effect}
@@ -169,7 +185,7 @@ class PF2App extends React.Component {
             routines: [
                 [
                     {
-                        MAP: new MAP(0),
+                        MAP: new MAP(),
 
                         useOverride: new Flag(),
                         override: new Modifier(),
