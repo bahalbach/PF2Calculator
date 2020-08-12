@@ -1,128 +1,33 @@
 import React from 'react';
 import update from 'immutability-helper';
-import CollapsableInput from './CollapsableInput';
-import Proficiency from './Proficiency';
-import ProficiencyInput from './ProficiencyInput';
-import AbilityScore from './AbilityScore';
-import AbilityScoreInput from './AbilityScoreInput';
-import ByLevelInput from './ByLevelInput';
+
+import { CheckboxInput, CollapsableInput, ByLevelInput } from './Inputs/CommonInputs.js'
+
+import Flag from './Model/Flag.js';
+import MAP from './Model/MAP.js';
+import Proficiency from './Model/Proficiency.js';
+import AbilityScore from './Model/AbilityScore.js';
+import Modifier from './Model/Modifier.js';
+import ItemBonus from './Model/ItemBonus.js';
+
+import MAPInput from './Inputs/MAPInput.js';
+import OverrideInput from './Inputs/OverrideInput.js';
+import {WeaponProficiencyInput} from './Inputs/ProficiencyInput.js';
+import {AttackAbilityScoreInput, DamageAbilityScoreInput } from './Inputs/AbilityScoreInput.js';
+import ItemBonusInput from './Inputs/ItemBonusInput.js';
+import ModifierInput from './Inputs/ModifierInput.js';
+
+
 import './PF2App.css';
-import Modifier from './Modifier';
-import ItemBonus from './ItemBonus';
 
-class Flag {
-    constructor(value = false) {
-        this.value = value;
-    }
 
-    isTrue() {
-        return this.value;
-    }
 
-    createUpdated(event) {
-        return new Flag(event.target.checked);
-    }
-}
 
-function ProficiencyPresets(props) {
-    return (
-        <div className="ProficiencyPresets">
-            <CheckboxInput
-                checked={props.proficiency.isFighter()}
-                onChange={props.onChange.bind(null, "fighter")}
-                label={"Fighter"}
-            />
-            <CheckboxInput
-                checked={props.proficiency.isMartial()}
-                onChange={props.onChange.bind(null, "martial")}
-                label={"Martial"}
-            />
-            <CheckboxInput
-                checked={props.proficiency.isCaster()}
-                onChange={props.onChange.bind(null, "caster")}
-                label={"Caster"}
-            />
-            <CheckboxInput
-                checked={props.proficiency.isAlchemist()}
-                onChange={props.onChange.bind(null, "alchemist")}
-                label={"Alchemist/Warpriest"}
-            />
-        </div>
-    );
-}
 
-function AbilityScorePresets(props) {
-    return (
-        <div className="AbilityScorePresets">
-            <CheckboxInput
-                checked={props.score.is18a()}
-                onChange={props.onChange.bind(null, "18a")}
-                label={"18a"}
-            />
-            <CheckboxInput
-                checked={props.score.is16a()}
-                onChange={props.onChange.bind(null, "16a")}
-                label={"16a"}
-            />
-            <CheckboxInput
-                checked={props.score.is16pp()}
-                onChange={props.onChange.bind(null, "16++")}
-                label={"16++"}
-            />
-            <CheckboxInput
-                checked={props.score.is14p()}
-                onChange={props.onChange.bind(null, "14+")}
-                label={"14+"}
-            />
-            <CheckboxInput
-                checked={props.score.is10()}
-                onChange={props.onChange.bind(null, "10")}
-                label={"10"}
-            />
-        </div>
-    );
-}
 
-function ItemBonusPresets(props) {
-    return (
-        <div className="ItemBonusPresets">
-            <CheckboxInput
-                checked={props.itemBonus.isNone()}
-                onChange={props.onChange.bind(null, "None")}
-                label={"None"}
-            />
-            <CheckboxInput
-                checked={props.itemBonus.isABPWeapon()}
-                onChange={props.onChange.bind(null, "ABPWeapon")}
-                label={"ABP Weapon"}
-            />
-            <CheckboxInput
-                checked={props.itemBonus.isABPSkill1()}
-                onChange={props.onChange.bind(null, "ABPSkill1")}
-                label={"ABP Skill Item 1"}
-            />
-            <CheckboxInput
-                checked={props.itemBonus.isABPSkill2()}
-                onChange={props.onChange.bind(null, "ABPSkill2")}
-                label={"ABP Skill Item 2"}
-            />
-        </div>
-    );
-}
 
-function CheckboxInput(props) {
-    // props: checked, onChange, label
-    return (
-        <label className="CheckboxInput">
-            <input
-                type="checkbox"
-                checked={props.checked}
-                onChange={props.onChange}
-            />
-            {props.label}
-        </label>
-    );
-}
+
+
 
 // function CheckInput(props) {
 //     return (
@@ -130,21 +35,60 @@ function CheckboxInput(props) {
 //     );
 // }
 function totalBonusDescription(effect, level) {
+    let desc = "";
+    let levelTotal;
+    let initial;
+    let final;
+
     if (effect.useOverride.isTrue()) {
-        return effect.override.getDescription(level);
+        if (level) {
+            levelTotal = effect.override.get(level);
+        }
+        initial = effect.override.get(1);
+        final = effect.override.get(20);
     }
     else {
-        let desc = " ";
         if (level) {
-            let levelTotal = effect.attackAbilityScore.getMod(level) + effect.proficiency.get(level) + effect.itemBonus.get(level);
-            desc += "(" + levelTotal + ") ";
+            levelTotal = effect.attackAbilityScore.getMod(level) + effect.proficiency.get(level) + effect.itemBonus.get(level);
         }
-        let initial = effect.attackAbilityScore.getMod(1) + effect.proficiency.get(1) + effect.itemBonus.get(1);
-        let final = effect.attackAbilityScore.getMod(20) + effect.proficiency.get(20) + effect.itemBonus.get(20);
-        desc += initial + " to " + final;
-
-        return desc;
+        initial = effect.attackAbilityScore.getMod(1) + effect.proficiency.get(1) + effect.itemBonus.get(1);
+        final = effect.attackAbilityScore.getMod(20) + effect.proficiency.get(20) + effect.itemBonus.get(20);
     }
+
+    if (effect.useMiscModifiers.isTrue()) {
+        if (level) {
+            levelTotal += (
+                effect.circumstanceBonus.get(level) +
+                effect.statusBonus.get(level) +
+                -effect.circumstancePenalty.get(level) +
+                -effect.statusPenalty.get(level) +
+                -effect.itemPenalty.get(level) +
+                -effect.untypedPenalty.get(level)
+            );
+        }
+        initial += (
+            effect.circumstanceBonus.get(1) +
+            effect.statusBonus.get(1) +
+            -effect.circumstancePenalty.get(1) +
+            -effect.statusPenalty.get(1) +
+            -effect.itemPenalty.get(1) +
+            -effect.untypedPenalty.get(1)
+        );
+        final += (
+            effect.circumstanceBonus.get(20) +
+            effect.statusBonus.get(20) +
+            -effect.circumstancePenalty.get(20) +
+            -effect.statusPenalty.get(20) +
+            -effect.itemPenalty.get(20) +
+            -effect.untypedPenalty.get(20)
+        );
+    }
+
+    if (level) {
+        desc += "(" + levelTotal + ") ";
+    }
+    desc += initial + " to " + final;
+    return desc;
 }
 
 function StrikeInput(props) {
@@ -158,76 +102,42 @@ function StrikeInput(props) {
                 description={"Total Bonus: " + totalBonusDescription(props.effect, props.selectedLevel)}
                 listInput={
                     <div className="CheckInput">
-                        <CheckboxInput
-                            checked={props.effect.useOverride.isTrue()}
-                            onChange={props.onEffectChange.bind(null, "useOverride")}
-                            label="Override Attack Bonus?"
+                        <OverrideInput
+                            effect={props.effect}
+                            onEffectChange={props.onEffectChange}
                         />
-                        <CollapsableInput
-                            description={"Override: " + props.effect.override.getDescription(props.selectedLevel)}
-                            listInput={
-                                <ByLevelInput
-                                    modifier={props.effect.override}
-                                    onChange={props.onEffectChange.bind(null, "override")}
-                                />
-                            }
+                        <WeaponProficiencyInput
+                            effect={props.effect}
+                            onEffectChange={props.onEffectChange}
                         />
-                        <ProficiencyPresets
-                            proficiency={props.effect.proficiency}
-                            onChange={props.onEffectChange.bind(null, "proficiency")}
-                        />
-                        <CollapsableInput
-                            description={"Proficiency: " + props.effect.proficiency.getDescription(props.selectedLevel)}
-                            listInput={
-                                <ProficiencyInput
-                                    proficiency={props.effect.proficiency}
-                                    onChange={props.onEffectChange.bind(null, "proficiency")}
-                                />
-                            }
-                        />
-                        <AbilityScorePresets
-                            score={props.effect.attackAbilityScore}
+
+                        <AttackAbilityScoreInput
+                            effect={props.effect}
                             onChange={props.onEffectChange.bind(null, "attackAbilityScore")}
                         />
-                        <CollapsableInput
-                            description={"Attack Ability Score: " + props.effect.attackAbilityScore.getDescription(props.selectedLevel)}
-                            listInput={
-                                <AbilityScoreInput
-                                    score={props.effect.attackAbilityScore}
-                                    onChange={props.onEffectChange.bind(null, "attackAbilityScore")}
-                                />
-                            }
-                        />
-                        <ItemBonusPresets
-                            itemBonus={props.effect.itemBonus}
+
+                        <ItemBonusInput 
+                            effect={props.effect}
                             onChange={props.onEffectChange.bind(null, "itemBonus")}
                         />
-                        <CollapsableInput
-                            description={"Item Bonus: " + props.effect.itemBonus.getDescription(props.selectedLevel)}
-                            listInput={
-                                <ByLevelInput
-                                    modifier={props.effect.itemBonus}
-                                    onChange={props.onEffectChange.bind(null, "itemBonus")}
-                                />
-                            }
+
+                        <ModifierInput 
+                            effect={props.effect}
+                            onEffectChange={props.onEffectChange}
                         />
-                        <CheckboxInput
-                            checked={props.effect.useMiscModifiers.isTrue()}
-                            onChange={props.onEffectChange.bind(null, "useMiscModifiers")}
-                            label="Add Circumstance/Status Bonuses/Penalties"
-                        />
+                        
+
                     </div>
                 }
             />
-            {/* <MAPInput /> */}
-            <CollapsableInput
-                description={"Damage Ability Score: " + props.effect.damageAbilityScore.getDescription(props.selectedLevel)}
-                listInput={
-                    <AbilityScoreInput
-                        score={props.effect.damageAbilityScore}
-                        onChange={props.onEffectChange.bind(null, "damageAbilityScore")}
-                    />
-                }
+            <MAPInput 
+                effect={props.effect}
+                onChange={props.onEffectChange.bind(null, "MAP")}
+            />
+
+            <DamageAbilityScoreInput
+                effect={props.effect}
+                onChange={props.onEffectChange.bind(null, "damageAbilityScore")}
             />
         </div>
     );
@@ -259,6 +169,8 @@ class PF2App extends React.Component {
             routines: [
                 [
                     {
+                        MAP: new MAP(0),
+
                         useOverride: new Flag(),
                         override: new Modifier(),
 

@@ -1,10 +1,22 @@
+* {
+    box-sizing: border-box;
+}
 
+.PF2App {
+    max-width: 500px;
+}
 
 .CollapsableInput {
     border: 1px solid black;
     padding: 5px;
     margin: 5px;
-    width: fit-content;
+}
+
+.InputGroup {
+    border: 1px solid black;
+    padding: 5px;
+    margin: 10px;  
+    background-color: lightgray; 
 }
 
 .CollapsableInputDescription {

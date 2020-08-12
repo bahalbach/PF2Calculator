@@ -1,5 +1,68 @@
 import React from 'react';
 
+function CheckboxInput(props) {
+    // props: checked, onChange, label
+    return (
+        <label className="CheckboxInput">
+            <input
+                type="checkbox"
+                checked={props.checked}
+                onChange={props.onChange}
+            />
+            {props.label}
+        </label>
+    );
+}
+
+
+class CollapsableInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            collapseView: true,
+        };
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick(event) {
+        this.setState({collapseView: !this.state.collapseView});
+    }
+
+    render() {
+        // if (this.state.collapseView) {
+            return (
+                <div className="CollapsableInput">
+                    <div 
+                        className="CollapsableInputDescription"
+                        onClick={this.handleClick}
+                    >
+                        {this.props.description}
+                    </div>
+                        {this.state.collapseView ? "" : this.props.listInput}
+                </div>
+            );
+    }
+}
+
+function ByLevelInput(props) {
+    // level: value
+    let levelList = [];
+    for (let i = 1; i <= 20; i++) {
+        levelList.push(
+            <div key={i}>
+                <label> Level {i}: { }
+                    <input 
+                        type="number" 
+                        value={props.modifier.get(i)} 
+                        onChange={props.onChange.bind(null,i)}
+                    />
+                </label>
+            </div>
+        );
+    }
+    return levelList;
+}
+
 // name, value, onChange
 function LevelSelection(props) {
     return (
@@ -77,4 +140,5 @@ function LevelSelection(props) {
     );
 }
 
-export default LevelSelection
+
+export { CheckboxInput, CollapsableInput, ByLevelInput, LevelSelection}

@@ -20,6 +20,13 @@ class Modifier {
         return this.values[level - 1]
     }
 
+    is(value) {
+        for (let i = 0; i < 20; i++) {
+            if (this.values[i] !== value) return false;
+        }
+        return true;
+    }
+
     getDescription(level) {
         let desc = " ";
         if (level) {

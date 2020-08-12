@@ -1,8 +1,35 @@
 import React from 'react';
-import Proficiency from './Proficiency';
-import LevelSelection from './LevelSelection';
+import Proficiency from '../Model/Proficiency';
+import { CheckboxInput, CollapsableInput, LevelSelection } from './CommonInputs'
 
-function ProficiencyInput(props) {
+function ProficiencyPresets(props) {
+    return (
+        <div className="Presets ProficiencyPresets">
+            <CheckboxInput className="PresetItem"
+                checked={props.proficiency.isFighter()}
+                onChange={props.onChange.bind(null, "fighter")}
+                label={"Fighter"}
+            />
+            <CheckboxInput className="PresetItem"
+                checked={props.proficiency.isMartial()}
+                onChange={props.onChange.bind(null, "martial")}
+                label={"Martial"}
+            />
+            <CheckboxInput className="PresetItem"
+                checked={props.proficiency.isCaster()}
+                onChange={props.onChange.bind(null, "caster")}
+                label={"Caster"}
+            />
+            <CheckboxInput className="PresetItem"
+                checked={props.proficiency.isAlchemist()}
+                onChange={props.onChange.bind(null, "alchemist")}
+                label={"Alchemist/Warpriest"}
+            />
+        </div>
+    );
+}
+
+function ProficiencyInputList(props) {
     // props: proficiency, onChange
     
     let prof = props.proficiency;
@@ -53,7 +80,6 @@ function ProficiencyInput(props) {
         />);
     }
 
-
     return (
         <div className="ProficiencyInput">
             {profList}
@@ -62,5 +88,24 @@ function ProficiencyInput(props) {
 
 }
 
+function WeaponProficiencyInput(props) {
+    return (
+        <div className="InputGroup WeaponProficiencyInput">
+            <ProficiencyPresets
+                proficiency={props.effect.proficiency}
+                onChange={props.onEffectChange.bind(null, "proficiency")}
+            />
+            <CollapsableInput
+                description={"Proficiency: " + props.effect.proficiency.getDescription(props.selectedLevel)}
+                listInput={
+                    <ProficiencyInputList
+                        proficiency={props.effect.proficiency}
+                        onChange={props.onEffectChange.bind(null, "proficiency")}
+                    />
+                }
+            />
+        </div>
+    );
+}
 
-export default ProficiencyInput
+export { WeaponProficiencyInput }
