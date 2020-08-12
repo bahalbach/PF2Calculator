@@ -65,16 +65,20 @@ function PenaltyPresets(props) {
     );
 }
 
+{/* <CheckboxInput
+                checked={props.effect.useMiscModifiers.isTrue()}
+                onChange={props.onEffectChange.bind(null, "useMiscModifiers")}
+                label="Add Circumstance/Status Bonuses/Penalties"
+            /> */}
+
 function ModifierInput(props) {
     // props: effect, onEffectChange
     return (
         <div className="InputGroup ModifierInput" >
-            <CheckboxInput
-                checked={props.effect.useMiscModifiers.isTrue()}
-                onChange={props.onEffectChange.bind(null, "useMiscModifiers")}
-                label="Add Circumstance/Status Bonuses/Penalties"
-            />
-
+            <CollapsableInput 
+            description="Add Circumstance/Status Bonuses/Penalties"
+            listInput={
+                <div className="ModifierInputList">
             <BonusPresets
                 modifier={props.effect.statusBonus}
                 onChange={props.onEffectChange.bind(null, "statusBonus")}
@@ -157,6 +161,9 @@ function ModifierInput(props) {
                         onChange={props.onEffectChange.bind(null, "untypedPenalty")}
                     />
                 }
+            />
+            </div>
+            }
             />
         </div>
     );

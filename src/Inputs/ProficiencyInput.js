@@ -81,7 +81,7 @@ function ProficiencyInputList(props) {
     }
 
     return (
-        <div className="ProficiencyInput">
+        <div className="ProficiencyInputList">
             {profList}
         </div>
     );

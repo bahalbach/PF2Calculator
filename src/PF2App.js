@@ -58,7 +58,7 @@ function totalBonusDescription(effect, level) {
         levelTotal += effect.MAP.get(level);
     }
     initial += effect.MAP.get(1);
-    final  += effect.MAP.get(20);
+    final += effect.MAP.get(20);
 
     if (effect.useMiscModifiers.isTrue()) {
         if (level) {
@@ -94,6 +94,10 @@ function totalBonusDescription(effect, level) {
     }
     desc += initial + " to " + final;
     return desc;
+}
+
+function totalDamageDescription(effect, level) {
+    return "";
 }
 
 function StrikeInput(props) {
@@ -150,10 +154,14 @@ function StrikeInput(props) {
             />
 
 
-
-            <DamageAbilityScoreInput
-                effect={props.effect}
-                onChange={props.onEffectChange.bind(null, "damageAbilityScore")}
+            <CollapsableInput
+                description={"Total Damage: " + totalDamageDescription(props.effect, props.selectedLevel)}
+                listInput={
+                    <DamageAbilityScoreInput
+                        effect={props.effect}
+                        onChange={props.onEffectChange.bind(null, "damageAbilityScore")}
+                    />
+                }
             />
         </div>
     );
@@ -168,6 +176,23 @@ function EffectInput(props) {
         />
     );
 }
+
+function TargetInput(props) {
+    return (
+        <div className="TargetInput">
+            <label>Target Level: {props.target.selectedLevel}
+                <input type="range" 
+                    min="1"
+                    max="20"
+                    step="1"
+                    value={props.target.selectedLevel}
+                    onChange={props.onTargetChange.bind(null,"selectedLevel")}
+                />
+            </label>
+            
+        </div>
+    );
+}
 class PF2App extends React.Component {
     /*
         Target Selector
@@ -179,7 +204,7 @@ class PF2App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            targetInfo: {
+            target: {
                 selectedLevel: 3
             },
             routines: [
@@ -194,7 +219,7 @@ class PF2App extends React.Component {
                         attackAbilityScore: new AbilityScore(18, [true, true, true, true], 17),
                         itemBonus: new ItemBonus(),
 
-                        useMiscModifiers: new Flag(),
+                        useMiscModifiers: new Flag(true),
                         circumstanceBonus: new Modifier(),
                         statusBonus: new Modifier(),
                         circumstancePenalty: new Modifier(),
@@ -212,46 +237,25 @@ class PF2App extends React.Component {
         // this.handleProficiencyChange = this.handleProficiencyChange.bind(this);
         // this.handleAbilityScoreChange = this.handleAbilityScoreChange.bind(this);
         this.handleEffectChange = this.handleEffectChange.bind(this);
+        this.handleTargetChange = this.handleTargetChange.bind(this);
     }
-
-
-
-    // handleProficiencyChange(key, event) {
-    //     const currentProf = this.state.routines[this.state.selectedRoutine][this.state.selectedEffect].proficiency;
-    //     const newProf = currentProf.createUpdated(key, event);
-    //     const selected = this.state.selectedEffect;
-    //     const newEffects = update(this.state.effects, {
-    //         [selected]: { proficiency: { $set: newProf } }
-    //     });
-    //     this.setState({ effects: newEffects });
-    // }
-
-    // handleAbilityScoreChange(isAttack, key, event) {
-    //     const currentEffect = this.state.effects[this.state.selectedEffect];
-    //     const currentScore = (isAttack ? currentEffect.attackAbilityScore : currentEffect.damageAbilityScore);
-    //     const effectProperty = (isAttack ? "attackAbilityScore" : "damageAbilityScore");
-    //     let newScore = currentScore.createUpdated(key, event);
-
-    //     const newEffects = update(this.state.effects, {
-    //         [this.state.selectedEffect]: { [effectProperty]: { $set: newScore } }
-    //     });
-
-    //     this.setState({ effects: newEffects });
-    // }
+    handleTargetChange(propertyName, event) {
+        let newPropertyValue;
+        switch (propertyName) {
+            case "selectedLevel":
+                newPropertyValue = event.target.value;
+            default:
+                newPropertyValue = event.target.value;
+        }
+        const newTarget = update(this.state.target, {[propertyName]: {$set: newPropertyValue}});
+        
+        this.setState({ target: newTarget });
+    }
 
     handleEffectChange(propertyName, key, event) {
         const currentEffect = this.state.routines[this.state.selectedRoutine][this.state.selectedEffect];
         const currentPropertyValue = currentEffect[propertyName];
         const newPropertyValue = currentPropertyValue.createUpdated(key, event);
-
-        // switch(propertyName) {
-        //     case "proficiency":
-        //         break;
-        //     case "attackAbilityScore":
-        //         break;
-        //     case "damageAbilityScore":
-        //         break;
-        // }
 
         const newRoutines = update(this.state.routines, {
             [this.state.selectedRoutine]: {
@@ -267,9 +271,13 @@ class PF2App extends React.Component {
     render() {
         return (
             <div className="PF2App">
+                <TargetInput
+                    target={this.state.target}
+                    onTargetChange={this.handleTargetChange}
+                />
                 <EffectInput
                     effect={this.state.routines[this.state.selectedRoutine][this.state.selectedEffect]}
-                    selectedLevel={this.state.targetInfo.selectedLevel}
+                    selectedLevel={this.state.target.selectedLevel}
                     onEffectChange={this.handleEffectChange}
                 />
             </div>
