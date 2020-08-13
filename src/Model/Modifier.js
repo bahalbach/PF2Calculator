@@ -8,6 +8,8 @@
 //     circumstance penalties
 //     untyped penalties (other than MAP)
 
+// Also can be used for damage bonuses like Weapon specialization 
+
 class Modifier {
     constructor(values = null) {
         if (values === null) {
@@ -23,6 +25,33 @@ class Modifier {
     is(value) {
         for (let i = 0; i < 20; i++) {
             if (this.values[i] !== value) return false;
+        }
+        return true;
+    }
+
+    isWSMartial() {
+        for (let level = 1; level <= 20; level++) {
+            if (level < 7) {
+                if (this.values[level - 1] !== 0) return false;
+            }
+            if (level >= 7 && level < 15) {
+                if (this.values[level - 1] !== 1) return false;
+            }
+            if (level >= 15) {
+                if (this.values[level - 1] !== 2) return false;
+            }
+        }
+        return true;
+    }
+
+    isWSCaster() {
+        for (let level = 1; level <= 20; level++) {
+            if (level < 13) {
+                if (this.values[level - 1] !== 0) return false;
+            }
+            if (level >= 13) {
+                if (this.values[level - 1] !== 1) return false;
+            }
         }
         return true;
     }
@@ -60,10 +89,29 @@ class Modifier {
             case "-4":
                 newValues = new Array(20).fill(4);
                 break;
-            
+
+            case "WSMartial":
+                newValues = new Array(20).fill(0);
+                for (let level = 7; level <= 20; level++) {
+                    if (level < 15) {
+                        newValues[level - 1] = 1;
+                    }
+                    if (level >= 15) {
+                        newValues[level - 1] = 2;
+                    }
+                }
+                break;
+
+            case "WSCaster":
+                newValues = new Array(20).fill(0);
+                for (let level = 13; level <= 20; level++) {
+                    newValues[level - 1] = 1;  
+                }
+                break;
+
             default:
                 newValues = this.values.slice();
-                newValues[key-1] = parseInt(event.target.value);
+                newValues[key - 1] = parseInt(event.target.value);
         }
         return new Modifier(newValues);
     }

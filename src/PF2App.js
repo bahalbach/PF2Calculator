@@ -9,6 +9,8 @@ import Proficiency from './Model/Proficiency.js';
 import AbilityScore from './Model/AbilityScore.js';
 import Modifier from './Model/Modifier.js';
 import ItemBonus from './Model/ItemBonus.js';
+import DiceNumber from './Model/DiceNumber.js';
+import DieSize from './Model/DieSize.js';
 
 import MAPInput from './Inputs/MAPInput.js';
 import OverrideInput from './Inputs/OverrideInput.js';
@@ -16,9 +18,12 @@ import { WeaponProficiencyInput } from './Inputs/ProficiencyInput.js';
 import { AttackAbilityScoreInput, DamageAbilityScoreInput } from './Inputs/AbilityScoreInput.js';
 import ItemBonusInput from './Inputs/ItemBonusInput.js';
 import ModifierInput from './Inputs/ModifierInput.js';
+import { WeaponDiceNumInput } from './Inputs/NumberDiceInput.js';
+import { DieSizeInput } from './Inputs/DieSizeInput.js';
 
 
 import './PF2App.css';
+import WeaponSpecInput from './Inputs/WeaponSpecInput.js';
 
 
 
@@ -97,6 +102,16 @@ function totalBonusDescription(effect, level) {
 }
 
 function totalDamageDescription(effect, level) {
+    // damageAbilityScore: new AbilityScore(),
+    // weaponDiceNum: new DiceNumber(),
+    // dieSize: new DieSize(),
+    // weaponSpec
+    if ( level ) {
+        const dice = "" + effect.weaponDiceNum.get(level) + "d" + effect.dieSize.get(level);
+        const staticDamage = (effect.damageAbilityScore.getMod(level) + (effect.weaponSpec.get(level) * effect.proficiency.getProf(level)));
+        const average = effect.weaponDiceNum.get(level) * (effect.dieSize.get(level)+1) / 2 + staticDamage;
+        return "(" + average + ") " + dice + " + " + staticDamage;
+    }
     return "";
 }
 
@@ -153,14 +168,31 @@ function StrikeInput(props) {
                 }
             />
 
-
             <CollapsableInput
                 description={"Total Damage: " + totalDamageDescription(props.effect, props.selectedLevel)}
                 listInput={
+                    <div className="DamageInput">
                     <DamageAbilityScoreInput
                         effect={props.effect}
                         onChange={props.onEffectChange.bind(null, "damageAbilityScore")}
+                        selectedLevel={props.selectedLevel}
                     />
+                    <WeaponDiceNumInput
+                        effect={props.effect}
+                        onChange={props.onEffectChange.bind(null, "weaponDiceNum")}
+                        selectedLevel={props.selectedLevel}
+                    />
+                    <DieSizeInput
+                        effect={props.effect}
+                        onChange={props.onEffectChange.bind(null, "dieSize")}
+                        selectedLevel={props.selectedLevel}
+                    />
+                    <WeaponSpecInput 
+                        effect={props.effect}
+                        onChange={props.onEffectChange.bind(null, "weaponSpec")}
+                        selectedLevel={props.selectedLevel}
+                    />
+                    </div>
                 }
             />
         </div>
@@ -228,6 +260,9 @@ class PF2App extends React.Component {
                         untypedPenalty: new Modifier(),
 
                         damageAbilityScore: new AbilityScore(),
+                        weaponDiceNum: new DiceNumber(),
+                        dieSize: new DieSize(),
+                        weaponSpec: new Modifier(),
                     }
                 ]
             ],

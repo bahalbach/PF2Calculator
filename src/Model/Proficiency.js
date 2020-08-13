@@ -17,6 +17,7 @@ class Proficiency {
             }
         }
         this.initial = currentProf;
+        this.values = [];
         this.profArray = [];
 
         for (let i = 0; i < MAX_LEVEL; i++) {
@@ -24,9 +25,11 @@ class Proficiency {
                 currentProf++;
             }
             if (currentProf === 0) {
+                this.values.push(0);
                 this.profArray.push(0);
             } else {
-                this.profArray.push((i + 1) + (currentProf * 2));
+                this.values.push((i + 1) + (currentProf * 2));
+                this.profArray.push(currentProf);
             }
         }
         this.maxProf = currentProf;
@@ -37,7 +40,11 @@ class Proficiency {
     }
 
     get(level) {
-        return this.profArray[level - 1];
+        return this.values[level - 1];
+    }
+
+    getProf(level) {
+        return this.profArray[level-1];
     }
 
     getInitial() {
