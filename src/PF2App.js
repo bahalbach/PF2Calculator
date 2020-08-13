@@ -30,7 +30,23 @@ import WeaponSpecInput from './Inputs/WeaponSpecInput.js';
 
 
 
-
+const DEFAULT_PROF = [1, 1, 5, 13];
+const DEFAULT_ABSCORE = [18, [true, true, true, true], 17];
+const DEFAULT_ITEMB = new Array(20).fill(0);
+for (let i = 0; i < 20; i++) {
+    if (i + 1 >= 16) {DEFAULT_ITEMB[i] = 3; continue;}
+    if (i + 1 >= 10) {DEFAULT_ITEMB[i] = 2; continue;}
+    if (i + 1 >= 2) {DEFAULT_ITEMB[i] = 1; continue;}
+}
+const DEFAULT_WS = new Array(20).fill(0);
+for (let level = 7; level <= 20; level++) {
+    if (level < 15) {
+        DEFAULT_WS[level - 1] = 1;
+    }
+    if (level >= 15) {
+        DEFAULT_WS[level - 1] = 2;
+    }
+}
 
 
 
@@ -247,9 +263,9 @@ class PF2App extends React.Component {
                         useOverride: new Flag(),
                         override: new Modifier(),
 
-                        proficiency: new Proficiency(1, 1, 5, 13),
-                        attackAbilityScore: new AbilityScore(18, [true, true, true, true], 17),
-                        itemBonus: new ItemBonus(),
+                        proficiency: new Proficiency(...DEFAULT_PROF),
+                        attackAbilityScore: new AbilityScore(...DEFAULT_ABSCORE),
+                        itemBonus: new ItemBonus(DEFAULT_ITEMB),
 
                         useMiscModifiers: new Flag(true),
                         circumstanceBonus: new Modifier(),
@@ -259,10 +275,10 @@ class PF2App extends React.Component {
                         itemPenalty: new Modifier(),
                         untypedPenalty: new Modifier(),
 
-                        damageAbilityScore: new AbilityScore(),
+                        damageAbilityScore: new AbilityScore(...DEFAULT_ABSCORE),
                         weaponDiceNum: new DiceNumber(),
                         dieSize: new DieSize(),
-                        weaponSpec: new Modifier(),
+                        weaponSpec: new Modifier(DEFAULT_WS),
                     }
                 ]
             ],
