@@ -187,23 +187,22 @@ function StrikeInput(props) {
                             onChange={props.onEffectChange.bind(null, "itemBonus")}
                             selectedLevel={props.selectedLevel}
                         />
-
-                        <ModifierInput
+                    </div>
+                }
+                after={
+                    <div className="CheckInputAfter">
+                    <ModifierInput
                             effect={props.effect}
                             onEffectChange={props.onEffectChange}
                             selectedLevel={props.selectedLevel}
                         />
-
-
-                    </div>
-                }
-                after={
                     <MAPInput
                         effect={props.effect}
                         onChange={props.onEffectChange.bind(null, "MAP")}
                         selectedLevel={props.selectedLevel}
 
                     />
+                    </div>
                 }
             />
 
@@ -272,7 +271,7 @@ function TargetInput(props) {
                         step="1"
                         value={props.target.selectedLevel}
                         onChange={props.onTargetChange.bind(null, "selectedLevel")}
-                    />
+                    /><br />
                 1
                 <input type="range"
                         min="1"

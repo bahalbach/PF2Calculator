@@ -70,15 +70,28 @@ function PenaltyPresets(props) {
                 onChange={props.onEffectChange.bind(null, "useMiscModifiers")}
                 label="Add Circumstance/Status Bonuses/Penalties"
             /> */
+function totalModDescription(effect, level) {
+    if (level) {
+        let total = (effect.circumstanceBonus.get(level) +
+        effect.statusBonus.get(level) +
+        -effect.circumstancePenalty.get(level) +
+        -effect.statusPenalty.get(level) +
+        -effect.itemPenalty.get(level) +
+        -effect.untypedPenalty.get(level))
+
+        return "(" + total + ")";
+    }
+}
 
 function ModifierInput(props) {
     // props: effect, onEffectChange
     return (
-        <div className="InputGroup ModifierInput" >
+        <div className="ModifierInput" >
             <CollapsableInput 
-            description="Add Circumstance/Status Bonuses/Penalties"
+            description={"Circumstance/Status Bonuses/Penalties: " + totalModDescription(props.effect, props.selectedLevel)}
             listInput={
                 <div className="ModifierInputList">
+                <div className="InputGroup">
             <BonusPresets
                 modifier={props.effect.statusBonus}
                 onChange={props.onEffectChange.bind(null, "statusBonus")}
@@ -92,7 +105,9 @@ function ModifierInput(props) {
                     />
                 }
             />
+            </div>
 
+            <div className="InputGroup">
             <BonusPresets
                 modifier={props.effect.circumstanceBonus}
                 onChange={props.onEffectChange.bind(null, "circumstanceBonus")}
@@ -106,7 +121,9 @@ function ModifierInput(props) {
                     />
                 }
             />
+            </div>
 
+            <div className="InputGroup">
             <PenaltyPresets
                 modifier={props.effect.statusPenalty}
                 onChange={props.onEffectChange.bind(null, "statusPenalty")}
@@ -120,7 +137,9 @@ function ModifierInput(props) {
                     />
                 }
             />
+            </div>
 
+            <div className="InputGroup">
             <PenaltyPresets
                 modifier={props.effect.circumstancePenalty}
                 onChange={props.onEffectChange.bind(null, "circumstancePenalty")}
@@ -134,7 +153,9 @@ function ModifierInput(props) {
                     />
                 }
             />
+            </div>
 
+            <div className="InputGroup">
             <PenaltyPresets
                 modifier={props.effect.itemPenalty}
                 onChange={props.onEffectChange.bind(null, "itemPenalty")}
@@ -148,7 +169,9 @@ function ModifierInput(props) {
                     />
                 }
             />
+            </div>
 
+            <div className="InputGroup">
             <PenaltyPresets
                 modifier={props.effect.untypedPenalty}
                 onChange={props.onEffectChange.bind(null, "untypedPenalty")}
@@ -162,6 +185,7 @@ function ModifierInput(props) {
                     />
                 }
             />
+            </div>
             </div>
             }
             />
