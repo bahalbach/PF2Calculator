@@ -34,9 +34,9 @@ const DEFAULT_PROF = [1, 1, 5, 13];
 const DEFAULT_ABSCORE = [18, [true, true, true, true], 17];
 const DEFAULT_ITEMB = new Array(20).fill(0);
 for (let i = 0; i < 20; i++) {
-    if (i + 1 >= 16) {DEFAULT_ITEMB[i] = 3; continue;}
-    if (i + 1 >= 10) {DEFAULT_ITEMB[i] = 2; continue;}
-    if (i + 1 >= 2) {DEFAULT_ITEMB[i] = 1; continue;}
+    if (i + 1 >= 16) { DEFAULT_ITEMB[i] = 3; continue; }
+    if (i + 1 >= 10) { DEFAULT_ITEMB[i] = 2; continue; }
+    if (i + 1 >= 2) { DEFAULT_ITEMB[i] = 1; continue; }
 }
 const DEFAULT_WS = new Array(20).fill(0);
 for (let level = 7; level <= 20; level++) {
@@ -57,63 +57,10 @@ for (let level = 7; level <= 20; level++) {
 // }
 function totalBonusDescription(effect, level) {
     let desc = "";
-    let levelTotal;
-    let initial;
-    let final;
-
-    if (effect.useOverride.isTrue()) {
-        if (level) {
-            levelTotal = effect.override.get(level);
-        }
-        initial = effect.override.get(1);
-        final = effect.override.get(20);
-    }
-    else {
-        if (level) {
-            levelTotal = effect.attackAbilityScore.getMod(level) + effect.proficiency.get(level) + effect.itemBonus.get(level);
-        }
-        initial = effect.attackAbilityScore.getMod(1) + effect.proficiency.get(1) + effect.itemBonus.get(1);
-        final = effect.attackAbilityScore.getMod(20) + effect.proficiency.get(20) + effect.itemBonus.get(20);
-    }
     if (level) {
-        levelTotal += effect.MAP.get(level);
+        desc += "(" + getAttackBonus(effect, level) + ") ";
     }
-    initial += effect.MAP.get(1);
-    final += effect.MAP.get(20);
-
-    if (effect.useMiscModifiers.isTrue()) {
-        if (level) {
-            levelTotal += (
-                effect.circumstanceBonus.get(level) +
-                effect.statusBonus.get(level) +
-                -effect.circumstancePenalty.get(level) +
-                -effect.statusPenalty.get(level) +
-                -effect.itemPenalty.get(level) +
-                -effect.untypedPenalty.get(level)
-            );
-        }
-        initial += (
-            effect.circumstanceBonus.get(1) +
-            effect.statusBonus.get(1) +
-            -effect.circumstancePenalty.get(1) +
-            -effect.statusPenalty.get(1) +
-            -effect.itemPenalty.get(1) +
-            -effect.untypedPenalty.get(1)
-        );
-        final += (
-            effect.circumstanceBonus.get(20) +
-            effect.statusBonus.get(20) +
-            -effect.circumstancePenalty.get(20) +
-            -effect.statusPenalty.get(20) +
-            -effect.itemPenalty.get(20) +
-            -effect.untypedPenalty.get(20)
-        );
-    }
-
-    if (level) {
-        desc += "(" + levelTotal + ") ";
-    }
-    desc += initial + " to " + final;
+    desc += getAttackBonus(effect, 1) + " to " + getAttackBonus(effect, 20);
     return desc;
 }
 
@@ -122,13 +69,89 @@ function totalDamageDescription(effect, level) {
     // weaponDiceNum: new DiceNumber(),
     // dieSize: new DieSize(),
     // weaponSpec
-    if ( level ) {
+    if (level) {
         const dice = "" + effect.weaponDiceNum.get(level) + "d" + effect.dieSize.get(level);
         const staticDamage = (effect.damageAbilityScore.getMod(level) + (effect.weaponSpec.get(level) * effect.proficiency.getProf(level)));
-        const average = effect.weaponDiceNum.get(level) * (effect.dieSize.get(level)+1) / 2 + staticDamage;
+        const average = effect.weaponDiceNum.get(level) * (effect.dieSize.get(level) + 1) / 2 + staticDamage;
         return "(" + average + ") " + dice + " + " + staticDamage;
     }
     return "";
+}
+
+function getAttackBonus(effect, level) {
+    let total;
+
+    if (effect.useOverride.isTrue()) {
+        total = effect.override.get(level);
+    }
+    else {
+        total = effect.attackAbilityScore.getMod(level) + effect.proficiency.get(level) + effect.itemBonus.get(level);
+    }
+    total += effect.MAP.get(level);
+
+    if (effect.useMiscModifiers.isTrue()) {
+
+        total += (
+            effect.circumstanceBonus.get(level) +
+            effect.statusBonus.get(level) +
+            -effect.circumstancePenalty.get(level) +
+            -effect.statusPenalty.get(level) +
+            -effect.itemPenalty.get(level) +
+            -effect.untypedPenalty.get(level)
+        );
+    }
+
+    return total;
+}
+
+function getCritSuccessPercent(bonus, DC, keen=false) {
+    const dif = bonus-DC;
+    let chance;
+    if (dif < -20) {
+        chance = 0;
+    } else if (dif < -9) {
+        chance = keen?10:5;
+    } else if (dif < 8) {
+        chance = (11 + dif) * 5;
+    } else {
+        chance = 95;
+    }
+      
+    return chance;
+}
+
+function getSuccessPercent(bonus, DC, keen=false) {
+    const dif = bonus-DC;
+    let chance;
+    if (dif < -29) {
+        chance = 0;
+    } else if (dif < -20) {
+        chance = 5;
+    } else if (dif < -9) {
+        chance = (keen?19:20 + dif) *5;
+    } else if (dif < -1) {
+        chance = 50;
+    } else if (dif < 9) {
+        chance = (8 - dif) * 5;
+    } else {
+        chance = 5;
+    }
+      
+    return chance;
+}
+
+function calculateExpectedDamage(effect, target) {
+    const level = target.selectedLevel;
+    if (!level) return;
+    const attackBonus = getAttackBonus(effect, level);
+    const diceNum = effect.weaponDiceNum.get(level);
+    const dieSize = effect.dieSize.get(level);
+    const staticDamage = (effect.damageAbilityScore.getMod(level) + (effect.weaponSpec.get(level) * effect.proficiency.getProf(level)));
+    const average = diceNum * (dieSize+1)/2 + staticDamage;
+    const AC = target.AC;
+    const critPercent = getCritSuccessPercent(attackBonus,AC);
+    const hitPercent = getSuccessPercent(attackBonus,AC);
+    return (hitPercent * average + critPercent * average * 2) / 100;
 }
 
 function StrikeInput(props) {
@@ -188,26 +211,26 @@ function StrikeInput(props) {
                 description={"Total Damage: " + totalDamageDescription(props.effect, props.selectedLevel)}
                 listInput={
                     <div className="DamageInput">
-                    <DamageAbilityScoreInput
-                        effect={props.effect}
-                        onChange={props.onEffectChange.bind(null, "damageAbilityScore")}
-                        selectedLevel={props.selectedLevel}
-                    />
-                    <WeaponDiceNumInput
-                        effect={props.effect}
-                        onChange={props.onEffectChange.bind(null, "weaponDiceNum")}
-                        selectedLevel={props.selectedLevel}
-                    />
-                    <DieSizeInput
-                        effect={props.effect}
-                        onChange={props.onEffectChange.bind(null, "dieSize")}
-                        selectedLevel={props.selectedLevel}
-                    />
-                    <WeaponSpecInput 
-                        effect={props.effect}
-                        onChange={props.onEffectChange.bind(null, "weaponSpec")}
-                        selectedLevel={props.selectedLevel}
-                    />
+                        <DamageAbilityScoreInput
+                            effect={props.effect}
+                            onChange={props.onEffectChange.bind(null, "damageAbilityScore")}
+                            selectedLevel={props.selectedLevel}
+                        />
+                        <WeaponDiceNumInput
+                            effect={props.effect}
+                            onChange={props.onEffectChange.bind(null, "weaponDiceNum")}
+                            selectedLevel={props.selectedLevel}
+                        />
+                        <DieSizeInput
+                            effect={props.effect}
+                            onChange={props.onEffectChange.bind(null, "dieSize")}
+                            selectedLevel={props.selectedLevel}
+                        />
+                        <WeaponSpecInput
+                            effect={props.effect}
+                            onChange={props.onEffectChange.bind(null, "weaponSpec")}
+                            selectedLevel={props.selectedLevel}
+                        />
                     </div>
                 }
             />
@@ -216,6 +239,7 @@ function StrikeInput(props) {
 }
 
 function EffectInput(props) {
+    // props: effect, selectedLevel, onEffectChange
     return (
         <StrikeInput
             effect={props.effect}
@@ -225,19 +249,51 @@ function EffectInput(props) {
     );
 }
 
+function DisplayOutput(props) {
+    // props: effect, target
+    return (
+        <div className="Display">
+            <CollapsableInput
+                description={"Expected Damage: " + calculateExpectedDamage(props.effect, props.target)}
+                listInput=""
+            />
+        </div>
+    );
+}
+
 function TargetInput(props) {
     return (
         <div className="TargetInput">
-            <label>Target Level: {props.target.selectedLevel}
-                <input type="range" 
-                    min="1"
-                    max="20"
-                    step="1"
-                    value={props.target.selectedLevel}
-                    onChange={props.onTargetChange.bind(null,"selectedLevel")}
-                />
+            <div>
+                <label>Target Level:
+                <input type="number"
+                        min="1"
+                        max="20"
+                        step="1"
+                        value={props.target.selectedLevel}
+                        onChange={props.onTargetChange.bind(null, "selectedLevel")}
+                    />
+                1
+                <input type="range"
+                        min="1"
+                        max="20"
+                        step="1"
+                        value={props.target.selectedLevel}
+                        onChange={props.onTargetChange.bind(null, "selectedLevel")}
+                    />
+                20
             </label>
-            
+            </div>
+            <div>
+                <label>Target AC: {}
+                    <input type="number"
+                        value={props.target.AC}
+                        onChange={props.onTargetChange.bind(null, "AC")}
+                    />
+
+                </label>
+            </div>
+
         </div>
     );
 }
@@ -253,7 +309,8 @@ class PF2App extends React.Component {
         super(props);
         this.state = {
             target: {
-                selectedLevel: 3
+                selectedLevel: 3,
+                AC: 15
             },
             routines: [
                 [
@@ -295,11 +352,15 @@ class PF2App extends React.Component {
         switch (propertyName) {
             case "selectedLevel":
                 newPropertyValue = event.target.value;
+                break;
+            case "AC":
+                newPropertyValue = event.target.value;
+                break;
             default:
                 newPropertyValue = event.target.value;
         }
-        const newTarget = update(this.state.target, {[propertyName]: {$set: newPropertyValue}});
-        
+        const newTarget = update(this.state.target, { [propertyName]: { $set: newPropertyValue } });
+
         this.setState({ target: newTarget });
     }
 
@@ -325,6 +386,10 @@ class PF2App extends React.Component {
                 <TargetInput
                     target={this.state.target}
                     onTargetChange={this.handleTargetChange}
+                />
+                <DisplayOutput
+                    target={this.state.target}
+                    effect={this.state.routines[this.state.selectedRoutine][this.state.selectedEffect]}
                 />
                 <EffectInput
                     effect={this.state.routines[this.state.selectedRoutine][this.state.selectedEffect]}

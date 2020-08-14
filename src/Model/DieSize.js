@@ -16,7 +16,7 @@ class DieSize {
             desc += "(d" + this.get(level) + ") ";
         }
 
-        desc += "d" + this.values[0] + " to " + "d" + this.values[19];
+        desc += "d" + this.values[0] + " to d" + this.values[19];
 
         return desc;
     }

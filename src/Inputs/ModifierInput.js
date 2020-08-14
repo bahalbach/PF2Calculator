@@ -65,11 +65,11 @@ function PenaltyPresets(props) {
     );
 }
 
-{/* <CheckboxInput
+/* <CheckboxInput
                 checked={props.effect.useMiscModifiers.isTrue()}
                 onChange={props.onEffectChange.bind(null, "useMiscModifiers")}
                 label="Add Circumstance/Status Bonuses/Penalties"
-            /> */}
+            /> */
 
 function ModifierInput(props) {
     // props: effect, onEffectChange
