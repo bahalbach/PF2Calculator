@@ -94,14 +94,14 @@ function WeaponProficiencyInput(props) {
         <div className="InputGroup WeaponProficiencyInput">
             <ProficiencyPresets
                 proficiency={props.effect.proficiency}
-                onChange={props.onEffectChange.bind(null, "proficiency")}
+                onChange={props.onEffectChange.bind(null, "proficiency", null)}
             />
             <CollapsableInput
                 description={"Proficiency: " + props.effect.proficiency.getDescription(props.selectedLevel)}
                 listInput={
                     <ProficiencyInputList
                         proficiency={props.effect.proficiency}
-                        onChange={props.onEffectChange.bind(null, "proficiency")}
+                        onChange={props.onEffectChange.bind(null, "proficiency", null)}
                     />
                 }
             />

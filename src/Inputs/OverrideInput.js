@@ -8,7 +8,7 @@ export function OverrideInput(props) {
         <div className="InputGroup OverrideInput">
             <CheckboxInput
                 checked={props.effect.useOverride.isTrue()}
-                onChange={props.onEffectChange.bind(null, "useOverride")}
+                onChange={props.onEffectChange.bind(null, "useOverride", null)}
                 label="Override Attack Bonus?"
             />
             <CollapsableInput
@@ -16,7 +16,7 @@ export function OverrideInput(props) {
                 listInput={
                     <ByLevelInput
                         modifier={props.effect.override}
-                        onChange={props.onEffectChange.bind(null, "override")}
+                        onChange={props.onEffectChange.bind(null, "override", null)}
                     />
                 }
             />

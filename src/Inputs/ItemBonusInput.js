@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckboxInput, CollapsableInput, ByLevelInput } from './CommonInputs'
+import { CheckboxInput, CollapsableInput, ByLevelInput2 } from './CommonInputs'
 
 function ItemBonusPresets(props) {
     return (
@@ -30,15 +30,15 @@ function ItemBonusPresets(props) {
 
 function ItemBonusInput(props) {
     return (
-        <div className="InputGroup WeaponProficiencyInput">
+        <div className="InputGroup ItemBonusInput">
             <ItemBonusPresets
                 itemBonus={props.effect.itemBonus}
-                onChange={props.onChange}
+                onChange={props.onChange.bind(null,null)}
             />
             <CollapsableInput
                 description={"Item Bonus: " + props.effect.itemBonus.getDescription(props.selectedLevel)}
                 listInput={
-                    <ByLevelInput
+                    <ByLevelInput2
                         modifier={props.effect.itemBonus}
                         onChange={props.onChange}
                     />

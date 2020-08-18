@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckboxInput, CollapsableInput, ByLevelInput } from './CommonInputs'
+import { CheckboxInput, CollapsableInput, ByLevelInput2 } from './CommonInputs'
 
 function DieSizePresets(props) {
     // props: diceNum, onChange
@@ -40,13 +40,13 @@ function DieSizeInput(props) {
         <div className="InputGroup DieSizeInput" >
             <DieSizePresets 
                 dieSize={props.effect.dieSize}
-                onChange={props.onChange}
+                onChange={props.onChange.bind(null,null)}
             />
         
         <CollapsableInput
-                description={"Die Size: " + props.effect.dieSize.getDescription(props.selectedLevel)}
+                description={"Die Size: " + props.effect.dieSize.getDieSizeDescription(props.selectedLevel)}
                 listInput={
-                    <ByLevelInput
+                    <ByLevelInput2
                         modifier={props.effect.dieSize}
                         onChange={props.onChange}
                     />

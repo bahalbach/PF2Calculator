@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckboxInput, CollapsableInput, ByLevelInput } from './CommonInputs'
+import { CheckboxInput, CollapsableInput, ByLevelInput2 } from './CommonInputs'
 
 function BonusPresets(props) {
     return (
@@ -73,11 +73,11 @@ function PenaltyPresets(props) {
 function totalModDescription(effect, level) {
     if (level) {
         let total = (effect.circumstanceBonus.get(level) +
-        effect.statusBonus.get(level) +
-        -effect.circumstancePenalty.get(level) +
-        -effect.statusPenalty.get(level) +
-        -effect.itemPenalty.get(level) +
-        -effect.untypedPenalty.get(level))
+            effect.statusBonus.get(level) +
+            -effect.circumstancePenalty.get(level) +
+            -effect.statusPenalty.get(level) +
+            -effect.itemPenalty.get(level) +
+            -effect.untypedPenalty.get(level))
 
         return "(" + total + ")";
     }
@@ -87,107 +87,107 @@ function ModifierInput(props) {
     // props: effect, onEffectChange
     return (
         <div className="ModifierInput" >
-            <CollapsableInput 
-            description={"Circumstance/Status Bonuses/Penalties: " + totalModDescription(props.effect, props.selectedLevel)}
-            listInput={
-                <div className="ModifierInputList">
-                <div className="InputGroup">
-            <BonusPresets
-                modifier={props.effect.statusBonus}
-                onChange={props.onEffectChange.bind(null, "statusBonus")}
-            />
             <CollapsableInput
-                description={"Status Bonus: " + props.effect.statusBonus.getDescription(props.selectedLevel)}
+                description={"Circumstance/Status Bonuses/Penalties: " + totalModDescription(props.effect, props.selectedLevel)}
                 listInput={
-                    <ByLevelInput
-                        modifier={props.effect.statusBonus}
-                        onChange={props.onEffectChange.bind(null, "statusBonus")}
-                    />
-                }
-            />
-            </div>
+                    <div className="ModifierInputList">
+                        <div className="InputGroup">
+                            <BonusPresets
+                                modifier={props.effect.statusBonus}
+                                onChange={props.onEffectChange.bind(null, "statusBonus", null)}
+                            />
+                            <CollapsableInput
+                                description={"Status Bonus: " + props.effect.statusBonus.getDescription(props.selectedLevel)}
+                                listInput={
+                                    <ByLevelInput2
+                                        modifier={props.effect.statusBonus}
+                                        onChange={props.onEffectChange.bind(null, "statusBonus")}
+                                    />
+                                }
+                            />
+                        </div>
 
-            <div className="InputGroup">
-            <BonusPresets
-                modifier={props.effect.circumstanceBonus}
-                onChange={props.onEffectChange.bind(null, "circumstanceBonus")}
-            />
-            <CollapsableInput
-                description={"Cicumstance Bonus: " + props.effect.circumstanceBonus.getDescription(props.selectedLevel)}
-                listInput={
-                    <ByLevelInput
-                        modifier={props.effect.circumstanceBonus}
-                        onChange={props.onEffectChange.bind(null, "circumstanceBonus")}
-                    />
-                }
-            />
-            </div>
+                        <div className="InputGroup">
+                            <BonusPresets
+                                modifier={props.effect.circumstanceBonus}
+                                onChange={props.onEffectChange.bind(null, "circumstanceBonus", null)}
+                            />
+                            <CollapsableInput
+                                description={"Cicumstance Bonus: " + props.effect.circumstanceBonus.getDescription(props.selectedLevel)}
+                                listInput={
+                                    <ByLevelInput2
+                                        modifier={props.effect.circumstanceBonus}
+                                        onChange={props.onEffectChange.bind(null, "circumstanceBonus")}
+                                    />
+                                }
+                            />
+                        </div>
 
-            <div className="InputGroup">
-            <PenaltyPresets
-                modifier={props.effect.statusPenalty}
-                onChange={props.onEffectChange.bind(null, "statusPenalty")}
-            />
-            <CollapsableInput
-                description={"Status Penalty: " + props.effect.statusPenalty.getDescription(props.selectedLevel)}
-                listInput={
-                    <ByLevelInput
-                        modifier={props.effect.statusPenalty}
-                        onChange={props.onEffectChange.bind(null, "statusPenalty")}
-                    />
-                }
-            />
-            </div>
+                        <div className="InputGroup">
+                            <PenaltyPresets
+                                modifier={props.effect.statusPenalty}
+                                onChange={props.onEffectChange.bind(null, "statusPenalty", null)}
+                            />
+                            <CollapsableInput
+                                description={"Status Penalty: " + props.effect.statusPenalty.getDescription(props.selectedLevel)}
+                                listInput={
+                                    <ByLevelInput2
+                                        modifier={props.effect.statusPenalty}
+                                        onChange={props.onEffectChange.bind(null, "statusPenalty")}
+                                    />
+                                }
+                            />
+                        </div>
 
-            <div className="InputGroup">
-            <PenaltyPresets
-                modifier={props.effect.circumstancePenalty}
-                onChange={props.onEffectChange.bind(null, "circumstancePenalty")}
-            />
-            <CollapsableInput
-                description={"Cicumstance Penalty: " + props.effect.circumstancePenalty.getDescription(props.selectedLevel)}
-                listInput={
-                    <ByLevelInput
-                        modifier={props.effect.circumstancePenalty}
-                        onChange={props.onEffectChange.bind(null, "circumstancePenalty")}
-                    />
-                }
-            />
-            </div>
+                        <div className="InputGroup">
+                            <PenaltyPresets
+                                modifier={props.effect.circumstancePenalty}
+                                onChange={props.onEffectChange.bind(null, "circumstancePenalty", null)}
+                            />
+                            <CollapsableInput
+                                description={"Cicumstance Penalty: " + props.effect.circumstancePenalty.getDescription(props.selectedLevel)}
+                                listInput={
+                                    <ByLevelInput2
+                                        modifier={props.effect.circumstancePenalty}
+                                        onChange={props.onEffectChange.bind(null, "circumstancePenalty")}
+                                    />
+                                }
+                            />
+                        </div>
 
-            <div className="InputGroup">
-            <PenaltyPresets
-                modifier={props.effect.itemPenalty}
-                onChange={props.onEffectChange.bind(null, "itemPenalty")}
-            />
-            <CollapsableInput
-                description={"Item Penalty: " + props.effect.itemPenalty.getDescription(props.selectedLevel)}
-                listInput={
-                    <ByLevelInput
-                        modifier={props.effect.itemPenalty}
-                        onChange={props.onEffectChange.bind(null, "itemPenalty")}
-                    />
-                }
-            />
-            </div>
+                        <div className="InputGroup">
+                            <PenaltyPresets
+                                modifier={props.effect.itemPenalty}
+                                onChange={props.onEffectChange.bind(null, "itemPenalty", null)}
+                            />
+                            <CollapsableInput
+                                description={"Item Penalty: " + props.effect.itemPenalty.getDescription(props.selectedLevel)}
+                                listInput={
+                                    <ByLevelInput2
+                                        modifier={props.effect.itemPenalty}
+                                        onChange={props.onEffectChange.bind(null, "itemPenalty")}
+                                    />
+                                }
+                            />
+                        </div>
 
-            <div className="InputGroup">
-            <PenaltyPresets
-                modifier={props.effect.untypedPenalty}
-                onChange={props.onEffectChange.bind(null, "untypedPenalty")}
-            />
-            <CollapsableInput
-                description={"Untyped Penalty: " + props.effect.untypedPenalty.getDescription(props.selectedLevel)}
-                listInput={
-                    <ByLevelInput
-                        modifier={props.effect.untypedPenalty}
-                        onChange={props.onEffectChange.bind(null, "untypedPenalty")}
-                    />
+                        <div className="InputGroup">
+                            <PenaltyPresets
+                                modifier={props.effect.untypedPenalty}
+                                onChange={props.onEffectChange.bind(null, "untypedPenalty", null)}
+                            />
+                            <CollapsableInput
+                                description={"Untyped Penalty: " + props.effect.untypedPenalty.getDescription(props.selectedLevel)}
+                                listInput={
+                                    <ByLevelInput2
+                                        modifier={props.effect.untypedPenalty}
+                                        onChange={props.onEffectChange.bind(null, "untypedPenalty")}
+                                    />
+                                }
+                            />
+                        </div>
+                    </div>
                 }
-            />
-            </div>
-            </div>
-            }
             />
         </div>
     );
