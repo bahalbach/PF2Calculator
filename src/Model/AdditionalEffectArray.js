@@ -2,7 +2,7 @@ class AdditionalEffectArray {
     // has an array of effect entries. 
     // Each effect entry has an Name, level added, and level removed
 
-    constructor(values=[], extraLevelAdded=1,extraLevelRemoved=0) {
+    constructor(values = [], extraLevelAdded = 1, extraLevelRemoved = 0) {
         this.length = values.length;
         this.effectEntries = values;
         this.extraLevelAdded = extraLevelAdded;
@@ -10,21 +10,21 @@ class AdditionalEffectArray {
     }
 
     getName(index) {
-        if ( index === this.length ) {
+        if (index === this.length) {
             return "None";
         }
         return this.effectEntries[index][0];
     }
 
     getLevelAdded(index) {
-        if ( index === this.length ) {
+        if (index === this.length) {
             return this.extraLevelAdded;
         }
         return this.effectEntries[index][1];
     }
 
     getLevelRemoved(index) {
-        if ( index === this.length ) {
+        if (index === this.length) {
             return this.extraLevelRemoved;
         }
         return this.effectEntries[index][2];
@@ -33,11 +33,15 @@ class AdditionalEffectArray {
     getDescription() {
         const nameSet = new Set();
         let desc = "Runes: ";
-        for(let i=0; i<this.length; i++) {
-            nameSet.add(this.effectEntries[i][0]);
-        }
-        for (let name of nameSet) {
-            desc += " " + name;
+        if (this.length === 0) {
+            desc += "None";
+        } else {
+            for (let i = 0; i < this.length; i++) {
+                nameSet.add(this.effectEntries[i][0]);
+            }
+            for (let name of nameSet) {
+                desc += " " + name;
+            }
         }
         return desc;
     }
@@ -45,11 +49,11 @@ class AdditionalEffectArray {
     fromUpdateEntryEffect(index, value) {
         let newValues = this.effectEntries.slice();
 
-        if ( index === this.length ) {
+        if (index === this.length) {
             console.log("here")
-            newValues.push([value,this.extraLevelAdded,this.extraLevelRemoved]);
+            newValues.push([value, this.extraLevelAdded, this.extraLevelRemoved]);
         }
-        else if ( value === "None") {
+        else if (value === "None") {
             newValues.splice(index, 1);
         }
         else {
@@ -61,9 +65,9 @@ class AdditionalEffectArray {
 
     fromUpdateEntryLevelAdded(index, value) {
         let newValues = this.effectEntries.slice();
-        if (!value) value=0;
+        if (!value) value = 0;
 
-        if ( index === this.length ) {
+        if (index === this.length) {
             this.extraLevelAdded = value;
         }
         else {
@@ -75,9 +79,9 @@ class AdditionalEffectArray {
 
     fromUpdateEntryLevelRemoved(index, value) {
         let newValues = this.effectEntries.slice();
-        if (!value) value=0;
+        if (!value) value = 0;
 
-        if ( index === this.length ) {
+        if (index === this.length) {
             this.extraLevelRemoved = value;
         }
         else {
@@ -87,7 +91,7 @@ class AdditionalEffectArray {
         return new AdditionalEffectArray(newValues, this.extraLevelAdded, this.extraLevelRemoved);
     }
 
-    createUpdated(key, event, index ) {
+    createUpdated(key, event, index) {
         switch (key) {
             case "EntryName":
                 return this.fromUpdateEntryEffect(index, event.target.value);
@@ -97,7 +101,7 @@ class AdditionalEffectArray {
 
             case "LevelRemoved":
                 return this.fromUpdateEntryLevelRemoved(index, parseInt(event.target.value));
-        
+
             default:
                 return new AdditionalEffectArray();
         }
