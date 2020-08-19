@@ -12,6 +12,10 @@
     margin: 5px;
 }
 
+.Collapsed {
+    outline: 1px solid lightgray;
+}
+
 .InputGroup {
     border: 1px solid black;
     padding: 5px;

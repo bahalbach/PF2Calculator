@@ -214,6 +214,7 @@ function TargetInput(props) {
         </div>
     );
 }
+
 class PF2App extends React.Component {
     /*
         Target Selector
@@ -261,11 +262,10 @@ class PF2App extends React.Component {
             selectedRoutine: 0,
             selectedEffect: 0,
         };
-        // this.handleProficiencyChange = this.handleProficiencyChange.bind(this);
-        // this.handleAbilityScoreChange = this.handleAbilityScoreChange.bind(this);
         this.handleEffectChange = this.handleEffectChange.bind(this);
         this.handleTargetChange = this.handleTargetChange.bind(this);
     }
+
     handleTargetChange(propertyName, event) {
         let newPropertyValue;
         switch (propertyName) {
@@ -299,6 +299,9 @@ class PF2App extends React.Component {
         this.setState({ routines: newRoutines });
     }
 
+    handleEffectItemChange(propertyName) {
+        
+    }
 
     render() {
         return (

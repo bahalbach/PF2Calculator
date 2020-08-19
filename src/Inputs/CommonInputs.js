@@ -33,7 +33,7 @@ class CollapsableInput extends React.Component {
         return (
             <div className="CollapsableInput">
                 <div
-                    className="Description CollapsableInputDescription"
+                    className={this.state.collapseView ? "Description CollapsableInputDescription Collapsed" : "Description CollapsableInputDescription Open"}
                     onClick={this.handleClick}
                 >
                     {this.props.description}
