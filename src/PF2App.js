@@ -10,7 +10,7 @@ import AbilityScore from './Model/AbilityScore.js';
 import Modifier from './Model/Modifier.js';
 import AdditionalEffectArray from './Model/AdditionalEffectArray.js';
 
-import { totalBonusDescription, totalDamageDescription, calculateExpectedDamage } from './Calculation.js';
+import { totalBonusDescription, attackBonusDescription, totalDamageDescription, calculateExpectedDamage } from './Calculation.js';
 
 import MAPInput from './Inputs/MAPInput.js';
 import OverrideInput from './Inputs/OverrideInput.js';
@@ -48,11 +48,11 @@ for (let level = 7; level <= 20; level++) {
         DEFAULT_WS[level - 1] = 2;
     }
 }
-const DEFAULT_DICENUMBER =  new Array(20).fill(1);
+const DEFAULT_DICENUMBER = new Array(20).fill(1);
 for (let i = 0; i < 20; i++) {
-    if (i + 1 >= 19) {DEFAULT_DICENUMBER[i] = 4; continue;}
-    if (i + 1 >= 12) {DEFAULT_DICENUMBER[i] = 3; continue;}
-    if (i + 1 >= 4) {DEFAULT_DICENUMBER[i] = 2; continue;}
+    if (i + 1 >= 19) { DEFAULT_DICENUMBER[i] = 4; continue; }
+    if (i + 1 >= 12) { DEFAULT_DICENUMBER[i] = 3; continue; }
+    if (i + 1 >= 4) { DEFAULT_DICENUMBER[i] = 2; continue; }
 }
 const DEFAULT_DIESIZE = new Array(20).fill(8);
 
@@ -75,44 +75,47 @@ function StrikeInput(props) {
                 description={"Total Bonus: " + totalBonusDescription(props.effect, props.selectedLevel)}
                 listInput={
                     <div className="CheckInput">
-                        <OverrideInput
+                        <CollapsableInput
+                            description={"Attack Bonus: " + attackBonusDescription(props.effect, props.selectedLevel)}
+                            listInput={
+                                <div>
+                                    <OverrideInput
+                                        effect={props.effect}
+                                        onEffectChange={props.onEffectChange}
+                                        selectedLevel={props.selectedLevel}
+                                    />
+                                    <WeaponProficiencyInput
+                                        effect={props.effect}
+                                        onEffectChange={props.onEffectChange}
+                                        selectedLevel={props.selectedLevel}
+                                    />
+
+                                    <AttackAbilityScoreInput
+                                        effect={props.effect}
+                                        onChange={props.onEffectChange.bind(null, "attackAbilityScore", null)}
+                                        selectedLevel={props.selectedLevel}
+                                    />
+
+                                    <ItemBonusInput
+                                        effect={props.effect}
+                                        onChange={props.onEffectChange.bind(null, "itemBonus")}
+                                        selectedLevel={props.selectedLevel}
+                                    />
+                                </div>
+                            } />
+                        <ModifierInput
                             effect={props.effect}
                             onEffectChange={props.onEffectChange}
                             selectedLevel={props.selectedLevel}
                         />
-                        <WeaponProficiencyInput
+                        <MAPInput
                             effect={props.effect}
-                            onEffectChange={props.onEffectChange}
+                            onChange={props.onEffectChange.bind(null, "MAP", null)}
                             selectedLevel={props.selectedLevel}
-                        />
 
-                        <AttackAbilityScoreInput
-                            effect={props.effect}
-                            onChange={props.onEffectChange.bind(null, "attackAbilityScore", null)}
-                            selectedLevel={props.selectedLevel}
-                        />
-
-                        <ItemBonusInput
-                            effect={props.effect}
-                            onChange={props.onEffectChange.bind(null, "itemBonus")}
-                            selectedLevel={props.selectedLevel}
                         />
                     </div>
-                }
-                after={
-                    <div className="CheckInputAfter">
-                    <ModifierInput
-                            effect={props.effect}
-                            onEffectChange={props.onEffectChange}
-                            selectedLevel={props.selectedLevel}
-                        />
-                    <MAPInput
-                        effect={props.effect}
-                        onChange={props.onEffectChange.bind(null, "MAP", null)}
-                        selectedLevel={props.selectedLevel}
 
-                    />
-                    </div>
                 }
             />
 
@@ -140,7 +143,7 @@ function StrikeInput(props) {
                             onChange={props.onEffectChange.bind(null, "weaponSpec", null)}
                             selectedLevel={props.selectedLevel}
                         />
-                        <RuneInput 
+                        <RuneInput
                             effect={props.effect}
                             onChange={props.onEffectChange.bind(null, "runes")}
                             selectedLevel={props.selectedLevel}

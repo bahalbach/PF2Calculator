@@ -6,7 +6,7 @@
     max-width: 500px;
 }
 
-.CollapsableInput {
+.CollapsableInput, .TargetInput {
     border: 1px solid black;
     padding: 5px;
     margin: 5px;

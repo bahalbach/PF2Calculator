@@ -184,4 +184,4 @@ function SelectLevel(props) {
 }
 
 
-export { CheckboxInput, CollapsableInput, ByLevelInput, ByLevelInput2, LevelSelection }
+export { CheckboxInput, CollapsableInput, ByLevelInput, ByLevelInput2, SelectLevel, LevelSelection }

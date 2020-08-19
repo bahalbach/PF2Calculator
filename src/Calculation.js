@@ -1,11 +1,22 @@
 function totalBonusDescription(effect, level) {
     let desc = "";
     if (level) {
+        desc += "(" + getTotalBonus(effect, level) + ") ";
+    }
+    desc += getTotalBonus(effect, 1) + " to " + getTotalBonus(effect, 20);
+    return desc;
+}
+
+function attackBonusDescription(effect, level) {
+    let desc = "";
+    if (level) {
         desc += "(" + getAttackBonus(effect, level) + ") ";
     }
     desc += getAttackBonus(effect, 1) + " to " + getAttackBonus(effect, 20);
     return desc;
 }
+
+
 
 function totalDamageDescription(effect, level) {
     // damageAbilityScore: new AbilityScore(),
@@ -31,6 +42,12 @@ function getAttackBonus(effect, level) {
         total = effect.attackAbilityScore.getMod(level) + effect.proficiency.get(level) + effect.itemBonus.get(level);
     }
     total += effect.MAP.get(level);
+
+    return total;
+}
+
+function getTotalBonus(effect, level) {
+    let total = getAttackBonus(effect, level);
 
     if (effect.useMiscModifiers.isTrue()) {
 
@@ -86,7 +103,7 @@ function getSuccessPercent(bonus, DC, keen=false) {
 function calculateExpectedDamage(effect, target) {
     const level = target.selectedLevel;
     if (!level) return;
-    const attackBonus = getAttackBonus(effect, level);
+    const attackBonus = getTotalBonus(effect, level);
     const diceNum = effect.weaponDiceNum.get(level);
     const dieSize = effect.dieSize.get(level);
     const staticDamage = (effect.damageAbilityScore.getMod(level) + (effect.weaponSpec.get(level) * effect.proficiency.getProf(level)));
@@ -97,4 +114,4 @@ function calculateExpectedDamage(effect, target) {
     return (hitPercent * average + critPercent * average * 2) / 100;
 }
 
-export { totalBonusDescription, totalDamageDescription, calculateExpectedDamage }
+export { totalBonusDescription, attackBonusDescription, totalDamageDescription, calculateExpectedDamage }
