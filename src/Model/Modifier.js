@@ -54,9 +54,9 @@ class Modifier {
     fromChangedEntryLevel(index, value) {
         if (index === this.entries.length) {
             // TODO: place value in entries at appropiate location
-            for(let i=0; i<=this.entries.length; i++) {
-                if ( i===this.entries.length || this.entries[i][0]  > value) {
-                    this.entries.splice(i,0,[value, this.extra]);
+            for (let i = 0; i <= this.entries.length; i++) {
+                if (i === this.entries.length || this.entries[i][0] > value) {
+                    this.entries.splice(i, 0, [value, this.extra]);
                     break;
                 }
             }
@@ -95,33 +95,6 @@ class Modifier {
         return mod;
     }
 
-    isWSMartial() {
-        for (let level = 1; level <= 20; level++) {
-            if (level < 7) {
-                if (this.values[level - 1] !== 0) return false;
-            }
-            if (level >= 7 && level < 15) {
-                if (this.values[level - 1] !== 1) return false;
-            }
-            if (level >= 15) {
-                if (this.values[level - 1] !== 2) return false;
-            }
-        }
-        return true;
-    }
-
-    isWSCaster() {
-        for (let level = 1; level <= 20; level++) {
-            if (level < 13) {
-                if (this.values[level - 1] !== 0) return false;
-            }
-            if (level >= 13) {
-                if (this.values[level - 1] !== 1) return false;
-            }
-        }
-        return true;
-    }
-
     getDescription(level) {
         let desc = " ";
         if (level) {
@@ -136,6 +109,11 @@ class Modifier {
     createUpdated(key, event, index) {
         let newValues;
         switch (key) {
+            case "EntryLevel":
+                return this.fromChangedEntryLevel(index, parseInt(event.target.value));
+
+            case "EntryValue":
+                return this.fromChangedEntryValue(index, parseInt(event.target.value));
 
             case "0":
                 newValues = new Array(20).fill(0);
@@ -194,7 +172,7 @@ class Modifier {
             case "None":
                 newValues = new Array(20).fill(0);
                 break;
-            case "ABPWeapon":
+            case "ABPWeaponBonus":
                 newValues = new Array(20).fill(0);
                 for (let i = 0; i < 20; i++) {
                     if (i + 1 >= 16) { newValues[i] = 3; continue; }
@@ -219,17 +197,62 @@ class Modifier {
                 }
                 break;
 
-            case "EntryLevel":
-                return this.fromChangedEntryLevel(index, parseInt(event.target.value));
-
-            case "EntryValue":
-                return this.fromChangedEntryValue(index, parseInt(event.target.value));
+            case "One":
+                newValues = new Array(20).fill(1);
+                break;
+            case "ABPWeaponDiceNum":
+                newValues = new Array(20).fill(1);
+                for (let i = 0; i < 20; i++) {
+                    if (i + 1 >= 19) { newValues[i] = 4; continue; }
+                    if (i + 1 >= 12) { newValues[i] = 3; continue; }
+                    if (i + 1 >= 4) { newValues[i] = 2; continue; }
+                }
+                break;
 
             default:
                 newValues = this.values.slice();
                 newValues[key - 1] = parseInt(event.target.value);
         }
         return new Modifier(newValues);
+    }
+
+    // For acting as Weapon Specialization--------------------------
+    isWSMartial() {
+        for (let level = 1; level <= 20; level++) {
+            if (level < 7) {
+                if (this.values[level - 1] !== 0) return false;
+            }
+            if (level >= 7 && level < 15) {
+                if (this.values[level - 1] !== 1) return false;
+            }
+            if (level >= 15) {
+                if (this.values[level - 1] !== 2) return false;
+            }
+        }
+        return true;
+    }
+
+    isWSCaster() {
+        for (let level = 1; level <= 20; level++) {
+            if (level < 13) {
+                if (this.values[level - 1] !== 0) return false;
+            }
+            if (level >= 13) {
+                if (this.values[level - 1] !== 1) return false;
+            }
+        }
+        return true;
+    }
+
+    // For acting as Dice Number-----------------------------------
+    isABPWeaponDiceNum() {
+        for (let i = 0; i < 20; i++) {
+            if (i + 1 >= 19) { if (this.values[i] !== 4) return false; else continue; }
+            if (i + 1 >= 12) { if (this.values[i] !== 3) return false; else continue; }
+            if (i + 1 >= 4) { if (this.values[i] !== 2) return false; else continue; }
+            if (this.values[i] !== 1) return false; else continue;
+        }
+        return true;
     }
 
     // For acting as Die Size--------------------------------------
@@ -287,7 +310,7 @@ class Modifier {
         return true;
     }
 
-    isABPWeapon() {
+    isABPWeaponBonus() {
         for (let i = 0; i < 20; i++) {
             if (i + 1 >= 16) { if (this.values[i] !== 3) return false; else continue; }
             if (i + 1 >= 10) { if (this.values[i] !== 2) return false; else continue; }

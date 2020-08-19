@@ -10,8 +10,8 @@ function ItemBonusPresets(props) {
                 label={"None"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.itemBonus.isABPWeapon()}
-                onChange={props.onChange.bind(null, "ABPWeapon")}
+                checked={props.itemBonus.isABPWeaponBonus()}
+                onChange={props.onChange.bind(null, "ABPWeaponBonus")}
                 label={"ABP Weapon"}
             />
             <CheckboxInput className="PresetItem"

@@ -8,7 +8,6 @@ import MAP from './Model/MAP.js';
 import Proficiency from './Model/Proficiency.js';
 import AbilityScore from './Model/AbilityScore.js';
 import Modifier from './Model/Modifier.js';
-import DiceNumber from './Model/DiceNumber.js';
 import AdditionalEffectArray from './Model/AdditionalEffectArray.js';
 
 import { totalBonusDescription, totalDamageDescription, calculateExpectedDamage } from './Calculation.js';
@@ -48,6 +47,12 @@ for (let level = 7; level <= 20; level++) {
     if (level >= 15) {
         DEFAULT_WS[level - 1] = 2;
     }
+}
+const DEFAULT_DICENUMBER =  new Array(20).fill(1);
+for (let i = 0; i < 20; i++) {
+    if (i + 1 >= 19) {DEFAULT_DICENUMBER[i] = 4; continue;}
+    if (i + 1 >= 12) {DEFAULT_DICENUMBER[i] = 3; continue;}
+    if (i + 1 >= 4) {DEFAULT_DICENUMBER[i] = 2; continue;}
 }
 const DEFAULT_DIESIZE = new Array(20).fill(8);
 
@@ -122,7 +127,7 @@ function StrikeInput(props) {
                         />
                         <WeaponDiceNumInput
                             effect={props.effect}
-                            onChange={props.onEffectChange.bind(null, "weaponDiceNum", null)}
+                            onChange={props.onEffectChange.bind(null, "weaponDiceNum")}
                             selectedLevel={props.selectedLevel}
                         />
                         <DieSizeInput
@@ -242,7 +247,7 @@ class PF2App extends React.Component {
                         untypedPenalty: new Modifier(),
 
                         damageAbilityScore: new AbilityScore(...DEFAULT_ABSCORE),
-                        weaponDiceNum: new DiceNumber(),
+                        weaponDiceNum: new Modifier(DEFAULT_DICENUMBER),
                         dieSize: new Modifier(DEFAULT_DIESIZE),
                         weaponSpec: new Modifier(DEFAULT_WS),
 
