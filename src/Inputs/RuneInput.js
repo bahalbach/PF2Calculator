@@ -4,7 +4,7 @@ let runeNames = ["Fire", "Ice", "Shock", "Keen"];
 
 function SelectRuneName(props) {
     let optionList = [];
-    for (let i=0; i<runeNames.length; i++) {
+    for (let i = 0; i < runeNames.length; i++) {
         optionList.push(
             <option value={runeNames[i]}>
                 {runeNames[i]}
@@ -12,6 +12,7 @@ function SelectRuneName(props) {
         );
     }
     return (
+
         <select
             value={props.value}
             onChange={props.onChange}
@@ -21,6 +22,7 @@ function SelectRuneName(props) {
             </option>
             {optionList}
         </select>
+
     );
 }
 
@@ -29,40 +31,57 @@ function RuneTable(props) {
 
     const runes = props.runes;
     let rows = [];
-    for (let i = 0; i < runes.length; i++) {
+    for (let i = 0; i <= runes.length; i++) {
         rows.push(
-            <div key={i}>
-                <SelectRuneName 
-                    value={runes.getName(i)}
-                    onChange={props.onChange.bind(null, i, "EntryName")}
-                />
-                <SelectLevel value={runes.getLevelAdded(i)}
-                    onChange={props.onChange.bind(null, i, "LevelAdded")}
-                />
-                <SelectLevel value={runes.getLevelRemoved(i)}
-                    onChange={props.onChange.bind(null, i, "LevelRemoved")}
-                />
-            </div>
+            <tr key={i}>
+                <td>
+                    <SelectRuneName
+                        value={runes.getName(i)}
+                        onChange={props.onChange.bind(null, i, "EntryName")}
+                    />
+                </td>
+                <td>
+                    <SelectLevel value={runes.getLevelAdded(i)}
+                        onChange={props.onChange.bind(null, i, "LevelAdded")}
+                    />
+                </td>
+                <td>
+                    <SelectLevel value={runes.getLevelRemoved(i)}
+                        onChange={props.onChange.bind(null, i, "LevelRemoved")}
+                    />
+                </td>
+            </tr>
         );
     }
-    rows.push(
-        <div key={runes.length}>
-            <SelectRuneName 
-                    value={runes.getName(runes.length)}
-                    onChange={props.onChange.bind(null, runes.length, "EntryName")}
-                />
-            <SelectLevel value={runes.getLevelAdded(runes.length)}
-                onChange={props.onChange.bind(null, runes.length, "LevelAdded")}
-            />
-            <SelectLevel value={runes.getLevelRemoved(runes.length)}
-                onChange={props.onChange.bind(null, runes.length, "LevelRemoved")}
-            />
-        </div>
-    );
+    // rows.push(
+    //     <div key={runes.length}>
+    //         <SelectRuneName 
+    //                 value={runes.getName(runes.length)}
+    //                 onChange={props.onChange.bind(null, runes.length, "EntryName")}
+    //             />
+    //         <SelectLevel value={runes.getLevelAdded(runes.length)}
+    //             onChange={props.onChange.bind(null, runes.length, "LevelAdded")}
+    //         />
+    //         <SelectLevel value={runes.getLevelRemoved(runes.length)}
+    //             onChange={props.onChange.bind(null, runes.length, "LevelRemoved")}
+    //         />
+    //     </div>
+    // );
 
     return (
         <div className="Runes">
-            {rows}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rune Name</th>
+                        <th>Level Added</th>
+                        <th>Level Removed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
         </div>
     );
 }

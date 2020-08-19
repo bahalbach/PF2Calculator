@@ -2,7 +2,7 @@ class AdditionalEffectArray {
     // has an array of effect entries. 
     // Each effect entry has an Name, level added, and level removed
 
-    constructor(values=[], extraLevelAdded=1,extraLevelRemoved=20) {
+    constructor(values=[], extraLevelAdded=1,extraLevelRemoved=0) {
         this.length = values.length;
         this.effectEntries = values;
         this.extraLevelAdded = extraLevelAdded;
