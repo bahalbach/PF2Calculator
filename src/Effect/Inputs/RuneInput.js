@@ -1,6 +1,10 @@
 import React from 'react';
-import { CheckboxInput, CollapsableInput, SelectLevel } from './CommonInputs'
-let runeNames = ["Fire", "Ice", "Shock", "Keen"];
+import { CheckboxInput, CollapsableInput, SelectLevel } from './CommonInputs.js';
+import { runeNames } from '../Model/Features.js';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRunes, selectRunes } from '../effectSlice.js';
+import AdditionalEffectArray from '../Model/AdditionalEffectArray.js';
+
 
 function SelectRuneName(props) {
     let optionList = [];
@@ -27,27 +31,28 @@ function SelectRuneName(props) {
 }
 
 function RuneTable(props) {
-    // props: runes, onChange
-
+    const dispatch = useDispatch();
     const runes = props.runes;
+    const action = props.action;
+    
     let rows = [];
-    for (let i = 0; i <= runes.length; i++) {
+    for (let index = 0; index <= runes.length; index++) {
         rows.push(
-            <tr key={i}>
+            <tr key={index}>
                 <td>
                     <SelectRuneName
-                        value={runes.getName(i)}
-                        onChange={props.onChange.bind(null, i, "EntryName")}
+                        value={AdditionalEffectArray.getName(runes, index)}
+                        onChange={event => dispatch(action({key: "EntryName", index, event: event.target.value}))} 
                     />
                 </td>
                 <td>
-                    <SelectLevel value={runes.getLevelAdded(i)}
-                        onChange={props.onChange.bind(null, i, "LevelAdded")}
+                    <SelectLevel value={AdditionalEffectArray.getLevelAdded(runes, index)}
+                        onChange={event => dispatch(action({key: "LevelAdded", index, event: event.target.value}))} 
                     />
                 </td>
                 <td>
-                    <SelectLevel value={runes.getLevelRemoved(i)}
-                        onChange={props.onChange.bind(null, i, "LevelRemoved")}
+                    <SelectLevel value={AdditionalEffectArray.getLevelRemoved(runes, index)}
+                        onChange={event => dispatch(action({key: "LevelRemoved", index, event: event.target.value}))} 
                     />
                 </td>
             </tr>
@@ -86,19 +91,18 @@ function RuneTable(props) {
     );
 }
 
-function RuneInput(props) {
+function RuneInput() {
     // props: effect, onChange, selectedLevel
-    const runes = props.effect.runes;
-
+    const runes = useSelector(selectRunes); // props.effect.runes;
 
     return (
         <div className="RuneInput">
             <CollapsableInput
-                description={runes.getDescription()}
+                description={AdditionalEffectArray.getDescription(runes)}
                 listInput={
                     <RuneTable
                         runes={runes}
-                        onChange={props.onChange}
+                        action={setRunes}
                     />
                 }
 

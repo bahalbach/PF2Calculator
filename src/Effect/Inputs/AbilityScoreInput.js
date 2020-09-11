@@ -1,8 +1,17 @@
 import React from 'react';
 import { CheckboxInput, CollapsableInput, LevelSelection } from './CommonInputs'
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  selectLevel,
+  selectAttackAbilityScore,
+  selectDamageAbilityScore,
+  setAttackAbilityScore,
+  setDamageAbilityScore,
+} from '../effectSlice';
+import AbilityScore from '../Model/AbilityScore';
 
 function AbilityScoreInputList(props) {
-    // props: score, onChange
+    const dispatch = useDispatch();
 
     const score = props.score;
     let scoreList = [];
@@ -10,8 +19,8 @@ function AbilityScoreInputList(props) {
         <div key="initial">
             <label> Initial: {}
                 <select
-                    value={score.getInitial()}
-                    onChange={props.onChange.bind(null, "initial")}
+                    value={AbilityScore.getInitial(score)}
+                    onChange={(event)=>dispatch(props.action({key: "initial", eventValue: event.target.value}))}
                 >
                     <option value="8">
                         8
@@ -35,7 +44,7 @@ function AbilityScoreInputList(props) {
             </label>
         </div>
     );
-    const boosts = score.getBoosts();
+    const boosts = AbilityScore.getBoosts(score);
     for (let i = 0; i < boosts.length; i++) {
         scoreList.push(
             <div key={i}>
@@ -43,17 +52,17 @@ function AbilityScoreInputList(props) {
                     <input
                         type="checkbox"
                         checked={boosts[i]}
-                        onChange={props.onChange.bind(null, i)}
+                        onChange={(event)=>dispatch(props.action({key: i, eventChecked: event.target.checked}))}
                     />
                 </label>
             </div>
         );
     }
-    let apexLevel = score.getApexLevel();
+    let apexLevel = AbilityScore.getApexLevel(score);
     if (apexLevel === null) apexLevel = "never";
     scoreList.push(
         <LevelSelection key="apex" name="Apex Level"
-            value={apexLevel} onChange={props.onChange.bind(null, "apex")}
+            value={apexLevel} onChange={(event)=>dispatch(props.action({key: "apex", eventValue: event.target.value}))}
         />
     );
 
@@ -66,52 +75,56 @@ function AbilityScoreInputList(props) {
 }
 
 function AbilityScorePresets(props) {
-    // props: score, onChange
+    const dispatch = useDispatch();
+    const score = props.score;
+
     return (
         <div className="Presets AbilityScorePresets">
             <CheckboxInput className="PresetItem"
-                checked={props.score.is18a()}
-                onChange={props.onChange.bind(null, "18a")}
+                checked={AbilityScore.is18a(score)}
+                onChange={()=>dispatch(props.action({key: "18a"}))}
                 label={"18a"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.score.is16a()}
-                onChange={props.onChange.bind(null, "16a")}
+                checked={AbilityScore.is16a(score)}
+                onChange={()=>dispatch(props.action({key: "16a"}))}
                 label={"16a"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.score.is16pp()}
-                onChange={props.onChange.bind(null, "16++")}
+                checked={AbilityScore.is16pp(score)}
+                onChange={()=>dispatch(props.action({key: "16++"}))}
                 label={"16++"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.score.is14p()}
-                onChange={props.onChange.bind(null, "14+")}
+                checked={AbilityScore.is14p(score)}
+                onChange={()=>dispatch(props.action({key: "14+"}))}
                 label={"14+"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.score.is10()}
-                onChange={props.onChange.bind(null, "10")}
+                checked={AbilityScore.is10(score)}
+                onChange={()=>dispatch(props.action({key: "10"}))}
                 label={"10"}
             />
         </div>
     );
 }
 
-function AttackAbilityScoreInput(props) {
-    // props: effect, onChange
+function AttackAbilityScoreInput() {
+    const level = useSelector(selectLevel);
+    const attackAbilityScore = useSelector(selectAttackAbilityScore);
+
     return (
         <div className="InputGroup AbilityScoreInput">
             <AbilityScorePresets
-                score={props.effect.attackAbilityScore}
-                onChange={props.onChange}
+                score={attackAbilityScore}
+                action={setAttackAbilityScore}
             />
             <CollapsableInput
-                description={"Attack Ability Score: " + props.effect.attackAbilityScore.getDescription(props.selectedLevel)}
+                description={"Attack Ability Score: " + AbilityScore.getDescription(attackAbilityScore,level)}
                 listInput={
                     <AbilityScoreInputList
-                        score={props.effect.attackAbilityScore}
-                        onChange={props.onChange}
+                        score={attackAbilityScore}
+                        action={setAttackAbilityScore}
                     />
                 }
             />
@@ -119,20 +132,22 @@ function AttackAbilityScoreInput(props) {
     );
 }
 
-function DamageAbilityScoreInput(props) {
-    // props: effect, onChange
+function DamageAbilityScoreInput() {
+    const level = useSelector(selectLevel);
+    const damageAbilityScore = useSelector(selectDamageAbilityScore);
+
     return (
         <div className="InputGroup AbilityScoreInput">
             <AbilityScorePresets
-                score={props.effect.damageAbilityScore}
-                onChange={props.onChange}
+                score={damageAbilityScore}
+                action={setDamageAbilityScore}
             />
             <CollapsableInput
-                description={"Damage Ability Score: " + props.effect.damageAbilityScore.getDescription(props.selectedLevel)}
+                description={"Damage Ability Score: " + AbilityScore.getDescription(damageAbilityScore,level)}
                 listInput={
                     <AbilityScoreInputList
-                        score={props.effect.damageAbilityScore}
-                        onChange={props.onChange}
+                        score={damageAbilityScore}
+                        action={setDamageAbilityScore}
                     />
                 }
             />

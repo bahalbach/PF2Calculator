@@ -2,11 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import PF2App from './PF2App';
+import store from './store';
+import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <PF2App />
+    <Provider store={store}>
+      <PF2App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

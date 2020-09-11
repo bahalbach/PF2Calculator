@@ -1,28 +1,34 @@
 import React from 'react';
 import Proficiency from '../Model/Proficiency';
 import { CheckboxInput, CollapsableInput, LevelSelection } from './CommonInputs'
+import { useSelector, useDispatch } from 'react-redux';
+import { selectLevel, selectProficiency, setProficiency } from '../effectSlice';
 
 function ProficiencyPresets(props) {
+    const dispatch = useDispatch();
+    const prof = props.proficiency;
+    const action = props.action;
+
     return (
         <div className="Presets ProficiencyPresets">
             <CheckboxInput className="PresetItem"
-                checked={props.proficiency.isFighter()}
-                onChange={props.onChange.bind(null, "fighter")}
+                checked={Proficiency.isFighter(prof)}
+                onChange={() => dispatch(action({key: "fighter"}))}
                 label={"Fighter"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.proficiency.isMartial()}
-                onChange={props.onChange.bind(null, "martial")}
+                checked={Proficiency.isMartial(prof)}
+                onChange={() => dispatch(action({key: "martial"}))}
                 label={"Martial"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.proficiency.isCaster()}
-                onChange={props.onChange.bind(null, "caster")}
+                checked={Proficiency.isCaster(prof)}
+                onChange={() => dispatch(action({key: "caster"}))}
                 label={"Caster"}
             />
             <CheckboxInput className="PresetItem"
-                checked={props.proficiency.isAlchemist()}
-                onChange={props.onChange.bind(null, "alchemist")}
+                checked={Proficiency.isAlchemist(prof)}
+                onChange={() => dispatch(action({key: "alchemist"}))}
                 label={"Alchemist/Warpriest"}
             />
         </div>
@@ -30,19 +36,19 @@ function ProficiencyPresets(props) {
 }
 
 function ProficiencyInputList(props) {
-    // props: proficiency, onChange
-    
-    let prof = props.proficiency;
+    const dispatch = useDispatch();
+    const prof = props.proficiency;
+    const action = props.action;
 
-    let profList = prof.getProficiencies().map(
+    let profList = Proficiency.getProficiencies(prof).map(
         (profValue, index) => {
             if (index === 0) {
                 return (
                     <div key="initial">
                         <label> Initial: {}
                             <select
-                                value={prof.getInitial()}
-                                onChange={props.onChange.bind(null,"initial")}
+                                value={Proficiency.getInitial(prof)}
+                                onChange={event => dispatch(action({ key: "initial", event: event.target.value }))}
                             >
                                 <option value="0">
                                     Untrained
@@ -64,19 +70,20 @@ function ProficiencyInputList(props) {
                     </div>
                 );
             } else {
-                let value = prof.getLevelAcquired(profValue);
+                let value = Proficiency.getLevelAcquired(prof, profValue);
                 if (value === null) value = "never";
                 return (
                     <LevelSelection key={profValue} name={Proficiency.toName(profValue)}
-                        value={value} onChange={props.onChange.bind(null, profValue)}
+                        value={value} onChange={event => dispatch(action({ key: profValue, event: event.target.value }))}
                     />
                 );
             }
         }
     );
-    if (prof.getMax() < 4) {
-        profList.push(<LevelSelection key={prof.getMax() + 1} name={Proficiency.toName(prof.getMax() + 1)}
-            value="never" onChange={props.onChange.bind(null, prof.getMax() + 1)}
+    const profMax = Proficiency.getMax(prof);
+    if (profMax < 4) {
+        profList.push(<LevelSelection key={profMax + 1} name={Proficiency.toName(profMax + 1)}
+            value="never" onChange={event => dispatch(action({ key: profMax + 1, event: event.target.value }))}
         />);
     }
 
@@ -88,20 +95,22 @@ function ProficiencyInputList(props) {
 
 }
 
-function WeaponProficiencyInput(props) {
-    // props: effect, onEffectChange, selectedLevel
+function WeaponProficiencyInput() {
+    const level = useSelector(selectLevel);
+    const proficiency = useSelector(selectProficiency);
+
     return (
         <div className="InputGroup WeaponProficiencyInput">
             <ProficiencyPresets
-                proficiency={props.effect.proficiency}
-                onChange={props.onEffectChange.bind(null, "proficiency", null)}
+                proficiency={proficiency}
+                action={setProficiency}
             />
             <CollapsableInput
-                description={"Proficiency: " + props.effect.proficiency.getDescription(props.selectedLevel)}
+                description={"Proficiency: " + Proficiency.getDescription(proficiency, level)}
                 listInput={
                     <ProficiencyInputList
-                        proficiency={props.effect.proficiency}
-                        onChange={props.onEffectChange.bind(null, "proficiency", null)}
+                        proficiency={proficiency}
+                        action={setProficiency}
                     />
                 }
             />

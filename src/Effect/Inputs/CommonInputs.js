@@ -1,4 +1,6 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import Modifier from '../Model/Modifier';
 
 function CheckboxInput(props) {
     // props: checked, onChange, label
@@ -46,7 +48,9 @@ class CollapsableInput extends React.Component {
 }
 
 function ByLevelInput(props) {
-    // level: value
+    const dispatch = useDispatch();
+    const action = props.action;
+
     let levelList = [];
     for (let i = 1; i <= 20; i++) {
         levelList.push(
@@ -54,8 +58,8 @@ function ByLevelInput(props) {
                 <label> Level {i}: {}
                     <input
                         type="number"
-                        value={props.modifier.get(i)}
-                        onChange={props.onChange.bind(null, i)}
+                        value={Modifier.get(props.modifier, i)}
+                        onChange={event => dispatch(action({ key: i, event: event.target.value }))}
                     />
                 </label>
             </div>
@@ -65,19 +69,22 @@ function ByLevelInput(props) {
 }
 
 function ByLevelInput2(props) {
-    // bind array index and key to onChange
-    const entries = props.modifier.getByLevelEntries();
+    // get actionCreator from props, call dispatch with key and index in onChange
+    const dispatch = useDispatch();
+    const entries = Modifier.getByLevelEntries(props.modifier);
+    const action = props.action;
+
     let levelList = [];
     for (let i = 0; i < entries.length; i++) {
         levelList.push(
             <div key={i}>
                 <SelectLevel value={entries[i][0]}
-                    onChange={props.onChange.bind(null, i, "EntryLevel")}
+                    onChange={event => dispatch(action({ key: "EntryLevel", event: event.target.value, index: i }))}
                 />
                 <input
                     type="number"
                     value={entries[i][1]}
-                    onChange={props.onChange.bind(null, i, "EntryValue")}
+                    onChange={event => dispatch(action({ key: "EntryValue", event: event.target.value, index: i }))}
                 />
             </div>
         );
@@ -85,12 +92,12 @@ function ByLevelInput2(props) {
     levelList.push(
         <div key={entries.length}>
             <SelectLevel value={"never"}
-                onChange={props.onChange.bind(null, entries.length, "EntryLevel")}
+                onChange={event => dispatch(action({ key: "EntryLevel", event: event.target.value, index: entries.length }))}
             />
             <input
                 type="number"
                 value={props.modifier.extra}
-                onChange={props.onChange.bind(null, entries.length, "EntryValue")}
+                onChange={event => dispatch(action({ key: "EntryValue", event: event.target.value, index: entries.length }))}
             />
         </div>
     );
@@ -111,73 +118,77 @@ function LevelSelection(props) {
 }
 
 function SelectLevel(props) {
+    // const dispatch = useDispatch();
+    // const action = props.action;
+    // const key = props.key;
+
     return (
         <select value={props.value}
             onChange={props.onChange}
         >
             <option value="never">
                 Never
-                                </option>
+            </option>
             <option value="1">
                 1
-                                </option>
+            </option>
             <option value="2">
                 2
-                                </option>
+            </option>
             <option value="3">
                 3
-                                </option>
+            </option>
             <option value="4">
                 4
-                                </option>
+            </option>
             <option value="5">
                 5
-                                </option>
+            </option>
             <option value="6">
                 6
-                                </option>
+            </option>
             <option value="7">
                 7
-                                </option>
+            </option>
             <option value="8">
                 8
-                                </option>
+            </option>
             <option value="9">
                 9
-                                </option>
+            </option>
             <option value="10">
                 10
-                                </option>
+            </option>
             <option value="11">
                 11
-                                </option>
+            </option>
             <option value="12">
                 12
-                                </option>
+            </option>
             <option value="13">
                 13
-                                </option>
+            </option>
             <option value="14">
                 14
-                                </option>
+            </option>
             <option value="15">
                 15
-                                </option>
+            </option>
             <option value="16">
                 16
-                                </option>
+            </option>
             <option value="17">
                 17
-                                </option>
+            </option>
             <option value="18">
                 18
-                                </option>
+            </option>
             <option value="19">
                 19
-                                </option>
+            </option>
             <option value="20">
                 20
-                                </option>
+            </option>
         </select>
 
     );
