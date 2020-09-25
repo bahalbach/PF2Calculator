@@ -44,6 +44,50 @@ const runeNames = [
     "Unholy",
     "Keen",
     "Vorpal",
-    ];
+];
 
-export { traitNames, runeNames }
+const damageTypes = [
+    "Bludgeoning",
+    "Piercing",
+    "Slashing",
+    "Acid",
+    "Cold",
+    "Electricity",
+    "Fire",
+    "Sonic",
+    "Negative",
+    "Positive",
+    "Chaotic",
+    "Evil",
+    "Good",
+    "Lawful",
+    "Mental",
+    "Poison",
+    "Precision",
+    "Bleed",
+    "Persistent Bludgeoning",
+    "Persistent Piercing",
+    "Persistent Slashing",
+    "Persistent Acid",
+    "Persistent Cold",
+    "Persistent Electricity",
+    "Persistent Fire",
+    "Persistent Sonic",
+    "Persistent Negative",
+    "Persistent Positive",
+    "Persistent Chaotic",
+    "Persistent Evil",
+    "Persistent Good",
+    "Persistent Lawful",
+    "Persistent Mental",
+    "Persistent Poison",
+];
+
+const preciousMaterials = [
+    "None",
+    "Adamantium",
+    "Cold Iron",
+    "Silver",
+];
+
+export { traitNames, runeNames, damageTypes, preciousMaterials }

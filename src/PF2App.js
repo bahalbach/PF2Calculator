@@ -36,6 +36,7 @@ import { TraitInput, RuneInput } from './Effect/Inputs/TraitInput.js';
 
 import './PF2App.css';
 import { AdditionalDamageInput } from './Effect/Inputs/AdditionalEffectInput';
+import DamageTypeInput from './Effect/Inputs/DamageTypeInput';
 
 
 function StrikeInput() {
@@ -72,6 +73,7 @@ function StrikeInput() {
                 description={"Total Damage: " + totalDamageDescription(effect, level)}
                 listInput={
                     <div className="DamageInput">
+                        <DamageTypeInput />
                         <DamageAbilityScoreInput />
                         <WeaponDiceNumInput />
                         <DieSizeInput />

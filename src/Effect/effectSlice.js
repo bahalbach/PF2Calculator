@@ -6,7 +6,9 @@ import AbilityScore from './Model/AbilityScore.js';
 import Modifier from './Model/Modifier.js';
 import AdditionalEffectArray from './Model/AdditionalEffectArray.js';
 import AdditionalEffect from './Model/AdditionalEffect.js';
+import { DamageType } from './Model/DamageType.js';
 
+//#region defaults
 const DEFAULT_OVERRIDE = Modifier.newMod(new Array(20).fill(0))
 const DEFAULT_PROF = Proficiency.newProficiency(1, 1, 5, 13);
 const DEFAULT_ABSCORE = AbilityScore.newScore(18, [true, true, true, true], 17);
@@ -35,6 +37,7 @@ for (let i = 0; i < 20; i++) {
 }
 const DEFAULT_DICENUM = Modifier.newMod(DICENUM_ARRAY);
 const DEFAULT_DIESIZE = Modifier.newMod(new Array(20).fill(8));
+//#endregion
 
 export const effectSlice = createSlice({
   name: 'effect',
@@ -56,6 +59,7 @@ export const effectSlice = createSlice({
     itemPenalty: Modifier.newMod(),
     untypedPenalty: Modifier.newMod(),
 
+    damageType: DamageType.newDamageType(),
     damageAbilityScore: DEFAULT_ABSCORE,
     weaponDiceNum: DEFAULT_DICENUM,
     dieSize: DEFAULT_DIESIZE,
@@ -110,6 +114,9 @@ export const effectSlice = createSlice({
       state.untypedPenalty = Modifier.createUpdated(state.untypedPenalty, action.payload);
     },
 
+    setDamageType: (state, action) => {
+      state.damageType = DamageType.newDamageType(action.payload);
+    },
     setDamageAbilityScore: (state, action) => {
       state.damageAbilityScore = AbilityScore.createUpdated(state.damageAbilityScore, action.payload);
     },
@@ -138,8 +145,9 @@ export const effectSlice = createSlice({
 
 export const { setMAP, setUseOverride, setOverride, setProficiency, setAttackAbilityScore, setItemBonus, 
   setUseMiscModifiers, setCircumstanceBonus, setStatusBonus, setCicumstancePenalty, setStatusPenalty, setItemPenalty, setUntypedPenalty,
-  setDamageAbilityScore, setWeaponDiceNum, setDieSize, setWeaponSpec, setTraits, setRunes, setAdditionalDamage, } = effectSlice.actions;
+  setDamageType, setDamageAbilityScore, setWeaponDiceNum, setDieSize, setWeaponSpec, setTraits, setRunes, setAdditionalDamage, } = effectSlice.actions;
 
+//#region selectors
 export const selectCurrentEffect = state => state.effect;
 
 export const selectLevel = state => state.target.level;
@@ -161,6 +169,7 @@ export const selectStatusPenalty = state => selectCurrentEffect(state).statusPen
 export const selectItemPenalty = state => selectCurrentEffect(state).itemPenalty;
 export const selectUntypedPenalty = state => selectCurrentEffect(state).untypedPenalty;
 
+export const selectDamageType = state => selectCurrentEffect(state).damageType;
 export const selectDamageAbilityScore = state => selectCurrentEffect(state).damageAbilityScore;
 export const selectWeaponDiceNum = state => selectCurrentEffect(state).weaponDiceNum;
 export const selectDieSize = state => selectCurrentEffect(state).dieSize;
@@ -170,5 +179,6 @@ export const selectTraits = state => selectCurrentEffect(state).traits;
 export const selectRunes = state => selectCurrentEffect(state).runes;
 
 export const selectAdditionalDamage = state => selectCurrentEffect(state).additionalDamage;
+//#endregion
 
 export default effectSlice.reducer;
