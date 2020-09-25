@@ -5,6 +5,7 @@ import Proficiency from './Model/Proficiency.js';
 import AbilityScore from './Model/AbilityScore.js';
 import Modifier from './Model/Modifier.js';
 import AdditionalEffectArray from './Model/AdditionalEffectArray.js';
+import AdditionalEffect from './Model/AdditionalEffect.js';
 
 const DEFAULT_OVERRIDE = Modifier.newMod(new Array(20).fill(0))
 const DEFAULT_PROF = Proficiency.newProficiency(1, 1, 5, 13);
@@ -60,7 +61,10 @@ export const effectSlice = createSlice({
     dieSize: DEFAULT_DIESIZE,
     weaponSpec: DEFAULT_WS,
 
+    traits: AdditionalEffectArray.newAdditionalEffectArray(),
     runes: AdditionalEffectArray.newAdditionalEffectArray(),
+
+    additionalDamage: AdditionalEffect.newAdditionalEffect(),
   },
   reducers: {
     setMAP: (state, action) => {
@@ -119,15 +123,22 @@ export const effectSlice = createSlice({
       state.weaponSpec = Modifier.createUpdated(state.weaponSpec, action.payload);
     },
 
+    setTraits: (state, action) => {
+      state.traits = AdditionalEffectArray.createUpdated(state.traits, action.payload);
+    },
     setRunes: (state, action) => {
       state.runes = AdditionalEffectArray.createUpdated(state.runes, action.payload);
+    },
+
+    setAdditionalDamage: (state, action) => {
+      state.additionalDamage = AdditionalEffect.createUpdated(state.additionalDamage, action.payload);
     },
   },
 });
 
 export const { setMAP, setUseOverride, setOverride, setProficiency, setAttackAbilityScore, setItemBonus, 
   setUseMiscModifiers, setCircumstanceBonus, setStatusBonus, setCicumstancePenalty, setStatusPenalty, setItemPenalty, setUntypedPenalty,
-  setDamageAbilityScore, setWeaponDiceNum, setDieSize, setWeaponSpec, setRunes, } = effectSlice.actions;
+  setDamageAbilityScore, setWeaponDiceNum, setDieSize, setWeaponSpec, setTraits, setRunes, setAdditionalDamage, } = effectSlice.actions;
 
 export const selectCurrentEffect = state => state.effect;
 
@@ -155,6 +166,9 @@ export const selectWeaponDiceNum = state => selectCurrentEffect(state).weaponDic
 export const selectDieSize = state => selectCurrentEffect(state).dieSize;
 export const selectWeaponSpec = state => selectCurrentEffect(state).weaponSpec;
 
+export const selectTraits = state => selectCurrentEffect(state).traits;
 export const selectRunes = state => selectCurrentEffect(state).runes;
+
+export const selectAdditionalDamage = state => selectCurrentEffect(state).additionalDamage;
 
 export default effectSlice.reducer;

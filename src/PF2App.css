@@ -23,6 +23,10 @@
     background-color: lightgray; 
 }
 
+.NumberInput {
+    width: fit-content;
+}
+
 .CollapsableInputDescription {
     /* border: 1px solid black; */
     /* margin-bottom: 5px; */

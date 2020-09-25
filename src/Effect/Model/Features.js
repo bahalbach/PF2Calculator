@@ -1,3 +1,24 @@
+const traitNames = [
+    "Backstabber",
+    "Backswing A",
+    "Backswing B",
+    "Deadly d4",
+    "Deadly d6",
+    "Deadly d8",
+    "Deadly d10",
+    "Deadly d12",
+    "Fatal d4",
+    "Fatal d6",
+    "Fatal d8",
+    "Fatal d10",
+    "Fatal d12",
+    "Forceful 1",
+    "Forceful 2",
+    "Jousting 1",
+    "Propulsive",
+    "Twin 1",
+];
+
 const runeNames = [
     "Ghost Touch",
     "Disrupting",
@@ -25,4 +46,4 @@ const runeNames = [
     "Vorpal",
     ];
 
-export { runeNames }
+export { traitNames, runeNames }

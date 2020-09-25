@@ -37,7 +37,7 @@ class AdditionalEffectArray {
 
     static getDescription(aea) {
         const nameSet = new Set();
-        let desc = "Runes: ";
+        let desc = "";
         if (aea.length === 0) {
             desc += "None";
         } else {

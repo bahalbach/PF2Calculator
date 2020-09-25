@@ -32,47 +32,10 @@ import ModifierInput from './Effect/Inputs/ModifierInput.js';
 import { WeaponDiceNumInput } from './Effect/Inputs/NumberDiceInput.js';
 import { DieSizeInput } from './Effect/Inputs/DieSizeInput.js';
 import WeaponSpecInput from './Effect/Inputs/WeaponSpecInput.js';
-import RuneInput from './Effect/Inputs/RuneInput.js';
+import { TraitInput, RuneInput } from './Effect/Inputs/TraitInput.js';
 
 import './PF2App.css';
-
-
-
-
-
-
-
-// const DEFAULT_PROF = [1, 1, 5, 13];
-// const DEFAULT_ABSCORE = [18, [true, true, true, true], 17];
-// const DEFAULT_ITEMB = new Array(20).fill(0);
-// for (let i = 0; i < 20; i++) {
-//     if (i + 1 >= 16) { DEFAULT_ITEMB[i] = 3; continue; }
-//     if (i + 1 >= 10) { DEFAULT_ITEMB[i] = 2; continue; }
-//     if (i + 1 >= 2) { DEFAULT_ITEMB[i] = 1; continue; }
-// }
-// const DEFAULT_WS = new Array(20).fill(0);
-// for (let level = 7; level <= 20; level++) {
-//     if (level < 15) {
-//         DEFAULT_WS[level - 1] = 1;
-//     }
-//     if (level >= 15) {
-//         DEFAULT_WS[level - 1] = 2;
-//     }
-// }
-// const DEFAULT_DICENUMBER = new Array(20).fill(1);
-// for (let i = 0; i < 20; i++) {
-//     if (i + 1 >= 19) { DEFAULT_DICENUMBER[i] = 4; continue; }
-//     if (i + 1 >= 12) { DEFAULT_DICENUMBER[i] = 3; continue; }
-//     if (i + 1 >= 4) { DEFAULT_DICENUMBER[i] = 2; continue; }
-// }
-// const DEFAULT_DIESIZE = new Array(20).fill(8);
-
-
-// function CheckInput(props) {
-//     return (
-
-//     );
-// }
+import { AdditionalDamageInput } from './Effect/Inputs/AdditionalEffectInput';
 
 
 function StrikeInput() {
@@ -113,7 +76,9 @@ function StrikeInput() {
                         <WeaponDiceNumInput />
                         <DieSizeInput />
                         <WeaponSpecInput />
+                        <TraitInput />
                         <RuneInput />
+                        <AdditionalDamageInput />
                     </div>
                 }
             />
