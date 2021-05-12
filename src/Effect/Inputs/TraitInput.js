@@ -1,17 +1,17 @@
 import React from 'react';
 import { CollapsableInput, SelectLevel } from './CommonInputs.js';
-import { runeNames, traitNames } from '../Model/Features.js';
+import { runeNames, weaponTraitNames } from '../Model/Features.js';
 import { useSelector, useDispatch } from 'react-redux';
-import { setRunes, selectRunes, selectTraits, setTraits } from '../effectSlice.js';
+import { setRunes, selectRunes, selectWeaponTraits, setWeaponTraits } from '../effectSlice.js';
 import AdditionalEffectArray from '../Model/AdditionalEffectArray.js';
 
-function SelectTraitName(props) {
+function SelectWeaponTraitName(props) {
     let optionList = [];
-    for (let i = 0; i < traitNames.length; i++) {
+    for (let i = 0; i < weaponTraitNames.length; i++) {
         optionList.push(
-            <option key={traitNames[i]}
-                value={traitNames[i]}>
-                {traitNames[i]}
+            <option key={weaponTraitNames[i]}
+                value={weaponTraitNames[i]}>
+                {weaponTraitNames[i]}
             </option>
         );
     }
@@ -55,7 +55,7 @@ function SelectRuneName(props) {
     );
 }
 
-function TraitTable(props) {
+function WeaponTraitTable(props) {
     const dispatch = useDispatch();
     const traits = props.traits;
     const action = props.action;
@@ -65,7 +65,7 @@ function TraitTable(props) {
         rows.push(
             <tr key={index}>
                 <td>
-                    <SelectTraitName
+                    <SelectWeaponTraitName
                         value={AdditionalEffectArray.getName(traits, index)}
                         onChange={event => dispatch(action({key: "EntryName", index, event: event.target.value}))} 
                     />
@@ -149,18 +149,18 @@ function RuneTable(props) {
     );
 }
 
-function TraitInput() {
+function WeaponTraitInput() {
     // props: effect, onChange, selectedLevel
-    const traits = useSelector(selectTraits); // props.effect.runes;
+    const traits = useSelector(selectWeaponTraits); // props.effect.runes;
 
     return (
         <div className="TraitInput">
             <CollapsableInput
-                description={"Traits: " + AdditionalEffectArray.getDescription(traits)}
+                description={"Weapon Traits: " + AdditionalEffectArray.getDescription(traits)}
                 listInput={
-                    <TraitTable
+                    <WeaponTraitTable
                         traits={traits}
-                        action={setTraits}
+                        action={setWeaponTraits}
                     />
                 }
 
@@ -191,4 +191,4 @@ function RuneInput() {
     );
 }
 
-export { TraitInput, RuneInput } 
+export { WeaponTraitInput, RuneInput } 

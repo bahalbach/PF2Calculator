@@ -65,7 +65,7 @@ export const effectSlice = createSlice({
     dieSize: DEFAULT_DIESIZE,
     weaponSpec: DEFAULT_WS,
 
-    traits: AdditionalEffectArray.newAdditionalEffectArray(),
+    weaponTraits: AdditionalEffectArray.newAdditionalEffectArray(),
     runes: AdditionalEffectArray.newAdditionalEffectArray(),
 
     additionalDamage: AdditionalEffect.newAdditionalEffect(),
@@ -130,8 +130,8 @@ export const effectSlice = createSlice({
       state.weaponSpec = Modifier.createUpdated(state.weaponSpec, action.payload);
     },
 
-    setTraits: (state, action) => {
-      state.traits = AdditionalEffectArray.createUpdated(state.traits, action.payload);
+    setWeaponTraits: (state, action) => {
+      state.weaponTraits = AdditionalEffectArray.createUpdated(state.weaponTraits, action.payload);
     },
     setRunes: (state, action) => {
       state.runes = AdditionalEffectArray.createUpdated(state.runes, action.payload);
@@ -145,7 +145,7 @@ export const effectSlice = createSlice({
 
 export const { setMAP, setUseOverride, setOverride, setProficiency, setAttackAbilityScore, setItemBonus, 
   setUseMiscModifiers, setCircumstanceBonus, setStatusBonus, setCicumstancePenalty, setStatusPenalty, setItemPenalty, setUntypedPenalty,
-  setDamageType, setDamageAbilityScore, setWeaponDiceNum, setDieSize, setWeaponSpec, setTraits, setRunes, setAdditionalDamage, } = effectSlice.actions;
+  setDamageType, setDamageAbilityScore, setWeaponDiceNum, setDieSize, setWeaponSpec, setWeaponTraits, setRunes, setAdditionalDamage, } = effectSlice.actions;
 
 //#region selectors
 export const selectCurrentEffect = state => state.effect;
@@ -175,7 +175,7 @@ export const selectWeaponDiceNum = state => selectCurrentEffect(state).weaponDic
 export const selectDieSize = state => selectCurrentEffect(state).dieSize;
 export const selectWeaponSpec = state => selectCurrentEffect(state).weaponSpec;
 
-export const selectTraits = state => selectCurrentEffect(state).traits;
+export const selectWeaponTraits = state => selectCurrentEffect(state).weaponTraits;
 export const selectRunes = state => selectCurrentEffect(state).runes;
 
 export const selectAdditionalDamage = state => selectCurrentEffect(state).additionalDamage;

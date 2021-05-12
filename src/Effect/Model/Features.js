@@ -1,4 +1,4 @@
-const traitNames = [
+const weaponTraitNames = [
     "Backstabber",
     "Backswing A",
     "Backswing B",
@@ -90,4 +90,4 @@ const preciousMaterials = [
     "Silver",
 ];
 
-export { traitNames, runeNames, damageTypes, preciousMaterials }
+export { weaponTraitNames, runeNames, damageTypes, preciousMaterials }

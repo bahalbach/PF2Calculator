@@ -32,7 +32,7 @@ import ModifierInput from './Effect/Inputs/ModifierInput.js';
 import { WeaponDiceNumInput } from './Effect/Inputs/NumberDiceInput.js';
 import { DieSizeInput } from './Effect/Inputs/DieSizeInput.js';
 import WeaponSpecInput from './Effect/Inputs/WeaponSpecInput.js';
-import { TraitInput, RuneInput } from './Effect/Inputs/TraitInput.js';
+import { WeaponTraitInput, RuneInput } from './Effect/Inputs/TraitInput.js';
 
 import './PF2App.css';
 import { AdditionalDamageInput } from './Effect/Inputs/AdditionalEffectInput';
@@ -78,7 +78,7 @@ function StrikeInput() {
                         <WeaponDiceNumInput />
                         <DieSizeInput />
                         <WeaponSpecInput />
-                        <TraitInput />
+                        <WeaponTraitInput />
                         <RuneInput />
                         <AdditionalDamageInput />
                     </div>
