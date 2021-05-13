@@ -1,26 +1,33 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.box {
+  padding: 5px;
+  margin: 5px;
+  border: 1px solid black;
 }
 
 .PF2App {
-    max-width: 500px;
+  max-width: 500px;
 }
 
-.CollapsableInput, .TargetInput {
-    border: 1px solid black;
-    padding: 5px;
-    margin: 5px;
+.CollapsableInput,
+.TargetInput {
+  border: 1px solid black;
+  padding: 5px;
+  margin: 5px;
 }
 
 .Collapsed {
-    outline: 1px solid lightgray;
+  outline: 1px solid lightgray;
 }
 
 .InputGroup {
-    border: 1px solid black;
-    padding: 5px;
-    margin: 10px;  
-    background-color: lightgray; 
+  border: 1px solid black;
+  padding: 5px;
+  margin: 10px;
+  background-color: lightgray;
 }
 
 /* .CollapsableInputDescription {
@@ -28,16 +35,17 @@
     margin-bottom: 5px;
 } */
 
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-    
-  }
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
 
 table {
-    width: 100%;
+  width: 100%;
 }
 
 table select {
-    width: 100%;
+  width: 100%;
 }
