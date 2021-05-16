@@ -14,7 +14,6 @@ export const targetInfosSlice = createSlice({
     builder
       .addCase(weaknessCreated, (state, action) => {
         const { parentId: id, id: weaknessId } = action.payload;
-        console.log(state);
         state.entities[id].weaknesses.push(weaknessId);
         // targetInfoAdded.updateOne(state, { id, changes: { weaknesses: [...weaknesses, weaknessId] }});
       })

@@ -9,7 +9,13 @@ import damageReducer, { damageAdded } from "./Routine/damageSlice";
 import effectReducer from "./Routine/effectSlice";
 import targetInfoReducer, { targetInfoAdded } from "./Routine/targetInfoSlice";
 import weaknessReducer, { weaknessAdded } from "./Routine/weaknessSlice";
-import { dCond } from "./types";
+import {
+  activityTypes,
+  damageTypes,
+  dCond,
+  defenses,
+  materials,
+} from "./types";
 
 export const store = configureStore({
   reducer: {
@@ -28,12 +34,12 @@ store.dispatch(routineAdded({ id: 0, name: "tesdt", apId: 0 }));
 store.dispatch(
   activityPathAdded({ id: 0, condition: null, activityId: 0, apIds: [] })
 );
-store.dispatch(weaknessAdded({ id: 0, type: "fire", value: 10 }));
+store.dispatch(weaknessAdded({ id: 0, type: damageTypes.FIRE, value: 10 }));
 
 store.dispatch(
   activityAdded({
     id: 0,
-    type: "strike",
+    type: activityTypes.STRIKE,
     targetInfoId: 0,
     value: 10,
     MAP: 0,
@@ -46,7 +52,7 @@ store.dispatch(
     id: 0,
     overrideDefault: true,
     addMods: false,
-    type: "AC",
+    type: defenses.AC,
     value: 20,
     weaknesses: [0],
   })
@@ -58,8 +64,9 @@ store.dispatch(
     diceNum: 1,
     diceSize: 8,
     staticDamage: 6,
-    type: "Pierce",
-    material: "Cold Iron",
+    type: damageTypes.B,
+    material: materials.COLD_IRON,
+    persistent: false,
   })
 );
 store.dispatch(
@@ -69,8 +76,9 @@ store.dispatch(
     diceNum: 0,
     diceSize: 8,
     staticDamage: 10,
-    type: "Fire",
-    material: "None",
+    type: damageTypes.FIRE,
+    material: materials.NONE,
+    persistent: false,
   })
 );
 

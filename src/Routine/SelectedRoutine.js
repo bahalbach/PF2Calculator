@@ -1,15 +1,33 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { damageTypes } from "../types";
+import {
+  activityTypes,
+  damageTypes,
+  dCond,
+  defenses,
+  diceNums,
+  diceSizes,
+  MAPs,
+  materials,
+} from "../types";
 import { selectactivityPathById } from "./activityPathSlice";
-import { selectactivityById } from "./activitySlice";
-import { selectdamageById } from "./damageSlice";
+import { activityUpdated, selectactivityById } from "./activitySlice";
+import {
+  damageCreated,
+  damageRemoved,
+  damageUpdated,
+  selectdamageById,
+} from "./damageSlice";
 import {
   routineUpdated,
   selectRoutineById,
   selectSelectedRoutine,
 } from "./routineSlice";
-import { selecttargetInfoById, targetInfoAdded } from "./targetInfoSlice";
+import {
+  selecttargetInfoById,
+  targetInfoAdded,
+  targetInfoUpdated,
+} from "./targetInfoSlice";
 import {
   selectweaknessById,
   weaknessAdded,
@@ -165,19 +183,175 @@ const Activity = ({ id }) => {
   const { type, targetInfoId, value, MAP, damages, effects } = useSelector(
     (state) => selectactivityById(state, id)
   );
+  const dispatch = useDispatch();
+
+  const activityTypeOptions = [];
+  for (let at in activityTypes) {
+    activityTypeOptions.push(<option key={at}>{activityTypes[at]}</option>);
+  }
+  const MAPOptions = [];
+  for (let m in MAPs) {
+    MAPOptions.push(<option key={m}>{MAPs[m]}</option>);
+  }
 
   return (
     <div className="box">
+      <select
+        value={type}
+        onChange={(e) =>
+          dispatch(activityUpdated({ id, changes: { type: e.target.value } }))
+        }
+      >
+        {activityTypeOptions}
+      </select>
+      {" +"}
+      <input
+        type="number"
+        value={value}
+        onChange={(e) =>
+          dispatch(activityUpdated({ id, changes: { value: e.target.value } }))
+        }
+      />
+      {" MAP: "}
+      <select
+        value={MAP}
+        onChange={(e) =>
+          dispatch(activityUpdated({ id, changes: { MAP: e.target.value } }))
+        }
+      >
+        {MAPOptions}
+      </select>
+
+      <TargetInfo id={targetInfoId} />
+
       <div className="box">
-        Type: {type} VS <TargetInfo id={targetInfoId} />
-      </div>
-      Bonus: {value} MAP: {MAP}
-      <div className="box">
+        {"Damage: "}
         {damages.map((damageId) => (
-          <Damage id={damageId} key={damageId} />
+          <Damage parentId={id} id={damageId} key={damageId} />
         ))}
+        <button
+          className="add"
+          onClick={() => dispatch(damageCreated({ parentId: id }))}
+        >
+          +
+        </button>
       </div>
       <div className="box">Effects: {effects}</div>
+    </div>
+  );
+};
+
+const Damage = ({ parentId, id }) => {
+  const {
+    condition,
+    diceNum,
+    diceSize,
+    staticDamage,
+    type,
+    material,
+    persistent,
+  } = useSelector((state) => selectdamageById(state, id));
+  const dispatch = useDispatch();
+
+  const conditionOptions = [];
+  for (let dc in dCond) {
+    conditionOptions.push(<option key={dc}>{dCond[dc]}</option>);
+  }
+  const diceNumOptions = [];
+  for (let dn in diceNums) {
+    diceNumOptions.push(<option key={dn}>{dn}</option>);
+  }
+  const diceSizeOptions = [];
+  for (let ds in diceSizes) {
+    diceSizeOptions.push(<option key={ds}>{ds}</option>);
+  }
+  const damageTypeOptions = [];
+  for (let dt in damageTypes) {
+    damageTypeOptions.push(<option key={dt}>{damageTypes[dt]}</option>);
+  }
+  const materialOptions = [];
+  for (let m in materials) {
+    materialOptions.push(<option key={m}>{materials[m]}</option>);
+  }
+
+  return (
+    <div className="box">
+      <button
+        className="delete"
+        onClick={(e) => {
+          dispatch(damageRemoved({ id, parentId }));
+        }}
+      >
+        -
+      </button>
+      <select
+        value={condition}
+        onChange={(e) =>
+          dispatch(
+            damageUpdated({ id, changes: { condition: e.target.value } })
+          )
+        }
+      >
+        {conditionOptions}
+      </select>
+      <select
+        value={diceNum}
+        onChange={(e) =>
+          dispatch(damageUpdated({ id, changes: { diceNum: e.target.value } }))
+        }
+      >
+        {diceNumOptions}
+      </select>
+      d
+      <select
+        value={diceSize}
+        onChange={(e) =>
+          dispatch(damageUpdated({ id, changes: { diceSize: e.target.value } }))
+        }
+      >
+        {diceSizeOptions}
+      </select>
+      {" + "}
+      <input
+        type="number"
+        value={staticDamage}
+        onChange={(e) =>
+          dispatch(
+            damageUpdated({ id, changes: { staticDamage: e.target.value } })
+          )
+        }
+      />
+      <select
+        value={type}
+        onChange={(e) => {
+          dispatch(damageUpdated({ id, changes: { type: e.target.value } }));
+        }}
+      >
+        {damageTypeOptions}
+      </select>
+      <select
+        value={material}
+        onChange={(e) => {
+          dispatch(
+            damageUpdated({ id, changes: { material: e.target.value } })
+          );
+        }}
+      >
+        {materialOptions}
+      </select>
+      {" Persistent: "}
+      <input
+        type="checkbox"
+        checked={persistent}
+        onChange={(e) =>
+          dispatch(
+            damageUpdated({
+              id,
+              changes: { persistent: e.target.checked },
+            })
+          )
+        }
+      />
     </div>
   );
 };
@@ -186,45 +360,67 @@ const TargetInfo = ({ id }) => {
   const { overrideDefault, type, value, weaknesses } = useSelector((state) =>
     selecttargetInfoById(state, id)
   );
-  // Should have a Weaknesses component instead of map
+  const dispatch = useDispatch();
+
+  const defenseOptions = [];
+  for (let d in defenses) {
+    defenseOptions.push(<option key={d}>{defenses[d]}</option>);
+  }
 
   return (
-    <span>
-      {overrideDefault ? "yes" : "no"} {type} {value}
+    <div className="box">
+      {"Override Target: "}
+      <input
+        type="checkbox"
+        checked={overrideDefault}
+        onChange={(e) =>
+          dispatch(
+            targetInfoUpdated({
+              id,
+              changes: { overrideDefault: e.target.checked },
+            })
+          )
+        }
+      />
+      <select
+        value={type}
+        onChange={(e) => {
+          dispatch(
+            targetInfoUpdated({ id, changes: { type: e.target.value } })
+          );
+        }}
+      >
+        {defenseOptions}
+      </select>
+      <input
+        type="number"
+        value={value}
+        onChange={(e) =>
+          dispatch(
+            targetInfoUpdated({ id, changes: { value: e.target.value } })
+          )
+        }
+      />
       {/* <Weaknesses parentId={id} weaknessIds={weaknesses} /> */}
+      {" Weakness: "}
       {weaknesses.map((weaknessId) => (
         <Weakness parentId={id} id={weaknessId} key={weaknessId} />
       ))}
       <AddWeakness parentId={id} />
-    </span>
-  );
-};
-
-const Damage = ({ id }) => {
-  const { condition, diceNum, diceSize, staticDamage, type, material } =
-    useSelector((state) => selectdamageById(state, id));
-
-  return (
-    <div className="box">
-      {condition} {diceNum}d{diceSize} + {staticDamage} {type} {material}
     </div>
   );
 };
 
-const AddDamage = ({ id }) => {
-  // add a Damage to Activity id
-};
-
-const Weaknesses = ({ parentId, weaknessIds }) => {
-  return (
-    <span>
-      {weaknessIds.map((weaknessId) => (
-        <Weakness id={weaknessId} key={weaknessId} />
-      ))}
-      <AddWeakness id={parentId} />
-    </span>
-  );
-};
+// const Weaknesses = ({ parentId, weaknessIds }) => {
+//   return (
+//     <span>
+//       {weaknessIds.map((weaknessId) => (
+//         <Weakness id={weaknessId} key={weaknessId} />
+//       ))}
+//       <AddWeakness id={parentId} />
+//     </span>
+//   );
+// };
 
 const Weakness = ({ id, parentId }) => {
   // needs to have parent id to remove weakness
@@ -290,6 +486,9 @@ const WeaknessSelect = ({ value, onChange }) => {
   const options = [];
   for (let dt in damageTypes) {
     options.push(<option key={dt}>{damageTypes[dt]}</option>);
+  }
+  for (let m in materials) {
+    options.push(<option key={m}>{materials[m]}</option>);
   }
   return (
     <span>
