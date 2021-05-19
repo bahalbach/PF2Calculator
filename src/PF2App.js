@@ -53,7 +53,7 @@ import "./PF2App.css";
 function PF2App(props) {
   return (
     <div className="PF2App">
-      <TargetInput />
+      <TargetInput id={0} />
       <Display />
       <SelectedRoutine />
       <Routines />

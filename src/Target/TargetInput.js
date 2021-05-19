@@ -1,56 +1,248 @@
-import React from "react";
-// import { useSelector, useDispatch } from 'react-redux';
-// import {
-//   setLevel,
-//   setAC,
-//   selectLevel,
-//   selectAC,
-// } from './targetSlice';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selecttargetById, targetUpdated } from "./targetSlice";
+import { damageTypes, defenses, materials } from "../types";
+import {
+  selectweaknessById,
+  weaknessCreated,
+  weaknessRemoved,
+  weaknessUpdated,
+} from "./weaknessSlice";
 
-function TargetInput() {
-  //     const level = useSelector(selectLevel);
-  //     const AC = useSelector(selectAC);
-  //     const dispatch = useDispatch();
-  //     const [tempLevel, setTempLevel] = useState('1');
+function TargetInput({ id }) {
+  const {
+    name,
+    level,
+    [defenses.AC]: AC,
+    [defenses.FORT]: Fort,
+    [defenses.REF]: Ref,
+    [defenses.WILL]: Will,
+    [defenses.PER]: Perception,
+    flatfooted,
+    weaknesses,
+  } = useSelector((state) => selecttargetById(state, 0));
+  const dispatch = useDispatch();
+
+  // name, level, ac, fort, ref, will, perception, resistances/weaknesses
   return (
-    <div className="box">Display target here</div>
-    // <div className="TargetInput">
-    //     <div>
-    //         <label>Target Level:
-    //         <input type="number"
-    //                 min="1"
-    //                 max="20"
-    //                 step="1"
-    //                 value={tempLevel}
-    //                 onChange={e => setTempLevel(e.target.value)}
-    //                 onBlur={() => dispatch(setLevel(Number(tempLevel) || 0))}
-    //             /><br />
-    //         1
-    //         <input type="range"
-    //                 min="1"
-    //                 max="20"
-    //                 step="1"
-    //                 value={level}
-    //                 onChange={e => {
-    //                     setTempLevel(e.target.value)
-    //                     dispatch(setLevel(Number(e.target.value) || 0))}
-    //                 }
-    //             />
-    //         20
-    //     </label>
-    //     </div>
-    //     <div>
-    //         <label>Target AC: {}
-    //             <input type="number"
-    //                 value={AC}
-    //                 onChange={e => dispatch(setAC(Number(e.target.value) || 0))}
-    //             />
+    <div className="box">
+      <label htmlFor="targetName">Target Name:</label>
+      <input
+        id="targetName"
+        type="text"
+        placeholder="Enter Target name"
+        value={name}
+        onChange={(e) =>
+          dispatch(targetUpdated({ id, changes: { name: e.target.value } }))
+        }
+      />
 
-    //         </label>
-    //     </div>
-
-    // </div>
+      {" AC: "}
+      <input
+        type="number"
+        value={AC}
+        onChange={(e) =>
+          dispatch(
+            targetUpdated({
+              id,
+              changes: { [defenses.AC]: parseInt(e.target.value) },
+            })
+          )
+        }
+      />
+      {" Fort: "}
+      <input
+        type="number"
+        value={Fort}
+        onChange={(e) =>
+          dispatch(
+            targetUpdated({
+              id,
+              changes: { [defenses.FORT]: parseInt(e.target.value) },
+            })
+          )
+        }
+      />
+      {" Ref: "}
+      <input
+        type="number"
+        value={Ref}
+        onChange={(e) =>
+          dispatch(
+            targetUpdated({
+              id,
+              changes: { [defenses.REF]: parseInt(e.target.value) },
+            })
+          )
+        }
+      />
+      {" Will: "}
+      <input
+        type="number"
+        value={Will}
+        onChange={(e) =>
+          dispatch(
+            targetUpdated({
+              id,
+              changes: { [defenses.WILL]: parseInt(e.target.value) },
+            })
+          )
+        }
+      />
+      {" Perception: "}
+      <input
+        type="number"
+        value={Perception}
+        onChange={(e) =>
+          dispatch(
+            targetUpdated({
+              id,
+              changes: { [defenses.PER]: parseInt(e.target.value) },
+            })
+          )
+        }
+      />
+      {" Flatfooted: "}
+      <input
+        type="checkbox"
+        checked={flatfooted}
+        onChange={(e) =>
+          dispatch(
+            targetUpdated({ id, changes: { flatfooted: e.target.checked } })
+          )
+        }
+      />
+      {" Resistance/Weakness: "}
+      {weaknesses.map((weaknessId) => (
+        <Weakness parentId={id} id={weaknessId} key={weaknessId} />
+      ))}
+      <AddWeakness parentId={id} />
+    </div>
   );
 }
+
+// const TargetInfo = ({ id }) => {
+//   const { overrideDefault, type, value, weaknesses } = useSelector((state) =>
+//     selecttargetInfoById(state, id)
+//   );
+//   const dispatch = useDispatch();
+
+//   const defenseOptions = [];
+//   for (let d in defenses) {
+//     defenseOptions.push(<option key={d}>{defenses[d]}</option>);
+//   }
+
+//   return (
+//     <div className="box">
+//       {"Override Target: "}
+//       <input
+//         type="checkbox"
+//         checked={overrideDefault}
+//         onChange={(e) =>
+//           dispatch(
+//             targetInfoUpdated({
+//               id,
+//               changes: { overrideDefault: e.target.checked },
+//             })
+//           )
+//         }
+//       />
+
+// {/* <Weaknesses parentId={id} weaknessIds={weaknesses} /> */}
+
+//     </div>
+//   );
+// };
+
+// const Weaknesses = ({ parentId, weaknessIds }) => {
+//   return (
+//     <span>
+//       {weaknessIds.map((weaknessId) => (
+//         <Weakness id={weaknessId} key={weaknessId} />
+//       ))}
+//       <AddWeakness id={parentId} />
+//     </span>
+//   );
+// };
+
+const Weakness = ({ id, parentId }) => {
+  // needs to have parent id to remove weakness
+  const { type, value } = useSelector((state) => selectweaknessById(state, id));
+  const dispatch = useDispatch();
+
+  const updateOrRemoveWeakness = (e) => {
+    if (e.target.value === damageTypes.NONE) {
+      // remove this weakness
+      dispatch(weaknessRemoved({ id, parentId }));
+    } else {
+      dispatch(weaknessUpdated({ id, changes: { type: e.target.value } }));
+    }
+  };
+  const updateWeaknessValue = (e) => {
+    if (!isNaN(e.target.value)) {
+      dispatch(
+        weaknessUpdated({ id, changes: { value: parseInt(e.target.value) } })
+      );
+    }
+  };
+  return (
+    <span>
+      <WeaknessSelect value={type} onChange={updateOrRemoveWeakness} />
+      <input type="number" value={value} onChange={updateWeaknessValue} />
+    </span>
+  );
+};
+
+let weaknessId = 0;
+
+const AddWeakness = ({ parentId }) => {
+  const dispatch = useDispatch();
+  let [weaknessValue, setWeaknessValue] = useState(0);
+
+  // add a Weakness to TargetInfo id
+  const addWeakness = (e) => {
+    if (e.target.value !== damageTypes.NONE) {
+      // need to create a new weakness
+      weaknessId++;
+      dispatch(
+        weaknessCreated({
+          id: weaknessId,
+          type: e.target.value,
+          value: weaknessValue,
+          parentId: parentId,
+        })
+      );
+    }
+  };
+
+  return (
+    <span>
+      <WeaknessSelect value={damageTypes.NONE} onChange={addWeakness} />
+      <input
+        type="number"
+        value={weaknessValue}
+        onChange={(e) => setWeaknessValue(parseInt(e.target.value))}
+      />
+    </span>
+  );
+};
+
+const WeaknessSelect = ({ value, onChange }) => {
+  const options = [];
+  for (let dt in damageTypes) {
+    options.push(<option key={dt}>{damageTypes[dt]}</option>);
+  }
+  for (let m in materials) {
+    if (materials[m] === materials.NONE) continue;
+    options.push(<option key={m}>{materials[m]}</option>);
+  }
+  return (
+    <span>
+      <select value={value} onChange={(e) => onChange(e)}>
+        {options}
+      </select>
+    </span>
+  );
+};
 
 export default TargetInput;

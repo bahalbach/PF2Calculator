@@ -1,5 +1,6 @@
 export const activityTypes = {
   STRIKE: "Strike",
+  SAVE: "Save",
 };
 
 export const defenses = {
@@ -28,6 +29,24 @@ export const MAPs = {
   RAA3: "-2 (2x-1)",
 };
 
+export const MAPvalues = {
+  "0 (0x-5)": 0,
+  "-5 (1x-5)": -5,
+  "-10 (2x-5)": -10,
+  "0 (0x-4)": 0,
+  "-4 (1x-4)": -4,
+  "-8 (2x-4)": -8,
+  "0 (0x-3)": 0,
+  "-3 (1x-3)": -3,
+  "-6 (2x-3)": -6,
+  "0 (0x-2)": 0,
+  "-2 (1x-2)": -2,
+  "-4 (2x-2)": -4,
+  "0 (0x-1)": 0,
+  "-1 (1x-1)": -1,
+  "-2 (2x-1)": -2,
+};
+
 export const damageTypes = {
   NONE: "None",
   B: "bludgeoning",
@@ -45,20 +64,28 @@ export const materials = {
 
 export const conditions = {
   ALWAYS: "Always",
-  ON_SUCCESS: "On Success",
-  ON_FAILURE: "On Failure",
-  ON_CRIT_SUC: "On Critical Success",
-  ON_CRIT_FAIL: "On Critical Failure",
-};
-
-export const dCond = {
-  STRIKE: "x1 hit, x2 crit",
-  BASIC: "basic save",
   CRIT: "On Crit",
   SUCC: "On Success",
   FAIL: "On Failure",
   CRIF: "On Crit Fail",
+  AT_LEAST_SUCC: "Success or better",
   AT_LEAST_FAIL: "Failure or better",
+  FAIL_WORSE: "Failure or worse",
+  SUCC_WORSE: "Success or worse",
+};
+
+export const dCond = {
+  STRIKE: "x1 hit, x2 crit",
+  BASIC: "Basic save",
+  ALWAYS: "Always",
+  CRIT: "On Crit",
+  SUCC: "On Success",
+  FAIL: "On Failure",
+  CRIF: "On Crit Fail",
+  AT_LEAST_SUCC: "Success or better",
+  AT_LEAST_FAIL: "Failure or better",
+  FAIL_WORSE: "Failure or worse",
+  SUCC_WORSE: "Success or worse",
 };
 
 export const diceNums = {

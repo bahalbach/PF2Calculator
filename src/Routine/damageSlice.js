@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import { damageTypes, dCond, diceNums, materials } from "../types";
+import { damageTypes, dCond, materials } from "../types";
 
 export const damageAdapter = createEntityAdapter();
 

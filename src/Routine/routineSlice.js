@@ -1,7 +1,9 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import { activityPathCreated } from "./activityPathSlice";
 
 export const routinesAdapter = createEntityAdapter();
 
+let routineId = 1;
 export const routinesSlice = createSlice({
   name: "routines",
   initialState: routinesAdapter.getInitialState({ selectedRoutine: 0 }),
@@ -11,11 +13,32 @@ export const routinesSlice = createSlice({
     },
     routineAdded: routinesAdapter.addOne,
     routineUpdated: routinesAdapter.updateOne,
+    routineCreated: {
+      reducer: (state, action) => {
+        const { id, name, apIds } = action.payload;
+        routinesAdapter.addOne(state, { id, name, apIds });
+      },
+      prepare: () => {
+        const id = ++routineId;
+        return { payload: { id, name: "New Routine", apIds: [] } };
+      },
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(activityPathCreated, (state, action) => {
+      const { routineId: id, id: apId } = action.payload;
+      if (id !== undefined) state.entities[id].apIds.push(id);
+    });
   },
 });
 
-export const { setRoutine, updateSelected, routineAdded, routineUpdated } =
-  routinesSlice.actions;
+export const {
+  routineCreated,
+  setRoutine,
+  updateSelected,
+  routineAdded,
+  routineUpdated,
+} = routinesSlice.actions;
 
 export default routinesSlice.reducer;
 
