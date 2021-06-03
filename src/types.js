@@ -3,6 +3,14 @@ export const activityTypes = {
   SAVE: "Save",
 };
 
+export const defaultValues = {
+  LOW: "Low",
+  MODERATE: "Moderate",
+  HIGH: "High",
+  EXTREME: "Extreme",
+  AVERAGE: "Average Bestiary",
+};
+
 export const defenses = {
   AC: "AC",
   FORT: "Fort",

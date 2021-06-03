@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selecttargetById, targetUpdated } from "./targetSlice";
-import { damageTypes, defenses, materials } from "../types";
+import { damageTypes, defaultValues, defenses, materials } from "../types";
 import {
   selectweaknessById,
   weaknessCreated,
@@ -14,6 +14,8 @@ function TargetInput({ id }) {
     name,
     level,
     [defenses.AC]: AC,
+    defaultAC,
+    useDefaultAC,
     [defenses.FORT]: Fort,
     [defenses.REF]: Ref,
     [defenses.WILL]: Will,
@@ -22,6 +24,11 @@ function TargetInput({ id }) {
     weaknesses,
   } = useSelector((state) => selecttargetById(state, 0));
   const dispatch = useDispatch();
+
+  const ACOptions = [];
+  for (let dv in defaultValues) {
+    ACOptions.push(<option key={dv}>{defaultValues[dv]}</option>);
+  }
 
   // name, level, ac, fort, ref, will, perception, resistances/weaknesses
   return (
@@ -40,7 +47,45 @@ function TargetInput({ id }) {
       </span>
 
       <span className="input">
+        <label htmlFor="Level">{" Level: "}</label>
+        <input
+          id="Level"
+          type="number"
+          value={level}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: {
+                  level: parseInt(e.target.value),
+                },
+              })
+            )
+          }
+        />
+      </span>
+
+      <span className="input">
         <label htmlFor="AC">{" AC: "}</label>
+        <input
+          type="checkbox"
+          checked={useDefaultAC}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({ id, changes: { useDefaultAC: e.target.checked } })
+            )
+          }
+        />
+        <select
+          value={defaultAC}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({ id, changes: { defaultAC: e.target.value } })
+            )
+          }
+        >
+          {ACOptions}
+        </select>
         <input
           id="AC"
           type="number"
@@ -49,7 +94,10 @@ function TargetInput({ id }) {
             dispatch(
               targetUpdated({
                 id,
-                changes: { [defenses.AC]: parseInt(e.target.value) },
+                changes: {
+                  useDefaultAC: false,
+                  [defenses.AC]: parseInt(e.target.value),
+                },
               })
             )
           }

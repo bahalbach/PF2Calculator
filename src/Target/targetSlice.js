@@ -1,4 +1,6 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import { defaultACs } from "../defaults";
+import { defenses } from "../types";
 import { weaknessCreated, weaknessRemoved } from "./weaknessSlice";
 
 export const targetAdapter = createEntityAdapter();
@@ -8,7 +10,16 @@ export const targetsSlice = createSlice({
   initialState: targetAdapter.getInitialState(),
   reducers: {
     targetAdded: targetAdapter.addOne,
-    targetUpdated: targetAdapter.updateOne,
+    targetUpdated: (state, action) => {
+      targetAdapter.updateOne(state, action.payload);
+      const target = state.entities[action.payload.id];
+      if (!target.level) target.level = 0;
+      if (target.level < -1) target.level = -1;
+      if (target.level > 24) target.level = 24;
+      if (target.useDefaultAC) {
+        target[defenses.AC] = defaultACs[target.defaultAC][target.level];
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
