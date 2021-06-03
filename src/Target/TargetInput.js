@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selecttargetById, targetUpdated } from "./targetSlice";
-import { damageTypes, defaultValues, defenses, materials } from "../types";
+import {
+  damageTypes,
+  defaultValuesAC,
+  defaultValuesSaves,
+  defenses,
+  materials,
+} from "../types";
 import {
   selectweaknessById,
   weaknessCreated,
@@ -17,17 +23,29 @@ function TargetInput({ id }) {
     defaultAC,
     useDefaultAC,
     [defenses.FORT]: Fort,
+    defaultFort,
+    useDefaultFort,
     [defenses.REF]: Ref,
+    defaultRef,
+    useDefaultRef,
     [defenses.WILL]: Will,
+    defaultWill,
+    useDefaultWill,
     [defenses.PER]: Perception,
+    defaultPer,
+    useDefaultPer,
     flatfooted,
     weaknesses,
   } = useSelector((state) => selecttargetById(state, 0));
   const dispatch = useDispatch();
 
   const ACOptions = [];
-  for (let dv in defaultValues) {
-    ACOptions.push(<option key={dv}>{defaultValues[dv]}</option>);
+  for (let dv in defaultValuesAC) {
+    ACOptions.push(<option key={dv}>{defaultValuesAC[dv]}</option>);
+  }
+  const SaveOptions = [];
+  for (let dv in defaultValuesSaves) {
+    SaveOptions.push(<option key={dv}>{defaultValuesSaves[dv]}</option>);
   }
 
   // name, level, ac, fort, ref, will, perception, resistances/weaknesses
@@ -107,6 +125,28 @@ function TargetInput({ id }) {
       <span className="input">
         <label htmlFor="Fort">{" Fort: "}</label>
         <input
+          type="checkbox"
+          checked={useDefaultFort}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { useDefaultFort: e.target.checked },
+              })
+            )
+          }
+        />
+        <select
+          value={defaultFort}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({ id, changes: { defaultFort: e.target.value } })
+            )
+          }
+        >
+          {SaveOptions}
+        </select>
+        <input
           id="Fort"
           type="number"
           value={Fort}
@@ -123,6 +163,28 @@ function TargetInput({ id }) {
 
       <span className="input">
         <label htmlFor="Ref">{" Ref: "}</label>
+        <input
+          type="checkbox"
+          checked={useDefaultRef}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { useDefaultRef: e.target.checked },
+              })
+            )
+          }
+        />
+        <select
+          value={defaultRef}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({ id, changes: { defaultRef: e.target.value } })
+            )
+          }
+        >
+          {SaveOptions}
+        </select>
         <input
           id="Ref"
           type="number"
@@ -141,6 +203,28 @@ function TargetInput({ id }) {
       <span className="input">
         <label htmlFor="Will">{" Will: "}</label>
         <input
+          type="checkbox"
+          checked={useDefaultWill}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { useDefaultWill: e.target.checked },
+              })
+            )
+          }
+        />
+        <select
+          value={defaultWill}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({ id, changes: { defaultWill: e.target.value } })
+            )
+          }
+        >
+          {SaveOptions}
+        </select>
+        <input
           id="Will"
           type="number"
           value={Will}
@@ -157,6 +241,28 @@ function TargetInput({ id }) {
 
       <span className="input">
         <label htmlFor="Perception">{" Perception: "}</label>
+        <input
+          type="checkbox"
+          checked={useDefaultPer}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { useDefaultPer: e.target.checked },
+              })
+            )
+          }
+        />
+        <select
+          value={defaultPer}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({ id, changes: { defaultPer: e.target.value } })
+            )
+          }
+        >
+          {SaveOptions}
+        </select>
         <input
           id="Perception"
           type="number"

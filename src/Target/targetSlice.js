@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import { defaultACs } from "../defaults";
+import { defaultACs, defaultSaves } from "../defaults";
 import { defenses } from "../types";
 import { weaknessCreated, weaknessRemoved } from "./weaknessSlice";
 
@@ -18,6 +18,18 @@ export const targetsSlice = createSlice({
       if (target.level > 24) target.level = 24;
       if (target.useDefaultAC) {
         target[defenses.AC] = defaultACs[target.defaultAC][target.level];
+      }
+      if (target.useDefaultFort) {
+        target[defenses.FORT] = defaultSaves[target.defaultFort][target.level];
+      }
+      if (target.useDefaultRef) {
+        target[defenses.REF] = defaultSaves[target.defaultRef][target.level];
+      }
+      if (target.useDefaultWill) {
+        target[defenses.WILL] = defaultSaves[target.defaultWill][target.level];
+      }
+      if (target.useDefaultPer) {
+        target[defenses.PER] = defaultSaves[target.defaultPer][target.level];
       }
     },
   },

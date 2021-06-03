@@ -11,7 +11,7 @@ import { selectRoutineEntities } from "./Routine/routineSlice";
 import { selecttargetEntities } from "./Target/targetSlice";
 import { selectweaknessEntities } from "./Target/weaknessSlice";
 import { conditions } from "./types";
-import { Bar, Line, Scatter } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 
 const Display = () => {
   const [addPersistent, setAddPersistent] = useState(false);
