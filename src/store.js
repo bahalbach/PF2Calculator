@@ -9,6 +9,7 @@ import targetReducer, { targetAdded } from "./Target/targetSlice";
 import weaknessReducer, { weaknessAdded } from "./Target/weaknessSlice";
 import {
   activityTypes,
+  conditions,
   damageTypes,
   dCond,
   defenses,
@@ -32,7 +33,7 @@ store.dispatch(routineAdded({ id: 0, name: "tesdt", apIds: [0] }));
 store.dispatch(
   activityPathAdded({
     id: 0,
-    condition: null,
+    condition: conditions.ALWAYS,
     type: activityTypes.STRIKE,
     targetType: defenses.AC,
     targetInfoId: 0,

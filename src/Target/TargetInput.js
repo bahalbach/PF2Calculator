@@ -25,98 +25,126 @@ function TargetInput({ id }) {
 
   // name, level, ac, fort, ref, will, perception, resistances/weaknesses
   return (
-    <div className="box">
-      <label htmlFor="targetName">Target Name:</label>
-      <input
-        id="targetName"
-        type="text"
-        placeholder="Enter Target name"
-        value={name}
-        onChange={(e) =>
-          dispatch(targetUpdated({ id, changes: { name: e.target.value } }))
-        }
-      />
+    <div className="box flexbox">
+      <span className="input">
+        <label htmlFor="targetName">{"Target Name: "}</label>
+        <input
+          id="targetName"
+          type="text"
+          placeholder="Enter Target name"
+          value={name}
+          onChange={(e) =>
+            dispatch(targetUpdated({ id, changes: { name: e.target.value } }))
+          }
+        />
+      </span>
 
-      {" AC: "}
-      <input
-        type="number"
-        value={AC}
-        onChange={(e) =>
-          dispatch(
-            targetUpdated({
-              id,
-              changes: { [defenses.AC]: parseInt(e.target.value) },
-            })
-          )
-        }
-      />
-      {" Fort: "}
-      <input
-        type="number"
-        value={Fort}
-        onChange={(e) =>
-          dispatch(
-            targetUpdated({
-              id,
-              changes: { [defenses.FORT]: parseInt(e.target.value) },
-            })
-          )
-        }
-      />
-      {" Ref: "}
-      <input
-        type="number"
-        value={Ref}
-        onChange={(e) =>
-          dispatch(
-            targetUpdated({
-              id,
-              changes: { [defenses.REF]: parseInt(e.target.value) },
-            })
-          )
-        }
-      />
-      {" Will: "}
-      <input
-        type="number"
-        value={Will}
-        onChange={(e) =>
-          dispatch(
-            targetUpdated({
-              id,
-              changes: { [defenses.WILL]: parseInt(e.target.value) },
-            })
-          )
-        }
-      />
-      {" Perception: "}
-      <input
-        type="number"
-        value={Perception}
-        onChange={(e) =>
-          dispatch(
-            targetUpdated({
-              id,
-              changes: { [defenses.PER]: parseInt(e.target.value) },
-            })
-          )
-        }
-      />
-      {" Flatfooted: "}
-      <input
-        type="checkbox"
-        checked={flatfooted}
-        onChange={(e) =>
-          dispatch(
-            targetUpdated({ id, changes: { flatfooted: e.target.checked } })
-          )
-        }
-      />
-      {" Resistance/Weakness: "}
-      {weaknesses.map((weaknessId) => (
-        <Weakness parentId={id} id={weaknessId} key={weaknessId} />
-      ))}
-      <AddWeakness parentId={id} />
+      <span className="input">
+        <label htmlFor="AC">{" AC: "}</label>
+        <input
+          id="AC"
+          type="number"
+          value={AC}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { [defenses.AC]: parseInt(e.target.value) },
+              })
+            )
+          }
+        />
+      </span>
+
+      <span className="input">
+        <label htmlFor="Fort">{" Fort: "}</label>
+        <input
+          id="Fort"
+          type="number"
+          value={Fort}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { [defenses.FORT]: parseInt(e.target.value) },
+              })
+            )
+          }
+        />
+      </span>
+
+      <span className="input">
+        <label htmlFor="Ref">{" Ref: "}</label>
+        <input
+          id="Ref"
+          type="number"
+          value={Ref}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { [defenses.REF]: parseInt(e.target.value) },
+              })
+            )
+          }
+        />
+      </span>
+
+      <span className="input">
+        <label htmlFor="Will">{" Will: "}</label>
+        <input
+          id="Will"
+          type="number"
+          value={Will}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { [defenses.WILL]: parseInt(e.target.value) },
+              })
+            )
+          }
+        />
+      </span>
+
+      <span className="input">
+        <label htmlFor="Perception">{" Perception: "}</label>
+        <input
+          id="Perception"
+          type="number"
+          value={Perception}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { [defenses.PER]: parseInt(e.target.value) },
+              })
+            )
+          }
+        />
+      </span>
+
+      <span className="input">
+        <label htmlFor="Flatfooted">{" Flatfooted: "}</label>
+        <input
+          id="Flatfooted"
+          type="checkbox"
+          checked={flatfooted}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({ id, changes: { flatfooted: e.target.checked } })
+            )
+          }
+        />
+      </span>
+
+      <div className="box flexbox">
+        {" Resistance/Weakness: "}
+        {weaknesses.map((weaknessId) => (
+          <Weakness parentId={id} id={weaknessId} key={weaknessId} />
+        ))}
+        <AddWeakness parentId={id} />
+      </div>
     </div>
   );
 }
@@ -186,7 +214,7 @@ const Weakness = ({ id, parentId }) => {
     }
   };
   return (
-    <span>
+    <span className="input">
       <WeaknessSelect value={type} onChange={updateOrRemoveWeakness} />
       <input type="number" value={value} onChange={updateWeaknessValue} />
     </span>
@@ -216,7 +244,7 @@ const AddWeakness = ({ parentId }) => {
   };
 
   return (
-    <span>
+    <span className="input">
       <WeaknessSelect value={damageTypes.NONE} onChange={addWeakness} />
       <input
         type="number"

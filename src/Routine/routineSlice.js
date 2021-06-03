@@ -16,6 +16,7 @@ export const routinesSlice = createSlice({
     routineCreated: {
       reducer: (state, action) => {
         const { id, name, apIds } = action.payload;
+        state.selectedRoutine = id;
         routinesAdapter.addOne(state, { id, name, apIds });
       },
       prepare: () => {
@@ -27,7 +28,7 @@ export const routinesSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(activityPathCreated, (state, action) => {
       const { routineId: id, id: apId } = action.payload;
-      if (id !== undefined) state.entities[id].apIds.push(id);
+      if (id !== undefined) state.entities[id].apIds.push(apId);
     });
   },
 });

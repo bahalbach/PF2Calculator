@@ -2,6 +2,34 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  font-size: 1.6rem;
+}
+
+.input {
+  background-color: antiquewhite;
+  margin: 0.5rem;
+}
+
+.input input[type="number"] {
+  width: 4rem;
+}
+
+.input select {
+  width: 6rem;
+}
+
+.flexbox {
+  display: flex;
+  flex-flow: wrap;
+  align-items: center;
+}
+
 .box {
   padding: 5px;
   margin: 5px;

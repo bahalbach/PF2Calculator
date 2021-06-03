@@ -38,7 +38,7 @@ export const activityPathsSlice = createSlice({
           effects,
           apIds,
         });
-        console.log(parentId);
+        // console.log(parentId);
         if (parentId !== undefined) state.entities[parentId].apIds.push(id);
       },
       prepare: ({ parentId, routineId }) => {
