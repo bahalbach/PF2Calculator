@@ -186,7 +186,15 @@ const Display = () => {
           autosize: true,
           xaxis: { title: "damage" },
           yaxis: { title: "chance" },
-          yaxis2: { title: "chance >=" },
+          legend: {
+            x: 1,
+            y: 1,
+            xanchor: "right",
+          },
+          margin: {
+            l: 40,
+            r: 40,
+          },
         }}
         useResizeHandler={true}
         style={{ width: "100%", height: "100%" }}

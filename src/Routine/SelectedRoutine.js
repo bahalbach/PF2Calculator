@@ -11,6 +11,7 @@ import {
   diceSizes,
   MAPs,
   materials,
+  rollTypes,
 } from "../types";
 import {
   activityPathCreated,
@@ -53,6 +54,10 @@ for (let m in MAPs) {
 const defenseOptions = [];
 for (let d in defenses) {
   defenseOptions.push(<option key={d}>{defenses[d]}</option>);
+}
+const rollOptions = [];
+for (let rt in rollTypes) {
+  rollOptions.push(<option key={rt}>{rollTypes[rt]}</option>);
 }
 
 const damageConditionOptions = [];
@@ -137,6 +142,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
     targetType,
     value,
     MAP,
+    rollType,
     damageCondition,
     diceNum,
     diceSize,
@@ -301,6 +307,21 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
               }}
             >
               {defenseOptions}
+            </select>
+          </span>
+          <span className="input">
+            <select
+              value={rollType}
+              onChange={(e) => {
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { rollType: e.target.value },
+                  })
+                );
+              }}
+            >
+              {rollOptions}
             </select>
           </span>
         </div>

@@ -18,6 +18,7 @@ import {
   defenses,
   MAPs,
   materials,
+  rollTypes,
 } from "./types";
 
 export const store = configureStore({
@@ -46,6 +47,7 @@ store.dispatch(
     targetInfoId: 0,
     value: 9,
     MAP: MAPs.N1,
+    rollType: rollTypes.NORMAL,
     damageCondition: dCond.STRIKE,
     diceNum: 1,
     diceSize: 8,

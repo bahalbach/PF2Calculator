@@ -93,6 +93,12 @@ export const MAPvalues = {
   "-2 (2x-1)": -2,
 };
 
+export const rollTypes = {
+  NORMAL: "Normal",
+  ADVANTAGE: "Advantage",
+  DISADVANTAGE: "Disadvantage",
+};
+
 export const damageTypes = {
   NONE: "None",
   B: "bludgeoning",
