@@ -145,7 +145,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
   let crfaPercent = getCritFailurePercent(bonus, DC);
   if (activity.rollType === rollTypes.ADVANTAGE) {
     let notcrit = 100 - critPercent;
-    critPercent = (notcrit * notcrit) / 100;
+    critPercent = 100 - (notcrit * notcrit) / 100;
     let nothit = notcrit - succPercent;
     succPercent = 100 - (nothit * nothit) / 100 - critPercent;
     let notfail = nothit - failPercent;
@@ -153,7 +153,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
     crfaPercent = (crfaPercent * crfaPercent) / 100;
   } else if (activity.rollType === rollTypes.DISADVANTAGE) {
     let notcrfa = 100 - crfaPercent;
-    crfaPercent = (notcrfa * notcrfa) / 100;
+    crfaPercent = 100 - (notcrfa * notcrfa) / 100;
     let notfail = notcrfa - failPercent;
     failPercent = 100 - (notfail * notfail) / 100 - crfaPercent;
     let notsucc = notfail - succPercent;
