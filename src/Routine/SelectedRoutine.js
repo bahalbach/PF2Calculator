@@ -5,6 +5,7 @@ import {
   conditions,
   damageTypes,
   dCond,
+  defaultActivities,
   defenses,
   diceNums,
   diceSizes,
@@ -14,6 +15,7 @@ import {
 import {
   activityPathCreated,
   activityPathUpdated,
+  activityPathRemoved,
   selectactivityPathById,
 } from "./activityPathSlice";
 
@@ -29,6 +31,51 @@ import {
   selectSelectedRoutine,
 } from "./routineSlice";
 
+const conditionOptions = [];
+for (let c in conditions) {
+  conditionOptions.push(<option key={c}>{conditions[c]}</option>);
+}
+const defaultActivityOptions = [];
+for (let da in defaultActivities) {
+  defaultActivityOptions.push(
+    <option key={da}>{defaultActivities[da]}</option>
+  );
+}
+
+const activityTypeOptions = [];
+for (let at in activityTypes) {
+  activityTypeOptions.push(<option key={at}>{activityTypes[at]}</option>);
+}
+const MAPOptions = [];
+for (let m in MAPs) {
+  MAPOptions.push(<option key={m}>{MAPs[m]}</option>);
+}
+const defenseOptions = [];
+for (let d in defenses) {
+  defenseOptions.push(<option key={d}>{defenses[d]}</option>);
+}
+
+const damageConditionOptions = [];
+for (let dc in dCond) {
+  damageConditionOptions.push(<option key={dc}>{dCond[dc]}</option>);
+}
+const diceNumOptions = [];
+for (let dn in diceNums) {
+  diceNumOptions.push(<option key={dn}>{dn}</option>);
+}
+const diceSizeOptions = [];
+for (let ds in diceSizes) {
+  diceSizeOptions.push(<option key={ds}>{ds}</option>);
+}
+const damageTypeOptions = [];
+for (let dt in damageTypes) {
+  damageTypeOptions.push(<option key={dt}>{damageTypes[dt]}</option>);
+}
+const materialOptions = [];
+for (let m in materials) {
+  materialOptions.push(<option key={m}>{materials[m]}</option>);
+}
+
 function SelectedRoutine() {
   const selectedRoutine = useSelector(selectSelectedRoutine);
   const apIds = useSelector((state) =>
@@ -40,7 +87,12 @@ function SelectedRoutine() {
     <div className="selectedRoutine">
       <NameInput id={selectedRoutine} />
       {apIds.map((apId) => (
-        <ActivityPath id={apId} key={apId} />
+        <ActivityPath
+          id={apId}
+          routineId={selectedRoutine}
+          key={apId}
+          displayCondition={false}
+        />
       ))}
       <button
         className="add"
@@ -75,33 +127,33 @@ const NameInput = ({ id }) => {
   );
 };
 
-const ActivityPath = ({ id }) => {
-  const { condition, type, targetType, value, MAP, damages, effects, apIds } =
-    useSelector((state) => selectactivityPathById(state, id));
+const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
+  const {
+    condition,
+    level,
+    override,
+    defaultActivity,
+    type,
+    targetType,
+    value,
+    MAP,
+    damageCondition,
+    diceNum,
+    diceSize,
+    staticDamage,
+    damageType,
+    material,
+    damages,
+    effects,
+    apIds,
+  } = useSelector((state) => selectactivityPathById(state, id));
   const dispatch = useDispatch();
-
-  const conditionOptions = [];
-  for (let c in conditions) {
-    conditionOptions.push(<option key={c}>{conditions[c]}</option>);
-  }
-  const activityTypeOptions = [];
-  for (let at in activityTypes) {
-    activityTypeOptions.push(<option key={at}>{activityTypes[at]}</option>);
-  }
-  const MAPOptions = [];
-  for (let m in MAPs) {
-    MAPOptions.push(<option key={m}>{MAPs[m]}</option>);
-  }
-  const defenseOptions = [];
-  for (let d in defenses) {
-    defenseOptions.push(<option key={d}>{defenses[d]}</option>);
-  }
 
   return (
     <div className="box">
-      {condition ? (
+      {displayCondition ? (
         <div>
-          Condition:
+          {"Condition: "}
           <select
             value={condition}
             onChange={(e) =>
@@ -120,59 +172,216 @@ const ActivityPath = ({ id }) => {
         ""
       )}
 
-      <div className="box">
-        <select
-          value={type}
-          onChange={(e) =>
-            dispatch(
-              activityPathUpdated({ id, changes: { type: e.target.value } })
-            )
-          }
-        >
-          {activityTypeOptions}
-        </select>
-        {type === activityTypes.STRIKE ? " +" : " DC: "}
-        <input
-          type="number"
-          value={value ? value : 0}
-          onChange={(e) =>
-            dispatch(
-              activityPathUpdated({
-                id,
-                changes: { value: parseInt(e.target.value) },
-              })
-            )
-          }
-        />
-        {" MAP: "}
-        <select
-          value={MAP}
-          onChange={(e) =>
-            dispatch(
-              activityPathUpdated({ id, changes: { MAP: e.target.value } })
-            )
-          }
-        >
-          {MAPOptions}
-        </select>
+      <div className="">
+        <div className="flexbox">
+          <button
+            className="delete"
+            onClick={(e) => {
+              dispatch(activityPathRemoved({ id, parentId, routineId }));
+            }}
+          >
+            -
+          </button>
+          <span className="input">
+            <label htmlFor="override">{"Override: "}</label>
+            <input
+              id="override"
+              type="checkbox"
+              checked={override}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { override: e.target.checked },
+                  })
+                )
+              }
+            />
+          </span>
+          <span className="input">
+            <label htmlFor="Level">{" Level: "}</label>
+            <input
+              id="Level"
+              type="number"
+              value={level}
+              min={1}
+              max={20}
+              onChange={(e) => {
+                let level = parseInt(e.target.value) || 1;
+                if (level > 20) level = 20;
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: {
+                      level,
+                    },
+                  })
+                );
+              }}
+            />
+          </span>
 
-        {" VS: "}
-        <select
-          value={targetType}
-          onChange={(e) => {
-            dispatch(
-              activityPathUpdated({
-                id,
-                changes: { targetType: e.target.value },
-              })
-            );
-          }}
-        >
-          {defenseOptions}
-        </select>
+          <span className="input">
+            {/* <input
+              type="checkbox"
+              checked={useDefault}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { useDefault: e.target.checked },
+                  })
+                )
+              }
+            /> */}
+            <select
+              value={defaultActivity}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { defaultActivity: e.target.value },
+                  })
+                )
+              }
+            >
+              {defaultActivityOptions}
+            </select>
+          </span>
 
+          <span className="input">
+            <select
+              value={type}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({ id, changes: { type: e.target.value } })
+                )
+              }
+            >
+              {activityTypeOptions}
+            </select>
+            {type === activityTypes.STRIKE ? " +" : " DC: "}
+            <input
+              type="number"
+              value={value ? value : 0}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { value: parseInt(e.target.value) },
+                  })
+                )
+              }
+            />
+          </span>
+          <span className="input">
+            {" MAP: "}
+            <select
+              value={MAP}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({ id, changes: { MAP: e.target.value } })
+                )
+              }
+            >
+              {MAPOptions}
+            </select>
+          </span>
+          <span className="input">
+            {" VS: "}
+            <select
+              value={targetType}
+              onChange={(e) => {
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { targetType: e.target.value },
+                  })
+                );
+              }}
+            >
+              {defenseOptions}
+            </select>
+          </span>
+        </div>
+        <div className="flexbox">
+          Damage:
+          <select
+            value={damageCondition}
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { damageCondition: e.target.value },
+                })
+              )
+            }
+          >
+            {damageConditionOptions}
+          </select>
+          <select
+            value={diceNum}
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { diceNum: parseInt(e.target.value) },
+                })
+              )
+            }
+          >
+            {diceNumOptions}
+          </select>
+          d
+          <select
+            value={diceSize}
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { diceSize: parseInt(e.target.value) },
+                })
+              )
+            }
+          >
+            {diceSizeOptions}
+          </select>
+          {" + "}
+          <input
+            type="number"
+            value={staticDamage}
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { staticDamage: parseInt(e.target.value) },
+                })
+              )
+            }
+          />
+          <select
+            value={damageType}
+            onChange={(e) => {
+              dispatch(
+                damageUpdated({ id, changes: { damageType: e.target.value } })
+              );
+            }}
+          >
+            {damageTypeOptions}
+          </select>
+          <select
+            value={material}
+            onChange={(e) => {
+              dispatch(
+                damageUpdated({ id, changes: { material: e.target.value } })
+              );
+            }}
+          >
+            {materialOptions}
+          </select>
+        </div>
         <div className="box">
-          {"Damage: "}
+          {"Additional Damage: "}
           {damages.map((damageId) => (
             <Damage parentId={id} id={damageId} key={damageId} />
           ))}
@@ -188,13 +397,21 @@ const ActivityPath = ({ id }) => {
 
       <div className="box">
         {apIds.map((apId) => (
-          <ActivityPath id={apId} key={apId} />
+          <ActivityPath id={apId} parentId={id} key={apId} />
         ))}
         <button
           className="add"
           onClick={() => dispatch(activityPathCreated({ parentId: id }))}
         >
           +
+        </button>
+        <button
+          className="add"
+          onClick={() =>
+            dispatch(activityPathCreated({ parentId: id, applyMAP: true }))
+          }
+        >
+          +MAP
         </button>
       </div>
     </div>
@@ -203,36 +420,15 @@ const ActivityPath = ({ id }) => {
 
 const Damage = ({ parentId, id }) => {
   const {
-    condition,
+    damageCondition,
     diceNum,
     diceSize,
     staticDamage,
-    type,
+    damageType,
     material,
     persistent,
   } = useSelector((state) => selectdamageById(state, id));
   const dispatch = useDispatch();
-
-  const conditionOptions = [];
-  for (let dc in dCond) {
-    conditionOptions.push(<option key={dc}>{dCond[dc]}</option>);
-  }
-  const diceNumOptions = [];
-  for (let dn in diceNums) {
-    diceNumOptions.push(<option key={dn}>{dn}</option>);
-  }
-  const diceSizeOptions = [];
-  for (let ds in diceSizes) {
-    diceSizeOptions.push(<option key={ds}>{ds}</option>);
-  }
-  const damageTypeOptions = [];
-  for (let dt in damageTypes) {
-    damageTypeOptions.push(<option key={dt}>{damageTypes[dt]}</option>);
-  }
-  const materialOptions = [];
-  for (let m in materials) {
-    materialOptions.push(<option key={m}>{materials[m]}</option>);
-  }
 
   return (
     <div className="box">
@@ -245,14 +441,14 @@ const Damage = ({ parentId, id }) => {
         -
       </button>
       <select
-        value={condition}
+        value={damageCondition}
         onChange={(e) =>
           dispatch(
-            damageUpdated({ id, changes: { condition: e.target.value } })
+            damageUpdated({ id, changes: { damageCondition: e.target.value } })
           )
         }
       >
-        {conditionOptions}
+        {damageConditionOptions}
       </select>
       <select
         value={diceNum}
@@ -295,9 +491,11 @@ const Damage = ({ parentId, id }) => {
         }
       />
       <select
-        value={type}
+        value={damageType}
         onChange={(e) => {
-          dispatch(damageUpdated({ id, changes: { type: e.target.value } }));
+          dispatch(
+            damageUpdated({ id, changes: { damageType: e.target.value } })
+          );
         }}
       >
         {damageTypeOptions}

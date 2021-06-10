@@ -12,6 +12,7 @@ import {
   conditions,
   damageTypes,
   dCond,
+  defaultActivities,
   defaultValuesAC,
   defaultValuesSaves,
   defenses,
@@ -30,18 +31,28 @@ export const store = configureStore({
   },
 });
 
-store.dispatch(routineAdded({ id: 0, name: "tesdt", apIds: [0] }));
+store.dispatch(routineAdded({ id: 0, name: "Fighter", apIds: [0] }));
 
 store.dispatch(
   activityPathAdded({
     id: 0,
     condition: conditions.ALWAYS,
+    override: false,
+    level: 1,
+    useDefault: false,
+    defaultActivity: defaultActivities.FIGHTER,
     type: activityTypes.STRIKE,
     targetType: defenses.AC,
     targetInfoId: 0,
     value: 9,
-    MAP: MAPs.A1,
-    damages: [0],
+    MAP: MAPs.N1,
+    damageCondition: dCond.STRIKE,
+    diceNum: 1,
+    diceSize: 8,
+    staticDamage: 4,
+    damageType: damageTypes.S,
+    material: materials.NONE,
+    damages: [],
     effects: [],
     apIds: [],
   })
@@ -54,38 +65,38 @@ store.dispatch(
     overrideDefault: true,
     addMods: false,
     level: 1,
-    useDefaultAC: false,
+    useDefaultAC: true,
     defaultAC: defaultValuesAC.HIGH,
-    [defenses.AC]: 15,
-    useDefaultFort: false,
-    defaultFort: defaultValuesSaves.HIGH,
-    [defenses.FORT]: 6,
-    useDefaultRef: false,
-    defaultRef: defaultValuesSaves.HIGH,
-    [defenses.REF]: 5,
-    useDefaultWill: false,
-    defaultWill: defaultValuesSaves.HIGH,
-    [defenses.WILL]: 4,
-    useDefaultPer: false,
-    defaultPer: defaultValuesSaves.HIGH,
-    [defenses.PER]: 5,
+    [defenses.AC]: 16,
+    useDefaultFort: true,
+    defaultFort: defaultValuesSaves.MODERATE,
+    [defenses.FORT]: 7,
+    useDefaultRef: true,
+    defaultRef: defaultValuesSaves.MODERATE,
+    [defenses.REF]: 7,
+    useDefaultWill: true,
+    defaultWill: defaultValuesSaves.MODERATE,
+    [defenses.WILL]: 7,
+    useDefaultPer: true,
+    defaultPer: defaultValuesSaves.MODERATE,
+    [defenses.PER]: 7,
     flatfooted: false,
-    weaknesses: [0],
+    weaknesses: [],
   })
 );
-store.dispatch(weaknessAdded({ id: 0, type: damageTypes.FIRE, value: 10 }));
-store.dispatch(
-  damageAdded({
-    id: 0,
-    condition: dCond.STRIKE,
-    diceNum: 1,
-    diceSize: 8,
-    staticDamage: 4,
-    type: damageTypes.B,
-    material: materials.COLD_IRON,
-    persistent: false,
-  })
-);
+// store.dispatch(weaknessAdded({ id: 0, type: damageTypes.FIRE, value: 10 }));
+// store.dispatch(
+//   damageAdded({
+//     id: 0,
+//     damageCondition: dCond.STRIKE,
+//     diceNum: 1,
+//     diceSize: 8,
+//     staticDamage: 4,
+//     damageType: damageTypes.B,
+//     material: materials.COLD_IRON,
+//     persistent: false,
+//   })
+// );
 // store.dispatch(
 //   damageAdded({
 //     id: 1,

@@ -1,62 +1,126 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import { activityTypes, conditions, defenses, MAPs } from "../types";
+import {
+  defaultDamageConditions,
+  defaultDiceNum,
+  defaultStatic,
+  defaultTargetTypes,
+  defaultTypes,
+  defaultValues,
+} from "../defaults";
+import {
+  activityTypes,
+  conditions,
+  damageTypes,
+  dCond,
+  defaultActivities,
+  defenses,
+  MAPs,
+  materials,
+  nextMAPs,
+} from "../types";
 import { damageCreated, damageRemoved } from "./damageSlice";
 
+function setDefault(state, apId) {
+  function applyDefault(apId) {
+    const ap = state.entities[apId];
+    if (ap.override) {
+      return;
+    }
+    const defaultActivity = ap.defaultActivity;
+    ap.type = defaultTypes[defaultActivity];
+    ap.targetType = defaultTargetTypes[defaultActivity];
+    ap.value = defaultValues[defaultActivity][ap.level];
+    ap.damageCondition = defaultDamageConditions[defaultActivity];
+    ap.diceNum = defaultDiceNum[defaultActivity][ap.level];
+    ap.staticDamage = defaultStatic[defaultActivity][ap.level];
+    for (let apId of ap.apIds) {
+      state.entities[apId].level = ap.level;
+      applyDefault(apId);
+    }
+  }
+  applyDefault(apId);
+}
 export const activityPathAdapter = createEntityAdapter();
 
 let activityPathId = 1;
+const defaultParentActivity = {
+  level: 1,
+  useDefault: false,
+  defaultActivity: defaultActivities.FIGHTER,
+  type: activityTypes.STRIKE,
+  targetType: defenses.AC,
+  value: 9,
+  MAP: MAPs.N1,
+  damageCondition: dCond.STRIKE,
+  diceNum: 1,
+  diceSize: 8,
+  staticDamage: 4,
+  damageType: damageTypes.S,
+  material: materials.NONE,
+};
+
 export const activityPathsSlice = createSlice({
   name: "activityPaths",
   initialState: activityPathAdapter.getInitialState(),
   reducers: {
     activityPathAdded: activityPathAdapter.addOne,
-    activityPathUpdated: activityPathAdapter.updateOne,
+    activityPathUpdated: (state, action) => {
+      activityPathAdapter.updateOne(state, action.payload);
+      setDefault(state, action.payload.id);
+    },
+    activityPathRemoved: (state, action) => {
+      const { id, parentId } = action.payload;
+      activityPathAdapter.removeOne(state, id);
+      if (parentId !== undefined) {
+        state.entities[parentId].apIds = state.entities[parentId].apIds.filter(
+          (apId) => apId !== id
+        );
+      }
+    },
     activityPathCreated: {
       reducer: (state, action) => {
-        const {
-          id,
-          parentId,
-          condition,
-          type,
-          targetType,
-          targetInfoId,
-          value,
-          MAP,
-          damages,
-          effects,
-          apIds,
-        } = action.payload;
+        const { id, parentId, applyMAP } = action.payload;
+
+        let parentAP;
+        if (parentId !== undefined) {
+          parentAP = state.entities[parentId];
+        } else {
+          parentAP = defaultParentActivity;
+        }
+
         activityPathAdapter.addOne(state, {
           id,
-          condition,
-          type,
-          targetType,
-          targetInfoId,
-          value,
-          MAP,
-          damages,
-          effects,
-          apIds,
+          condition: conditions.ALWAYS,
+          override: false,
+          level: parentAP.level,
+          useDefault: parentAP.useDefault,
+          defaultActivity: parentAP.defaultActivity,
+          type: parentAP.type,
+          targetType: parentAP.targetType,
+          targetInfoId: 0,
+          value: parentAP.value,
+          MAP: applyMAP ? nextMAPs[parentAP.MAP] : parentAP.MAP,
+          damageCondition: parentAP.damageCondition,
+          diceNum: parentAP.diceNum,
+          diceSize: parentAP.diceSize,
+          staticDamage: parentAP.staticDamage,
+          damageType: parentAP.damageType,
+          material: parentAP.material,
+          damages: [],
+          effects: [],
+          apIds: [],
         });
-        // console.log(parentId);
+
         if (parentId !== undefined) state.entities[parentId].apIds.push(id);
       },
-      prepare: ({ parentId, routineId }) => {
+      prepare: ({ parentId, routineId, applyMAP }) => {
         const id = ++activityPathId;
         return {
           payload: {
             id,
             parentId,
             routineId,
-            condition: conditions.ALWAYS,
-            type: activityTypes.STRIKE,
-            targetType: defenses.AC,
-            targetInfoId: 0,
-            value: 9,
-            MAP: MAPs.A1,
-            damages: [],
-            effects: [],
-            apIds: [],
+            applyMAP,
           },
         };
       },
@@ -77,8 +141,12 @@ export const activityPathsSlice = createSlice({
   },
 });
 
-export const { activityPathCreated, activityPathAdded, activityPathUpdated } =
-  activityPathsSlice.actions;
+export const {
+  activityPathCreated,
+  activityPathAdded,
+  activityPathUpdated,
+  activityPathRemoved,
+} = activityPathsSlice.actions;
 
 export default activityPathsSlice.reducer;
 

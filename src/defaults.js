@@ -1,4 +1,109 @@
-import { defaultValuesAC, defaultValuesSaves } from "./types";
+import {
+  activityTypes,
+  dCond,
+  defaultActivities,
+  defaultValuesAC,
+  defaultValuesSaves,
+  defenses,
+} from "./types";
+
+export const defaultTypes = {
+  [defaultActivities.FIGHTER]: activityTypes.STRIKE,
+};
+
+export const defaultTargetTypes = {
+  [defaultActivities.FIGHTER]: defenses.AC,
+};
+
+export const defaultDamageConditions = {
+  [defaultActivities.FIGHTER]: dCond.STRIKE,
+};
+
+const maxScore = {};
+const martialProf = {};
+const alchProf = {};
+const casterProf = {};
+
+const weaponItem = {};
+const weaponDice = {};
+const spellDice = {};
+
+const martialSpec = {};
+const casterSpec = {};
+
+const fighterAB = {};
+const fighterStatic = {};
+
+for (let i = 1; i <= 20; i++) {
+  maxScore[i] = 4;
+  martialProf[i] = 2;
+  alchProf[i] = 2;
+  casterProf[i] = 2;
+
+  weaponItem[i] = 0;
+  weaponDice[i] = 1;
+
+  martialSpec[i] = 0;
+  casterSpec[i] = 0;
+
+  if (i >= 2) {
+    weaponItem[i] = 1;
+  }
+  if (i >= 4) {
+    weaponDice[i] = 2;
+  }
+  if (i >= 5) {
+    martialProf[i] = 4;
+  }
+  if (i >= 7) {
+    alchProf[i] = 4;
+    martialSpec[i] = 1;
+  }
+  if (i >= 10) {
+    weaponItem[i] = 2;
+    maxScore[i] = 5;
+  }
+  if (i >= 11) {
+    casterProf[i] = 4;
+  }
+  if (i >= 12) {
+    weaponDice[i] = 3;
+  }
+  if (i >= 13) {
+    martialProf[i] = 6;
+    casterSpec[i] = 1;
+  }
+  if (i >= 15) {
+    martialSpec[i] = 2;
+  }
+  if (i >= 16) {
+    weaponItem[i] = 3;
+  }
+  if (i >= 17) {
+    maxScore[i] = 6;
+  }
+  if (i >= 19) {
+    weaponDice[i] = 4;
+  }
+  if (i >= 20) {
+    maxScore[i] = 7;
+  }
+
+  fighterAB[i] = i + martialProf[i] + maxScore[i] + weaponItem[i] + 2;
+  fighterStatic[i] = maxScore[i] + (martialSpec[i] * (martialProf[i] + 2)) / 2;
+}
+
+export const defaultValues = {
+  [defaultActivities.FIGHTER]: fighterAB,
+};
+
+export const defaultDiceNum = {
+  [defaultActivities.FIGHTER]: weaponDice,
+};
+
+export const defaultStatic = {
+  [defaultActivities.FIGHTER]: fighterStatic,
+};
 
 const extremeAC = {
   "-1": 18,

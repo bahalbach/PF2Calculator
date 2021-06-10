@@ -24,21 +24,21 @@ export const damagesSlice = createSlice({
       reducer: (state, action) => {
         const {
           id,
-          condition,
+          damageCondition,
           diceNum,
           diceSize,
           staticDamage,
-          type,
+          damageType,
           material,
           persistent,
         } = action.payload;
         damageAdapter.addOne(state, {
           id,
-          condition,
+          damageCondition,
           diceNum,
           diceSize,
           staticDamage,
-          type,
+          damageType,
           material,
           persistent,
         });
@@ -49,11 +49,11 @@ export const damagesSlice = createSlice({
           payload: {
             id,
             parentId,
-            condition: dCond.STRIKE,
+            damageCondition: dCond.STRIKE,
             diceNum: 0,
             diceSize: 8,
             staticDamage: 0,
-            type: damageTypes.B,
+            damageType: damageTypes.B,
             material: materials.NONE,
             persistent: false,
           },
@@ -61,7 +61,6 @@ export const damagesSlice = createSlice({
       },
     },
     damageRemoved: (state, action) => {
-      console.log(action);
       damageAdapter.removeOne(state, action.payload.id);
     },
   },

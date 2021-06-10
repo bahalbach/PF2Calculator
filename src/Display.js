@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  calculateExpectedDamage,
-  convolve,
-  consolidateDists,
-} from "./Calculation";
+import { convolve } from "./Calculation/Distribution";
 import { selectactivityPathEntities } from "./Routine/activityPathSlice";
 import { selectdamageEntities } from "./Routine/damageSlice";
 import { selectRoutineEntities } from "./Routine/routineSlice";
 import { selecttargetEntities } from "./Target/targetSlice";
 import { selectweaknessEntities } from "./Target/weaknessSlice";
-import { conditions } from "./types";
+
 import { Bar } from "react-chartjs-2";
+import ActivityPathEvaluator from "./Calculation/EvaluateActivityPath";
 
 const Display = () => {
   const [addPersistent, setAddPersistent] = useState(false);
@@ -24,107 +21,12 @@ const Display = () => {
   const weaknesses = useSelector(selectweaknessEntities);
 
   // const selectedRoutine = routines[useSelector(selectSelectedRoutine)];
-
-  function evaluateActivityPath(activityPath) {
-    let currentTarget = targets[0];
-    let currentDamages = activityPath.damages.map(
-      (damageId) => damages[damageId]
-    );
-    let currentWeaknesses = currentTarget.weaknesses.map(
-      (weaknessId) => weaknesses[weaknessId]
-    );
-
-    // damage tress = [critDamages, succDamages, failDamages, crfaDamages]
-    // critDamages = {normal, persistent}
-    // normal = {fire..., staticDamage, damageDist}
-    let [damageTrees, chances] = calculateExpectedDamage(
-      activityPath,
-      currentDamages,
-      currentTarget,
-      currentWeaknesses
-    );
-    // console.log(`chances are ${chances}`);
-
-    // go through each activity path, depending on its condition add its damage distributions to this activities appropriately
-    activityPath.apIds.forEach((apId) => {
-      let ap = activityPaths[apId];
-      let [pathDist, pathPDist] = evaluateActivityPath(ap);
-
-      let indicies = [];
-      // console.log(`cond is: ${ap.condition}`);
-      switch (ap.condition) {
-        case conditions.ALWAYS:
-          indicies = [0, 1, 2, 3];
-          break;
-
-        case conditions.AT_LEAST_FAIL:
-          indicies = [0, 1, 2];
-          break;
-
-        case conditions.AT_LEAST_SUCC:
-          indicies = [0, 1];
-          break;
-
-        case conditions.CRIF:
-          indicies = [3];
-          break;
-
-        case conditions.CRIT:
-          indicies = [0];
-          break;
-
-        case conditions.FAIL:
-          indicies = [2];
-          break;
-
-        case conditions.FAIL_WORSE:
-          indicies = [2, 3];
-          break;
-
-        case conditions.SUCC:
-          indicies = [1];
-          break;
-
-        case conditions.SUCC_WORSE:
-          indicies = [1, 2, 3];
-          break;
-
-        default:
-      }
-      // console.log(`indies are: ${indicies}`);
-      for (let index of indicies) {
-        // console.log(
-        //   `adding damage to index ${index} w/ chance ${chances[index]}`
-        // );
-        // damageTrees[index].normal.staticDamage += pathSD;
-        damageTrees[index].normal.damageDist = convolve(
-          damageTrees[index].normal.damageDist,
-          pathDist
-        );
-        // damageTrees[index].persistent.staticDamage += pathPSD;
-        damageTrees[index].persistent.damageDist = convolve(
-          damageTrees[index].persistent.damageDist,
-          pathPDist
-        );
-      }
-      // console.log(pathChance);
-    });
-
-    let damageDist = consolidateDists(
-      [damageTrees[0].normal, chances[0]],
-      [damageTrees[1].normal, chances[1]],
-      [damageTrees[2].normal, chances[2]],
-      [damageTrees[3].normal, chances[3]]
-    );
-    let PdamageDist = consolidateDists(
-      [damageTrees[0].persistent, chances[0]],
-      [damageTrees[1].persistent, chances[1]],
-      [damageTrees[2].persistent, chances[2]],
-      [damageTrees[3].persistent, chances[3]]
-    );
-
-    return [damageDist, PdamageDist];
-  }
+  const evaluator = new ActivityPathEvaluator(
+    activityPaths,
+    targets,
+    damages,
+    weaknesses
+  );
 
   let maxDamage = 0;
   let maxPDamage = 0;
@@ -140,7 +42,7 @@ const Display = () => {
     let routinePDDist = [1];
     for (let i = 0; i < routine.apIds.length; i++) {
       let activityPath = activityPaths[routine.apIds[i]];
-      let [damageDist, PdamageDist] = evaluateActivityPath(activityPath);
+      let [damageDist, PdamageDist] = evaluator.evalPath(activityPath);
       routineDDist = convolve(routineDDist, damageDist);
       routinePDDist = convolve(routinePDDist, PdamageDist);
     }
@@ -202,7 +104,7 @@ const Display = () => {
       <div key={routine.id}>
         {routine.name}
         {": "}
-        {expD}
+        {expD.toFixed(2)}
       </div>
     );
     // expectedDamages.push(
@@ -217,7 +119,7 @@ const Display = () => {
       <div key={routine.id}>
         {routine.name}
         {": "}
-        {expP}
+        {expP.toFixed(2)}
       </div>
     );
   }

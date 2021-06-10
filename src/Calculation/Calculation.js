@@ -1,112 +1,5 @@
-import { activityTypes, dCond, defenses, MAPvalues, materials } from "./types";
-
-// const diceCombinations = (number, size) => {
-//   if (number===0) return [1];
-
-//   const factor = 1 / (size ** number);
-//   const dist = [];
-//   for (let i=0; i<number; i++) {
-//     // (number choose i) * factor
-//   }
-// }
-
-export const convolve = (vec1, vec2) => {
-  if (vec1.length === 0 || vec2.length === 0) {
-    throw new Error("Vectors can not be empty!");
-  }
-  const volume = vec1;
-  const kernel = vec2;
-  let displacement = 0;
-  const convVec = [];
-
-  for (let i = 0; i < volume.length; i++) {
-    for (let j = 0; j < kernel.length; j++) {
-      if (displacement + j !== convVec.length) {
-        convVec[displacement + j] =
-          convVec[displacement + j] + volume[i] * kernel[j];
-      } else {
-        convVec.push(volume[i] * kernel[j]);
-      }
-    }
-    displacement++;
-  }
-
-  return convVec;
-};
-
-const multiplyDist = (dam, dist, multiplier) => {
-  if (multiplier === 0) return [0, [1]];
-  if (multiplier === 1) return [dam, dist];
-
-  const newDist = [0];
-  let index = 0;
-  const newDam = Math.floor(dam * multiplier);
-
-  let i = 0;
-  let oldValue = newDam;
-  for (let chance of dist) {
-    let newValue = Math.floor((dam + i) * multiplier);
-    if (newValue === oldValue) {
-      // console.log(`adding ${newValue} at ${index} with ${chance}`);
-      newDist[index] += chance;
-    } else {
-      if (newValue > oldValue + 1) {
-        for (let diff = 0; diff < newValue - (oldValue + 1); diff++) {
-          index++;
-          // console.log(`adding ${newValue} at ${index} with ${0}`);
-          newDist[index] = 0;
-        }
-      }
-      index++;
-      // console.log(`adding ${newValue} at ${index} with ${chance}`);
-      newDist[index] = chance;
-    }
-    oldValue = newValue;
-    i++;
-  }
-
-  return [newDam, newDist];
-};
-
-export const consolidateDists = (...dists) => {
-  // dists = [[{staticDamage, damageDist}, chance]]...]
-  // console.log(dists);
-  let maxDamage = 0;
-  for (let dist of dists) {
-    // console.log(`chance is ${dist[1]}`);
-    maxDamage = Math.max(
-      maxDamage,
-      dist[0].staticDamage + dist[0].damageDist.length
-    );
-  }
-  let damageDist = [];
-  for (let i = 0; i < maxDamage; i++) {
-    damageDist.push(0);
-    // console.log(`i is ${i}`);
-    for (let dist of dists) {
-      if (dist[0].staticDamage <= i) {
-        let index = i - dist[0].staticDamage;
-        // console.log(`val ${dist[0].damageDist[index]} at index ${index}`);
-        if (index < dist[0].damageDist.length)
-          damageDist[i] += dist[0].damageDist[index] * dist[1];
-      }
-    }
-  }
-  // console.log([staticDamage, damageDist]);
-  return damageDist;
-};
-
-const applyMin = (staticDamage, damageDist, min) => {
-  // TODO: implement applyMin
-  while (staticDamage < min) {
-    if (damageDist.length >= 2) {
-      damageDist[1] += damageDist[0];
-      damageDist.shift();
-    }
-    staticDamage++;
-  }
-  return [staticDamage, damageDist];
-};
+import { activityTypes, dCond, defenses, MAPvalues, materials } from "../types";
+import { applyMin, convolve, multiplyDist } from "./Distribution";
 
 function getCritSuccessPercent(bonus, DC, keen = false) {
   const dif = bonus - DC;
@@ -258,11 +151,11 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
   // go through each damage and evaluate it, put damage types together
   damages.forEach((damage) => {
     let {
-      condition,
+      damageCondition,
       diceNum,
       diceSize,
       staticDamage,
-      type,
+      damageType,
       material,
       persistent,
     } = damage;
@@ -278,11 +171,11 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
     }
     staticDamage += diceNum;
 
-    switch (condition) {
+    switch (damageCondition) {
       case dCond.STRIKE:
         addDamage(
           succDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -291,7 +184,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           critDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -303,7 +196,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.BASIC:
         addDamage(
           succDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -312,7 +205,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           failDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -321,19 +214,19 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           crfaDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
           damageDist,
-          1
+          2
         );
         break;
 
       case dCond.CRIF:
         addDamage(
           crfaDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -345,7 +238,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.FAIL:
         addDamage(
           failDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -357,7 +250,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.SUCC:
         addDamage(
           succDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -369,7 +262,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.CRIT:
         addDamage(
           critDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -381,7 +274,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.AT_LEAST_SUCC:
         addDamage(
           succDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -390,7 +283,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           critDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -402,7 +295,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.AT_LEAST_FAIL:
         addDamage(
           failDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -411,7 +304,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           succDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -420,7 +313,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           critDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -432,7 +325,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.FAIL_WORSE:
         addDamage(
           crfaDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -441,7 +334,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           failDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -453,7 +346,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.SUCC_WORSE:
         addDamage(
           crfaDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -462,7 +355,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           failDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -471,7 +364,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           succDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -484,7 +377,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       case dCond.ALWAYS:
         addDamage(
           crfaDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -493,7 +386,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           failDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -502,7 +395,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           succDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -511,7 +404,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
         );
         addDamage(
           critDamages,
-          type,
+          damageType,
           material,
           persistent,
           staticDamage,
@@ -538,7 +431,8 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
           damageTree[damageQuality][type];
         // console.log(type);
         // make min damage 1 before resistances
-        [staticDamage, damageDist] = applyMin(staticDamage, damageDist, 1);
+        if (staticDamage < 0)
+          [staticDamage, damageDist] = applyMin(staticDamage, damageDist, 1);
 
         // find max weakness and resistance, weaknesses are negative numbers
         let maxW = 0;
@@ -572,9 +466,4 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
   return [damageTrees, chances];
 }
 
-export {
-  //   totalBonusDescription,
-  //   attackBonusDescription,
-  //   totalDamageDescription,
-  calculateExpectedDamage,
-};
+export { calculateExpectedDamage };

@@ -3,6 +3,10 @@ export const activityTypes = {
   SAVE: "Save",
 };
 
+export const defaultActivities = {
+  FIGHTER: "Fighter Strike",
+};
+
 export const defaultValuesAC = {
   LOW: "Low",
   MODERATE: "Moderate",
@@ -42,6 +46,24 @@ export const MAPs = {
   RAA1: "0 (0x-1)",
   RAA2: "-1 (1x-1)",
   RAA3: "-2 (2x-1)",
+};
+
+export const nextMAPs = {
+  "0 (0x-5)": "-5 (1x-5)",
+  "-5 (1x-5)": "-10 (2x-5)",
+  "-10 (2x-5)": "-10 (2x-5)",
+  "0 (0x-4)": "-4 (1x-4)",
+  "-4 (1x-4)": "-8 (2x-4)",
+  "-8 (2x-4)": "-8 (2x-4)",
+  "0 (0x-3)": "-3 (1x-3)",
+  "-3 (1x-3)": "-6 (2x-3)",
+  "-6 (2x-3)": "-6 (2x-3)",
+  "0 (0x-2)": "-2 (1x-2)",
+  "-2 (1x-2)": "-4 (2x-2)",
+  "-4 (2x-2)": "-4 (2x-2)",
+  "0 (0x-1)": "-1 (1x-1)",
+  "-1 (1x-1)": "-2 (2x-1)",
+  "-2 (2x-1)": "-2 (2x-1)",
 };
 
 export const MAPvalues = {
