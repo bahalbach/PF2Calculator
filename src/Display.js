@@ -11,7 +11,7 @@ import { Bar } from "react-chartjs-2";
 import ActivityPathEvaluator from "./Calculation/EvaluateActivityPath";
 
 const Display = () => {
-  const [addPersistent, setAddPersistent] = useState(false);
+  const [addPersistent, setAddPersistent] = useState(true);
   const [perMulti, setPerMulti] = useState(2);
 
   const routines = useSelector(selectRoutineEntities);

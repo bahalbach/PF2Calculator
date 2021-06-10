@@ -9,36 +9,89 @@ import {
 
 export const defaultTypes = {
   [defaultActivities.FIGHTER]: activityTypes.STRIKE,
+  [defaultActivities.MARTIAL]: activityTypes.STRIKE,
+  [defaultActivities.CASTER]: activityTypes.STRIKE,
+  [defaultActivities.ALCH]: activityTypes.STRIKE,
+  [defaultActivities.FIGHTERR]: activityTypes.STRIKE,
+  [defaultActivities.MARTIALR]: activityTypes.STRIKE,
+  [defaultActivities.CASTERR]: activityTypes.STRIKE,
+  [defaultActivities.ALCHR]: activityTypes.STRIKE,
+  [defaultActivities.CASTERC]: activityTypes.STRIKE,
+  [defaultActivities.CASTERS]: activityTypes.SAVE,
 };
 
 export const defaultTargetTypes = {
   [defaultActivities.FIGHTER]: defenses.AC,
+  [defaultActivities.MARTIAL]: defenses.AC,
+  [defaultActivities.CASTER]: defenses.AC,
+  [defaultActivities.ALCH]: defenses.AC,
+  [defaultActivities.FIGHTERR]: defenses.AC,
+  [defaultActivities.MARTIALR]: defenses.AC,
+  [defaultActivities.CASTERR]: defenses.AC,
+  [defaultActivities.ALCHR]: defenses.AC,
+  [defaultActivities.CASTERC]: defenses.AC,
+  [defaultActivities.CASTERS]: defenses.REF,
 };
 
 export const defaultDamageConditions = {
   [defaultActivities.FIGHTER]: dCond.STRIKE,
+  [defaultActivities.MARTIAL]: dCond.STRIKE,
+  [defaultActivities.CASTER]: dCond.STRIKE,
+  [defaultActivities.ALCH]: dCond.STRIKE,
+  [defaultActivities.FIGHTERR]: dCond.STRIKE,
+  [defaultActivities.MARTIALR]: dCond.STRIKE,
+  [defaultActivities.CASTERR]: dCond.STRIKE,
+  [defaultActivities.ALCHR]: dCond.STRIKE,
+  [defaultActivities.CASTERC]: dCond.STRIKE,
+  [defaultActivities.CASTERS]: dCond.BASIC,
 };
 
+const zero = {};
+
 const maxScore = {};
+const score16 = {};
 const martialProf = {};
 const alchProf = {};
 const casterProf = {};
 
+const spellProf = {};
+
 const weaponItem = {};
 const weaponDice = {};
 const spellDice = {};
+for (let i = 1; i <= 20; i++) {
+  spellDice[i] = Math.floor((i + 1) / 2);
+}
 
 const martialSpec = {};
 const casterSpec = {};
 
 const fighterAB = {};
+const martialAB = {};
+const casterAB = {};
+const alchAB = {};
+
+const casterSpellAttack = {};
+const casterSaveDC = {};
+
 const fighterStatic = {};
+const fighterRanged = {};
+const martialStatic = {};
+const martialRanged = {};
+const casterStatic = {};
+const casterRanged = {};
 
 for (let i = 1; i <= 20; i++) {
+  zero[i] = 0;
+
   maxScore[i] = 4;
+  score16[i] = 3;
+
   martialProf[i] = 2;
   alchProf[i] = 2;
   casterProf[i] = 2;
+
+  spellProf[i] = 2;
 
   weaponItem[i] = 0;
   weaponDice[i] = 1;
@@ -54,10 +107,12 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 5) {
     martialProf[i] = 4;
+    score16[i] = 4;
   }
   if (i >= 7) {
     alchProf[i] = 4;
     martialSpec[i] = 1;
+    spellProf[i] = 4;
   }
   if (i >= 10) {
     weaponItem[i] = 2;
@@ -75,6 +130,8 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 15) {
     martialSpec[i] = 2;
+    score16[i] = 5;
+    spellProf[i] = 6;
   }
   if (i >= 16) {
     weaponItem[i] = 3;
@@ -84,25 +141,64 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 19) {
     weaponDice[i] = 4;
+    spellProf[i] = 8;
   }
   if (i >= 20) {
     maxScore[i] = 7;
   }
 
   fighterAB[i] = i + martialProf[i] + maxScore[i] + weaponItem[i] + 2;
+  martialAB[i] = i + martialProf[i] + maxScore[i] + weaponItem[i];
+  casterAB[i] = i + casterProf[i] + score16[i] + weaponItem[i];
+  alchAB[i] = i + alchProf[i] + score16[i] + weaponItem[i];
+  casterSpellAttack[i] = i + spellProf[i] + maxScore[i];
+  casterSaveDC[i] = 10 + i + spellProf[i] + maxScore[i];
+
   fighterStatic[i] = maxScore[i] + (martialSpec[i] * (martialProf[i] + 2)) / 2;
+  fighterRanged[i] = (martialSpec[i] * (martialProf[i] + 2)) / 2;
+  martialStatic[i] = maxScore[i] + (martialSpec[i] * martialProf[i]) / 2;
+  martialRanged[i] = (martialSpec[i] * martialProf[i]) / 2;
+  casterStatic[i] = score16[i] + (casterSpec[i] * casterProf[i]) / 2;
+  casterRanged[i] = (casterSpec[i] * casterProf[i]) / 2;
 }
 
 export const defaultValues = {
   [defaultActivities.FIGHTER]: fighterAB,
+  [defaultActivities.MARTIAL]: martialAB,
+  [defaultActivities.CASTER]: casterAB,
+  [defaultActivities.ALCH]: alchAB,
+  [defaultActivities.FIGHTERR]: fighterAB,
+  [defaultActivities.MARTIALR]: martialAB,
+  [defaultActivities.CASTERR]: casterAB,
+  [defaultActivities.ALCHR]: alchAB,
+  [defaultActivities.CASTERC]: casterSpellAttack,
+  [defaultActivities.CASTERS]: casterSaveDC,
 };
 
 export const defaultDiceNum = {
   [defaultActivities.FIGHTER]: weaponDice,
+  [defaultActivities.MARTIAL]: weaponDice,
+  [defaultActivities.CASTER]: weaponDice,
+  [defaultActivities.ALCH]: weaponDice,
+  [defaultActivities.FIGHTERR]: weaponDice,
+  [defaultActivities.MARTIALR]: weaponDice,
+  [defaultActivities.CASTERR]: weaponDice,
+  [defaultActivities.ALCHR]: weaponDice,
+  [defaultActivities.CASTERC]: spellDice,
+  [defaultActivities.CASTERS]: spellDice,
 };
 
 export const defaultStatic = {
   [defaultActivities.FIGHTER]: fighterStatic,
+  [defaultActivities.MARTIAL]: martialStatic,
+  [defaultActivities.CASTER]: casterStatic,
+  [defaultActivities.ALCH]: casterStatic,
+  [defaultActivities.FIGHTERR]: fighterRanged,
+  [defaultActivities.MARTIALR]: martialRanged,
+  [defaultActivities.CASTERR]: casterRanged,
+  [defaultActivities.ALCHR]: casterRanged,
+  [defaultActivities.CASTERC]: maxScore,
+  [defaultActivities.CASTERS]: zero,
 };
 
 const extremeAC = {

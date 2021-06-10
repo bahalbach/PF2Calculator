@@ -4,7 +4,16 @@ export const activityTypes = {
 };
 
 export const defaultActivities = {
-  FIGHTER: "Fighter Strike",
+  FIGHTER: "Fighter Melee",
+  MARTIAL: "Martial Melee",
+  CASTER: "Caster(16str) Melee",
+  ALCH: "Alchemist(16str) Melee",
+  FIGHTERR: "Fighter Ranged",
+  MARTIALR: "Martial Ranged",
+  CASTERR: "Caster(16dex) Ranged",
+  ALCHR: "Alchemist(16dex) Ranged",
+  CASTERC: "Caster Cantrip",
+  CASTERS: "Caster Save",
 };
 
 export const defaultValuesAC = {

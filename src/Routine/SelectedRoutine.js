@@ -310,7 +310,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             value={damageCondition}
             onChange={(e) =>
               dispatch(
-                damageUpdated({
+                activityPathUpdated({
                   id,
                   changes: { damageCondition: e.target.value },
                 })
@@ -323,7 +323,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             value={diceNum}
             onChange={(e) =>
               dispatch(
-                damageUpdated({
+                activityPathUpdated({
                   id,
                   changes: { diceNum: parseInt(e.target.value) },
                 })
@@ -337,7 +337,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             value={diceSize}
             onChange={(e) =>
               dispatch(
-                damageUpdated({
+                activityPathUpdated({
                   id,
                   changes: { diceSize: parseInt(e.target.value) },
                 })
@@ -352,7 +352,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             value={staticDamage}
             onChange={(e) =>
               dispatch(
-                damageUpdated({
+                activityPathUpdated({
                   id,
                   changes: { staticDamage: parseInt(e.target.value) },
                 })
@@ -363,7 +363,10 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             value={damageType}
             onChange={(e) => {
               dispatch(
-                damageUpdated({ id, changes: { damageType: e.target.value } })
+                activityPathUpdated({
+                  id,
+                  changes: { damageType: e.target.value },
+                })
               );
             }}
           >
