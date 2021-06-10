@@ -7,10 +7,18 @@ import { selectRoutineEntities } from "./Routine/routineSlice";
 import { selecttargetEntities } from "./Target/targetSlice";
 import { selectweaknessEntities } from "./Target/weaknessSlice";
 
-import { Bar } from "react-chartjs-2";
 import ActivityPathEvaluator from "./Calculation/EvaluateActivityPath";
 
+// import Plot from "react-plotly.js";
+import Plotly from "plotly.js-basic-dist";
+import createPlotlyComponent from "react-plotly.js/factory";
+const Plot = createPlotlyComponent(Plotly);
+
 const Display = () => {
+  // const [width, setWidth] = useState(0);
+  // const ref = useRef(null);
+  // useLayoutEffect(() => setWidth(ref.current.clientWidth), []);
+
   const [addPersistent, setAddPersistent] = useState(true);
   const [perMulti, setPerMulti] = useState(2);
 
@@ -49,18 +57,38 @@ const Display = () => {
     maxDamage = Math.max(maxDamage, routineDDist.length - 1);
     maxPDamage = Math.max(maxPDamage, routinePDDist.length - 1);
     const dataArray = [];
+    const cumulative = [];
+    let currentSum = 1;
     for (let i = 0; i < routineDDist.length; i++) {
-      dataArray.push({ x: i, y: routineDDist[i] });
+      // dataArray.push({ x: i, y: routineDDist[i] });
+      dataArray.push(i);
+      cumulative.push(currentSum);
+      currentSum -= routineDDist[i];
+
       expD += routineDDist[i] * i;
     }
     datasets.push({
-      fill: "origin",
-      label: routine.name,
-      data: dataArray,
-      xAxisID: "damage",
-      yAxisID: "chance",
-      spanGaps: false,
+      type: "bar",
+      name: routine.name,
+      x: dataArray,
+      y: routineDDist,
     });
+    datasets.push({
+      type: "scatter",
+      name: routine.name,
+      x: dataArray,
+      y: cumulative,
+      yaxis: "y",
+    });
+    // datasets.push(<VerticalRectSeries data={dataArray} key={id} />);
+    // datasets.push({
+    //   fill: "origin",
+    //   label: routine.name,
+    //   data: dataArray,
+    //   xAxisID: "damage",
+    //   yAxisID: "chance",
+    //   spanGaps: false,
+    // });
     // }
     // maxDamage += damageDist.length-1;
 
@@ -127,10 +155,10 @@ const Display = () => {
   for (let i = 0; i <= maxDamage; i++) {
     labels.push(i);
   }
-  const data = {
-    labels,
-    datasets,
-  };
+  // const data = {
+  //   labels,
+  //   datasets,
+  // };
 
   return (
     <div className="box">
@@ -150,7 +178,27 @@ const Display = () => {
         Expected Damage:
         {expectedDamages}
       </div>
-      <Bar data={data} />
+      <Plot
+        classname="plot"
+        data={datasets}
+        layout={{
+          title: "Expected Damage",
+          autosize: true,
+          xaxis: { title: "damage" },
+          yaxis: { title: "chance" },
+          yaxis2: { title: "chance >=" },
+        }}
+        useResizeHandler={true}
+        style={{ width: "100%", height: "100%" }}
+      />
+      {/* <Bar data={data} /> */}
+      {/* <XYPlot height={300} width={300}>
+        <VerticalGridLines />
+        <HorizontalGridLines />
+        <XAxis />
+        <YAxis />
+        {datasets}
+      </XYPlot> */}
       {addPersistent ? (
         ""
       ) : (

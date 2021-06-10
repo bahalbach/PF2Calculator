@@ -3,10 +3,10 @@ import routineReducer, { routineAdded } from "./Routine/routineSlice";
 import activityPathReducer, {
   activityPathAdded,
 } from "./Routine/activityPathSlice";
-import damageReducer, { damageAdded } from "./Routine/damageSlice";
+import damageReducer from "./Routine/damageSlice";
 import effectReducer from "./Routine/effectSlice";
 import targetReducer, { targetAdded } from "./Target/targetSlice";
-import weaknessReducer, { weaknessAdded } from "./Target/weaknessSlice";
+import weaknessReducer from "./Target/weaknessSlice";
 import {
   activityTypes,
   conditions,
