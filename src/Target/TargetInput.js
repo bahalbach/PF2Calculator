@@ -19,6 +19,8 @@ function TargetInput({ id }) {
   const {
     name,
     level,
+    matchRoutines,
+    levelDiff,
     [defenses.AC]: AC,
     defaultAC,
     useDefaultAC,
@@ -77,6 +79,42 @@ function TargetInput({ id }) {
                 changes: {
                   level: parseInt(e.target.value),
                 },
+                match: matchRoutines,
+                level: parseInt(e.target.value) - levelDiff,
+              })
+            )
+          }
+        />
+      </span>
+
+      <span className="input">
+        <label htmlFor="match">{" Match routine levels: "}</label>
+        <input
+          type="checkbox"
+          checked={matchRoutines}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: { matchRoutines: e.target.checked },
+                match: e.target.checked,
+                level: level - levelDiff,
+              })
+            )
+          }
+        />
+        <input
+          type="number"
+          value={levelDiff}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: {
+                  levelDiff: parseInt(e.target.value),
+                },
+                match: matchRoutines,
+                level: level - parseInt(e.target.value),
               })
             )
           }

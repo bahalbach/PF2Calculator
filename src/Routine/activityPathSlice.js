@@ -7,6 +7,7 @@ import {
   defaultTypes,
   defaultValues,
 } from "../defaults";
+import { targetUpdated } from "../Target/targetSlice";
 import {
   activityTypes,
   conditions,
@@ -20,7 +21,7 @@ import {
 } from "../types";
 import { damageCreated, damageRemoved } from "./damageSlice";
 
-function setDefault(state, apId) {
+function setDefault(state, apId, setChildren = true) {
   function applyDefault(apId) {
     const ap = state.entities[apId];
     if (ap.override) {
@@ -33,9 +34,11 @@ function setDefault(state, apId) {
     ap.damageCondition = defaultDamageConditions[defaultActivity];
     ap.diceNum = defaultDiceNum[defaultActivity][ap.level];
     ap.staticDamage = defaultStatic[defaultActivity][ap.level];
-    for (let apId of ap.apIds) {
-      state.entities[apId].level = ap.level;
-      applyDefault(apId);
+    if (setChildren) {
+      for (let apId of ap.apIds) {
+        state.entities[apId].level = ap.level;
+        applyDefault(apId);
+      }
     }
   }
   applyDefault(apId);
@@ -137,6 +140,15 @@ export const activityPathsSlice = createSlice({
         state.entities[id].damages = state.entities[id].damages.filter(
           (did) => did !== damageId
         );
+      })
+      .addCase(targetUpdated, (state, action) => {
+        const { match, level } = action.payload;
+        if (match) {
+          for (let id of state.ids) {
+            state.entities[id].level = level;
+            setDefault(state, id, false);
+          }
+        }
       });
   },
 });

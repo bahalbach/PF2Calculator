@@ -25,7 +25,7 @@ import React from "react";
 // } from "./Calculation.js";
 
 import TargetInput from "./Target/TargetInput";
-import Display from "./Display";
+import Display from "./Display/Display";
 // import { selectTarget, selectLevel } from "./Target/targetSlice";
 
 import SelectedRoutine from "./Routine/SelectedRoutine";

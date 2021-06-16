@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { convolve } from "./Calculation/Distribution";
-import { selectactivityPathEntities } from "./Routine/activityPathSlice";
-import { selectdamageEntities } from "./Routine/damageSlice";
-import { selectRoutineEntities } from "./Routine/routineSlice";
-import { selecttargetEntities } from "./Target/targetSlice";
-import { selectweaknessEntities } from "./Target/weaknessSlice";
+import { convolve } from "../Calculation/Distribution";
+import { selectactivityPathEntities } from "../Routine/activityPathSlice";
+import { selectdamageEntities } from "../Routine/damageSlice";
+import { selectRoutineEntities } from "../Routine/routineSlice";
+import { selecttargetEntities } from "../Target/targetSlice";
+import { selectweaknessEntities } from "../Target/weaknessSlice";
 
-import ActivityPathEvaluator from "./Calculation/EvaluateActivityPath";
+import ActivityPathEvaluator from "../Calculation/EvaluateActivityPath";
 
 // import Plot from "react-plotly.js";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
+import { defenses } from "../types";
 const Plot = createPlotlyComponent(Plotly);
 
 const Display = () => {
@@ -19,7 +20,7 @@ const Display = () => {
   // const ref = useRef(null);
   // useLayoutEffect(() => setWidth(ref.current.clientWidth), []);
 
-  const [addPersistent, setAddPersistent] = useState(true);
+  const [addPersistent, setAddPersistent] = useState(false);
   const [perMulti, setPerMulti] = useState(2);
 
   const routines = useSelector(selectRoutineEntities);
@@ -28,6 +29,13 @@ const Display = () => {
   const damages = useSelector(selectdamageEntities);
   const weaknesses = useSelector(selectweaknessEntities);
 
+  const currentTarget = targets[0];
+  let title = "Expected Damage Vs";
+  title += " AC: " + currentTarget[defenses.AC];
+  title += " Fort: " + currentTarget[defenses.FORT];
+  title += " Ref: " + currentTarget[defenses.REF];
+  title += " Will: " + currentTarget[defenses.WILL];
+  title += " Per: " + currentTarget[defenses.PER];
   // const selectedRoutine = routines[useSelector(selectSelectedRoutine)];
   const evaluator = new ActivityPathEvaluator(
     activityPaths,
@@ -39,6 +47,7 @@ const Display = () => {
   let maxDamage = 0;
   let maxPDamage = 0;
   const datasets = [];
+  const perDatasets = [];
   const expectedDamages = [];
   const expectedPersistentDamages = [];
   // TODO: use distribution
@@ -58,6 +67,8 @@ const Display = () => {
     maxPDamage = Math.max(maxPDamage, routinePDDist.length - 1);
     const dataArray = [];
     const cumulative = [];
+    const PdataArray = [];
+    const Pcumulative = [];
     let currentSum = 1;
     for (let i = 0; i < routineDDist.length; i++) {
       // dataArray.push({ x: i, y: routineDDist[i] });
@@ -67,18 +78,39 @@ const Display = () => {
 
       expD += routineDDist[i] * i;
     }
-    datasets.push({
-      type: "bar",
-      name: routine.name,
-      x: dataArray,
-      y: routineDDist,
-    });
+    currentSum = 1;
+    for (let i = 0; i < routinePDDist.length; i++) {
+      // dataArray.push({ x: i, y: routineDDist[i] });
+      PdataArray.push(i);
+      Pcumulative.push(currentSum);
+      currentSum -= routinePDDist[i];
+
+      expP += routinePDDist[i] * i;
+    }
     datasets.push({
       type: "scatter",
       name: routine.name,
       x: dataArray,
       y: cumulative,
       yaxis: "y",
+    });
+    datasets.push({
+      type: "bar",
+      name: expD.toFixed(2),
+      x: dataArray,
+      y: routineDDist,
+    });
+    perDatasets.push({
+      type: "scatter",
+      name: routine.name,
+      x: PdataArray,
+      y: Pcumulative,
+    });
+    perDatasets.push({
+      type: "bar",
+      name: expP.toFixed(2),
+      x: PdataArray,
+      y: routinePDDist,
     });
     // datasets.push(<VerticalRectSeries data={dataArray} key={id} />);
     // datasets.push({
@@ -155,6 +187,11 @@ const Display = () => {
   for (let i = 0; i <= maxDamage; i++) {
     labels.push(i);
   }
+  const Plabels = [];
+  for (let i = 0; i <= maxPDamage; i++) {
+    Plabels.push(i);
+  }
+
   // const data = {
   //   labels,
   //   datasets,
@@ -162,18 +199,18 @@ const Display = () => {
 
   return (
     <div className="box">
-      Add persistent damage:
+      Show persistent damage:
       <input
         type="checkbox"
         checked={addPersistent}
         onChange={(e) => setAddPersistent(e.target.checked)}
       />
-      , persistent damage multiplier:
+      {/* , persistent damage multiplier:
       <input
         type="number"
         value={perMulti ? perMulti : 0}
         onChange={(e) => setPerMulti(e.target.valueAsNumber)}
-      />
+      /> */}
       <div>
         Expected Damage:
         {expectedDamages}
@@ -182,7 +219,7 @@ const Display = () => {
         classname="plot"
         data={datasets}
         layout={{
-          title: "Expected Damage",
+          title: title,
           autosize: true,
           xaxis: { title: "damage" },
           yaxis: { title: "chance" },
@@ -207,12 +244,35 @@ const Display = () => {
         <YAxis />
         {datasets}
       </XYPlot> */}
-      {addPersistent ? (
+      {!addPersistent ? (
         ""
       ) : (
         <div>
-          Expected Persistent Damage:
-          {expectedPersistentDamages}
+          <div>
+            Expected Persistent Damage:
+            {expectedPersistentDamages}
+          </div>
+          <Plot
+            classname="plot"
+            data={perDatasets}
+            layout={{
+              title: "Expected Persistent Damage",
+              autosize: true,
+              xaxis: { title: "persistent damage" },
+              yaxis: { title: "chance" },
+              legend: {
+                x: 1,
+                y: 1,
+                xanchor: "right",
+              },
+              margin: {
+                l: 40,
+                r: 40,
+              },
+            }}
+            useResizeHandler={true}
+            style={{ width: "100%", height: "100%" }}
+          />
         </div>
       )}
     </div>

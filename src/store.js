@@ -67,6 +67,8 @@ store.dispatch(
     overrideDefault: true,
     addMods: false,
     level: 1,
+    matchRoutines: false,
+    levelDiff: 0,
     useDefaultAC: true,
     defaultAC: defaultValuesAC.HIGH,
     [defenses.AC]: 16,

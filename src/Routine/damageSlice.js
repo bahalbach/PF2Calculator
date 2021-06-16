@@ -53,7 +53,7 @@ export const damagesSlice = createSlice({
             diceNum: 0,
             diceSize: 8,
             staticDamage: 0,
-            damageType: damageTypes.B,
+            damageType: damageTypes.S,
             material: materials.NONE,
             persistent: false,
           },
