@@ -53,6 +53,7 @@ const Display = () => {
   // TODO: use distribution
   for (let id in routines) {
     let routine = routines[id];
+    if (!routine.display) continue;
     let expD = 0;
     let expP = 0;
     let routineDDist = [1];

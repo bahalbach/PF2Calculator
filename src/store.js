@@ -32,7 +32,9 @@ export const store = configureStore({
   },
 });
 
-store.dispatch(routineAdded({ id: 0, name: "Fighter", apIds: [0] }));
+store.dispatch(
+  routineAdded({ id: 0, name: "Fighter", display: true, apIds: [0] })
+);
 
 store.dispatch(
   activityPathAdded({

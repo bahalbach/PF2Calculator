@@ -37,6 +37,19 @@ body {
   background-color: rgba(196, 196, 196, 0.322);
 }
 
+.routines {
+  padding: 5px;
+}
+
+.routineOn {
+  background-color: white;
+  padding: 5px;
+}
+.routineOff {
+  background-color: grey;
+  padding: 5px;
+}
+
 .PF2App {
   max-width: 1000px;
 }

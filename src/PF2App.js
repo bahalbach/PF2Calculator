@@ -33,6 +33,8 @@ import Routines from "./Routines";
 import Export from "./Export";
 
 import "./PF2App.css";
+import { useSelector } from "react-redux";
+import { selectSelectedRoutine } from "./Routine/routineSlice";
 
 // function DisplayOutput(props) {
 //   // props: effect, target
@@ -51,11 +53,18 @@ import "./PF2App.css";
 // }
 
 function PF2App(props) {
+  const selectedRoutine = useSelector(selectSelectedRoutine);
+
   return (
     <div className="PF2App">
       <TargetInput id={0} />
       <Display />
-      <SelectedRoutine />
+      {selectedRoutine !== undefined ? (
+        <SelectedRoutine routineId={selectedRoutine} />
+      ) : (
+        ""
+      )}
+      {/* <SelectedRoutine /> */}
       <Routines />
       <Export />
     </div>

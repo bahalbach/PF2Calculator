@@ -81,29 +81,27 @@ for (let m in materials) {
   materialOptions.push(<option key={m}>{materials[m]}</option>);
 }
 
-function SelectedRoutine() {
-  const selectedRoutine = useSelector(selectSelectedRoutine);
+function SelectedRoutine({ routineId }) {
+  // const selectedRoutine = useSelector(selectSelectedRoutine);
   const apIds = useSelector((state) =>
-    selectRoutineById(state, selectedRoutine)
+    selectRoutineById(state, routineId)
   ).apIds;
   const dispatch = useDispatch();
 
   return (
     <div className="selectedRoutine">
-      <NameInput id={selectedRoutine} />
+      <NameInput id={routineId} />
       {apIds.map((apId) => (
         <ActivityPath
           id={apId}
-          routineId={selectedRoutine}
+          routineId={routineId}
           key={apId}
           displayCondition={false}
         />
       ))}
       <button
         className="add"
-        onClick={() =>
-          dispatch(activityPathCreated({ routineId: selectedRoutine }))
-        }
+        onClick={() => dispatch(activityPathCreated({ routineId: routineId }))}
       >
         +
       </button>

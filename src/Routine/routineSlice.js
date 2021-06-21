@@ -13,11 +13,16 @@ export const routinesSlice = createSlice({
     },
     routineAdded: routinesAdapter.addOne,
     routineUpdated: routinesAdapter.updateOne,
+    routineRemoved: (state, action) => {
+      routinesAdapter.removeOne(state, action);
+      if (action.payload === state.selectedRoutine)
+        state.selectedRoutine = state.ids ? state.ids[0] : undefined;
+    },
     routineCreated: {
       reducer: (state, action) => {
         const { id, name, apIds } = action.payload;
         state.selectedRoutine = id;
-        routinesAdapter.addOne(state, { id, name, apIds });
+        routinesAdapter.addOne(state, { id, name, display: true, apIds });
       },
       prepare: () => {
         const id = ++routineId;
@@ -48,6 +53,7 @@ export const {
   updateSelected,
   routineAdded,
   routineUpdated,
+  routineRemoved,
 } = routinesSlice.actions;
 
 export default routinesSlice.reducer;
