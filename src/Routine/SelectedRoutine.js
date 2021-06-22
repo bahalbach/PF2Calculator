@@ -26,11 +26,7 @@ import {
   damageUpdated,
   selectdamageById,
 } from "./damageSlice";
-import {
-  routineUpdated,
-  selectRoutineById,
-  selectSelectedRoutine,
-} from "./routineSlice";
+import { routineUpdated, selectRoutineById } from "./routineSlice";
 
 const conditionOptions = [];
 for (let c in conditions) {

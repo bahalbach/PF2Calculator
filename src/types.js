@@ -12,7 +12,10 @@ export const defaultActivities = {
   MARTIALR: "Martial Ranged",
   CASTERR: "Caster(16dex) Ranged",
   ALCHR: "Alchemist(16dex) Ranged",
-  CASTERC: "Caster Cantrip",
+  CASTERCA: "Caster Cantrip Attack",
+  CASTERCS: "Caster Cantrip Save",
+  CASTERBR: "Caster 2dX Basic Save",
+  CASTERSA: "Caster Spell Attack",
   CASTERS: "Caster Save",
 };
 
