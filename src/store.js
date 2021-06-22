@@ -69,7 +69,7 @@ store.dispatch(
     overrideDefault: true,
     addMods: false,
     level: 1,
-    matchRoutines: false,
+    matchRoutines: true,
     levelDiff: 0,
     useDefaultAC: true,
     defaultAC: defaultValuesAC.HIGH,

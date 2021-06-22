@@ -143,6 +143,7 @@ export const activityPathsSlice = createSlice({
       })
       .addCase(targetUpdated, (state, action) => {
         const { match, level } = action.payload;
+        defaultParentActivity.level = level;
         if (match) {
           for (let id of state.ids) {
             state.entities[id].level = level;

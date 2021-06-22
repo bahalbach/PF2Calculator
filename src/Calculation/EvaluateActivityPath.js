@@ -10,7 +10,7 @@ class ActivityPathEvaluator {
     this.weaknesses = weaknesses;
   }
 
-  evalPath(activityPath) {
+  evalPath(activityPath, defenseBonus) {
     let currentTarget = this.targets[0];
     let currentDamages = activityPath.damages.map(
       (damageId) => this.damages[damageId]
@@ -27,14 +27,15 @@ class ActivityPathEvaluator {
       activityPath,
       currentDamages,
       currentTarget,
-      currentWeaknesses
+      currentWeaknesses,
+      defenseBonus
     );
     // console.log(`chances are ${chances}`);
 
     // go through each activity path, depending on its condition add its damage distributions to this activities appropriately
     activityPath.apIds.forEach((apId) => {
       let ap = this.activityPaths[apId];
-      let [pathDist, pathPDist] = this.evalPath(ap);
+      let [pathDist, pathPDist] = this.evalPath(ap, defenseBonus);
 
       let indicies = [];
       // console.log(`cond is: ${ap.condition}`);

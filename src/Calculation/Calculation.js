@@ -112,14 +112,20 @@ const addDamage = (
   }
 };
 
-function calculateExpectedDamage(activity, damages, target, weaknesses) {
+function calculateExpectedDamage(
+  activity,
+  damages,
+  target,
+  weaknesses,
+  defenseBonus
+) {
   let bonus;
   let DC;
   switch (activity.type) {
     case activityTypes.STRIKE:
       bonus = activity.value;
       bonus += MAPvalues[activity.MAP];
-      DC = target[activity.targetType];
+      DC = target[activity.targetType] + defenseBonus;
       if (activity.targetType === defenses.AC) {
         if (target.flatfooted) DC -= 2;
       } else {
@@ -128,7 +134,7 @@ function calculateExpectedDamage(activity, damages, target, weaknesses) {
       break;
 
     case activityTypes.SAVE:
-      bonus = target[activity.targetType];
+      bonus = target[activity.targetType] + defenseBonus;
       DC = activity.value;
       if (activity.targetType === defenses.AC) {
         bonus -= 10;
