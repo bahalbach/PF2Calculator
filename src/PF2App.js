@@ -59,13 +59,14 @@ function PF2App(props) {
     <div className="PF2App">
       <TargetInput id={0} />
       <Display />
+      <Routines />
       {selectedRoutine !== undefined ? (
         <SelectedRoutine routineId={selectedRoutine} />
       ) : (
         ""
       )}
       {/* <SelectedRoutine /> */}
-      <Routines />
+
       <Export />
     </div>
   );
