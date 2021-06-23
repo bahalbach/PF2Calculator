@@ -20,6 +20,7 @@ import {
   nextMAPs,
 } from "../types";
 import { damageCreated, damageRemoved } from "./damageSlice";
+import { effectCreated, effectRemoved } from "./effectSlice";
 
 function setDefault(state, apId, setChildren = true) {
   function applyDefault(apId) {
@@ -139,6 +140,16 @@ export const activityPathsSlice = createSlice({
         const { parentId: id, id: damageId } = action.payload;
         state.entities[id].damages = state.entities[id].damages.filter(
           (did) => did !== damageId
+        );
+      })
+      .addCase(effectCreated, (state, action) => {
+        const { parentId: id, id: effectId } = action.payload;
+        state.entities[id].effects.push(effectId);
+      })
+      .addCase(effectRemoved, (state, action) => {
+        const { parentId: id, id: effectId } = action.payload;
+        state.entities[id].effects = state.entities[id].effects.filter(
+          (eid) => eid !== effectId
         );
       })
       .addCase(targetUpdated, (state, action) => {

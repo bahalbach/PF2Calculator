@@ -13,6 +13,7 @@ import ActivityPathEvaluator from "../Calculation/EvaluateActivityPath";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
 import { defenses, graphTypes } from "../types";
+import { selecteffectEntities } from "../Routine/effectSlice";
 const Plot = createPlotlyComponent(Plotly);
 
 const Display = () => {
@@ -26,6 +27,7 @@ const Display = () => {
   const activityPaths = useSelector(selectactivityPathEntities);
   const targets = useSelector(selecttargetEntities);
   const damages = useSelector(selectdamageEntities);
+  const effects = useSelector(selecteffectEntities);
   const weaknesses = useSelector(selectweaknessEntities);
 
   const currentTarget = targets[0];
@@ -47,8 +49,13 @@ const Display = () => {
     activityPaths,
     targets,
     damages,
+    effects,
     weaknesses
   );
+  const initialTargetState = {
+    flatfooted: false,
+    frightened: 0,
+  };
 
   let minbonus = 0;
   let maxbonus = 0;
@@ -82,7 +89,11 @@ const Display = () => {
       let routinePDDist = [1];
       for (let i = 0; i < routine.apIds.length; i++) {
         let activityPath = activityPaths[routine.apIds[i]];
-        let [damageDist, PdamageDist] = evaluator.evalPath(activityPath, bonus);
+        let [damageDist, PdamageDist] = evaluator.evalPath(
+          activityPath,
+          initialTargetState,
+          bonus
+        );
         routineDDist = convolve(routineDDist, damageDist);
         routinePDDist = convolve(routinePDDist, PdamageDist);
       }

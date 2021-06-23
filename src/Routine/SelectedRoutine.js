@@ -9,6 +9,7 @@ import {
   defenses,
   diceNums,
   diceSizes,
+  effectTypes,
   MAPs,
   materials,
   rollTypes,
@@ -26,6 +27,12 @@ import {
   damageUpdated,
   selectdamageById,
 } from "./damageSlice";
+import {
+  effectCreated,
+  effectRemoved,
+  effectUpdated,
+  selecteffectById,
+} from "./effectSlice";
 import { routineUpdated, selectRoutineById } from "./routineSlice";
 
 const conditionOptions = [];
@@ -75,6 +82,10 @@ for (let dt in damageTypes) {
 const materialOptions = [];
 for (let m in materials) {
   materialOptions.push(<option key={m}>{materials[m]}</option>);
+}
+const effectTypeOptions = [];
+for (let et in effectTypes) {
+  effectTypeOptions.push(<option key={et}>{effectTypes[et]}</option>);
 }
 
 function SelectedRoutine({ routineId }) {
@@ -410,7 +421,18 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             +
           </button>
         </div>
-        <div className="box">Effects: {effects}</div>
+        <div className="box">
+          {"Effects: "}
+          {effects.map((effectId) => (
+            <Effect parentId={id} id={effectId} key={effectId} />
+          ))}
+          <button
+            className="add"
+            onClick={() => dispatch(effectCreated({ parentId: id }))}
+          >
+            +
+          </button>
+        </div>
       </div>
 
       <div className="box">
@@ -541,6 +563,46 @@ const Damage = ({ parentId, id }) => {
           )
         }
       />
+    </div>
+  );
+};
+
+const Effect = ({ parentId, id }) => {
+  const { effectCondition, effectType } = useSelector((state) =>
+    selecteffectById(state, id)
+  );
+  const dispatch = useDispatch();
+
+  return (
+    <div className="box">
+      <button
+        className="delete"
+        onClick={(e) => {
+          dispatch(effectRemoved({ id, parentId }));
+        }}
+      >
+        -
+      </button>
+      <select
+        value={effectCondition}
+        onChange={(e) =>
+          dispatch(
+            effectUpdated({ id, changes: { effectCondition: e.target.value } })
+          )
+        }
+      >
+        {conditionOptions}
+      </select>
+      <select
+        value={effectType}
+        onChange={(e) =>
+          dispatch(
+            effectUpdated({ id, changes: { effectType: e.target.value } })
+          )
+        }
+      >
+        {effectTypeOptions}
+      </select>
     </div>
   );
 };

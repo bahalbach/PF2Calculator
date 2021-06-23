@@ -116,6 +116,7 @@ function calculateExpectedDamage(
   activity,
   damages,
   target,
+  targetState,
   weaknesses,
   defenseBonus
 ) {
@@ -125,16 +126,17 @@ function calculateExpectedDamage(
     case activityTypes.STRIKE:
       bonus = activity.value;
       bonus += MAPvalues[activity.MAP];
-      DC = target[activity.targetType] + defenseBonus;
+      DC = target[activity.targetType] + defenseBonus - targetState.frightened;
       if (activity.targetType === defenses.AC) {
-        if (target.flatfooted) DC -= 2;
+        if (target.flatfooted || targetState.flatfooted) DC -= 2;
       } else {
         DC += 10;
       }
       break;
 
     case activityTypes.SAVE:
-      bonus = target[activity.targetType] + defenseBonus;
+      bonus =
+        target[activity.targetType] + defenseBonus - targetState.frightened;
       DC = activity.value;
       if (activity.targetType === defenses.AC) {
         bonus -= 10;

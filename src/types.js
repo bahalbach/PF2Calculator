@@ -123,6 +123,14 @@ export const materials = {
   ADAMANTINE: "adamantine",
 };
 
+export const effectTypes = {
+  FLATFOOT: "Flatfooted",
+  FRIGHTENED1: "Frightened 1",
+  FRIGHTENED2: "Frightened 2",
+  FRIGHTENED3: "Frightened 3",
+  FRIGHTENED4: "Frightened 4",
+};
+
 export const conditions = {
   ALWAYS: "Always",
   CRIT: "On Crit",

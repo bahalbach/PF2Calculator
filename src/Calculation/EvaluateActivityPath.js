@@ -1,100 +1,163 @@
 import { convolve, consolidateDists } from "./Distribution";
 import { calculateExpectedDamage } from "./Calculation";
-import { conditions } from "../types";
+import { conditions, effectTypes } from "../types";
+
+function validateCondition(condition, degreeOfSuccess) {
+  let indicies = [];
+  // console.log(`cond is: ${ap.condition}`);
+  switch (condition) {
+    case conditions.ALWAYS:
+      indicies = [0, 1, 2, 3];
+      break;
+
+    case conditions.AT_LEAST_FAIL:
+      indicies = [0, 1, 2];
+      break;
+
+    case conditions.AT_LEAST_SUCC:
+      indicies = [0, 1];
+      break;
+
+    case conditions.CRIF:
+      indicies = [3];
+      break;
+
+    case conditions.CRIT:
+      indicies = [0];
+      break;
+
+    case conditions.FAIL:
+      indicies = [2];
+      break;
+
+    case conditions.FAIL_WORSE:
+      indicies = [2, 3];
+      break;
+
+    case conditions.SUCC:
+      indicies = [1];
+      break;
+
+    case conditions.SUCC_WORSE:
+      indicies = [1, 2, 3];
+      break;
+
+    default:
+  }
+  return indicies.includes(degreeOfSuccess);
+}
 
 class ActivityPathEvaluator {
-  constructor(activityPaths, targets, damages, weaknesses) {
+  constructor(activityPaths, targets, damages, effects, weaknesses) {
     this.activityPaths = activityPaths;
     this.targets = targets;
     this.damages = damages;
+    this.effects = effects;
     this.weaknesses = weaknesses;
   }
 
-  evalPath(activityPath, defenseBonus) {
+  evalPath(activityPath, targetState, defenseBonus) {
+    // evaluate this and all following APs
     let currentTarget = this.targets[0];
     let currentDamages = activityPath.damages.map(
       (damageId) => this.damages[damageId]
     );
     currentDamages.push(activityPath);
+    let currentEffects = activityPath.effects.map(
+      (effectId) => this.effects[effectId]
+    );
     let currentWeaknesses = currentTarget.weaknesses.map(
       (weaknessId) => this.weaknesses[weaknessId]
     );
 
-    // damage tress = [critDamages, succDamages, failDamages, crfaDamages]
-    // critDamages = {normal, persistent}
-    // normal = {fire..., staticDamage, damageDist}
+    // calculate the expected damage for this activity
     let [damageTrees, chances] = calculateExpectedDamage(
       activityPath,
       currentDamages,
       currentTarget,
+      targetState,
       currentWeaknesses,
       defenseBonus
     );
-    // console.log(`chances are ${chances}`);
+
+    const targetStates = [targetState, targetState, targetState, targetState];
+    // go through each degree of success
+    for (let i = 0; i < 4; i++) {
+      // go though each effect and update targetStates
+      currentEffects.forEach((effect) => {
+        let { effectCondition, effectType } = effect;
+        if (validateCondition(effectCondition, i)) {
+          switch (effectType) {
+            case effectTypes.FLATFOOT:
+              if (targetStates[i].flatfooted !== true)
+                targetStates[i] = { ...targetStates[i], flatfooted: true };
+              break;
+
+            case effectTypes.FRIGHTENED1:
+              if (targetStates[i].frightened < 1)
+                targetStates[i] = {
+                  ...targetStates[i],
+                  frightened: 1,
+                };
+              break;
+            case effectTypes.FRIGHTENED2:
+              if (targetStates[i].frightened < 2)
+                targetStates[i] = {
+                  ...targetStates[i],
+                  frightened: 2,
+                };
+              break;
+            case effectTypes.FRIGHTENED3:
+              if (targetStates[i].frightened < 3)
+                targetStates[i] = {
+                  ...targetStates[i],
+                  frightened: 3,
+                };
+              break;
+            case effectTypes.FRIGHTENED4:
+              if (targetStates[i].frightened < 4)
+                targetStates[i] = {
+                  ...targetStates[i],
+                  frightened: 4,
+                };
+              break;
+
+            default:
+              console.log(`Effect type ${effectType} not implemented`);
+          }
+        }
+      });
+    }
 
     // go through each activity path, depending on its condition add its damage distributions to this activities appropriately
     activityPath.apIds.forEach((apId) => {
       let ap = this.activityPaths[apId];
-      let [pathDist, pathPDist] = this.evalPath(ap, defenseBonus);
 
-      let indicies = [];
-      // console.log(`cond is: ${ap.condition}`);
-      switch (ap.condition) {
-        case conditions.ALWAYS:
-          indicies = [0, 1, 2, 3];
-          break;
-
-        case conditions.AT_LEAST_FAIL:
-          indicies = [0, 1, 2];
-          break;
-
-        case conditions.AT_LEAST_SUCC:
-          indicies = [0, 1];
-          break;
-
-        case conditions.CRIF:
-          indicies = [3];
-          break;
-
-        case conditions.CRIT:
-          indicies = [0];
-          break;
-
-        case conditions.FAIL:
-          indicies = [2];
-          break;
-
-        case conditions.FAIL_WORSE:
-          indicies = [2, 3];
-          break;
-
-        case conditions.SUCC:
-          indicies = [1];
-          break;
-
-        case conditions.SUCC_WORSE:
-          indicies = [1, 2, 3];
-          break;
-
-        default:
+      const evaluations = new Map();
+      // go through each degree of success
+      for (let i = 0; i < 4; i++) {
+        // evaluate if necessary and add distribution to damageTrees
+        if (validateCondition(ap.condition, i)) {
+          if (evaluations.has(targetStates[i])) {
+            // already evaluated
+          } else {
+            let [pathDist, pathPDist] = this.evalPath(
+              ap,
+              targetStates[i],
+              defenseBonus
+            );
+            evaluations.set(targetStates[i], { pathDist, pathPDist });
+          }
+          damageTrees[i].normal.damageDist = convolve(
+            damageTrees[i].normal.damageDist,
+            evaluations.get(targetStates[i]).pathDist
+          );
+          damageTrees[i].persistent.damageDist = convolve(
+            damageTrees[i].persistent.damageDist,
+            evaluations.get(targetStates[i]).pathPDist
+          );
+        }
       }
-      // console.log(`indies are: ${indicies}`);
-      for (let index of indicies) {
-        // console.log(
-        //   `adding damage to index ${index} w/ chance ${chances[index]}`
-        // );
-        // damageTrees[index].normal.staticDamage += pathSD;
-        damageTrees[index].normal.damageDist = convolve(
-          damageTrees[index].normal.damageDist,
-          pathDist
-        );
-        // damageTrees[index].persistent.staticDamage += pathPSD;
-        damageTrees[index].persistent.damageDist = convolve(
-          damageTrees[index].persistent.damageDist,
-          pathPDist
-        );
-      }
-      // console.log(pathChance);
     });
 
     let damageDist = consolidateDists(
