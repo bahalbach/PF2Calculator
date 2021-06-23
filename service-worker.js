@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/PF2Calculator/precache-manifest.a0797cd61e04b7ea971a6bc4b0ab2ec7.js"
+  "/PF2Calculator/precache-manifest.7ebcbcbc95810264899460a9509ac03a.js"
 );
 
 self.addEventListener('message', (event) => {
