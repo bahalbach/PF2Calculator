@@ -1,7 +1,6 @@
 export const graphTypes = {
   DISTRIBUTION: "Damage Distribution",
   PMDEFENSE: "+/- AC/Save Bonus",
-  BYLEVEL: "By Level",
 };
 
 export const activityTypes = {
