@@ -461,10 +461,12 @@ function calculateExpectedDamage(
       for (let type in damageTree[damageQuality]) {
         let { material, staticDamage, damageDist } =
           damageTree[damageQuality][type];
-        // console.log(type);
+
+        // ignore if there's 0 damage
+        if (damageDist.length === 1 && staticDamage <= 0) continue;
+
         // make min damage 1 before resistances
-        if (staticDamage < 0)
-          [staticDamage, damageDist] = applyMin(staticDamage, damageDist, 1);
+        [staticDamage, damageDist] = applyMin(staticDamage, damageDist, 1);
 
         // find max weakness and resistance, weaknesses are negative numbers
         let maxW = 0;

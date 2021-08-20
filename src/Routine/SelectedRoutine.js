@@ -375,7 +375,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
           {" + "}
           <input
             type="number"
-            value={staticDamage}
+            value={staticDamage ? staticDamage : 0}
             onChange={(e) =>
               dispatch(
                 activityPathUpdated({

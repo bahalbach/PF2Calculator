@@ -24,7 +24,7 @@ export const convolve = (vec1, vec2) => {
 
 export const multiplyDist = (dam, dist, multiplier) => {
   if (multiplier === 0) return [0, [1]];
-  if (multiplier === 1) return [dam, dist];
+  if (multiplier === 1) return [dam, [...dist]];
 
   const newDist = [0];
   let index = 0;
@@ -85,7 +85,6 @@ export const consolidateDists = (...dists) => {
 };
 
 export const applyMin = (staticDamage, damageDist, min) => {
-  // TODO: implement applyMin
   while (staticDamage < min) {
     if (damageDist.length >= 2) {
       damageDist[1] += damageDist[0];
