@@ -56,7 +56,7 @@ class ActivityPathEvaluator {
     this.weaknesses = weaknesses;
   }
 
-  evalPath(activityPath, targetState, defenseBonus) {
+  evalPath(activityPath, targetState, defenseBonus, resistanceBonus) {
     // evaluate this and all following APs
     let currentTarget = this.targets[0];
     let currentDamages = activityPath.damages.map(
@@ -77,7 +77,8 @@ class ActivityPathEvaluator {
       currentTarget,
       targetState,
       currentWeaknesses,
-      defenseBonus
+      defenseBonus,
+      resistanceBonus
     );
 
     const targetStates = [targetState, targetState, targetState, targetState];

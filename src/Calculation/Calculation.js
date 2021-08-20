@@ -118,7 +118,8 @@ function calculateExpectedDamage(
   target,
   targetState,
   weaknesses,
-  defenseBonus
+  defenseBonus,
+  resistanceBonus
 ) {
   let bonus;
   let DC;
@@ -473,10 +474,10 @@ function calculateExpectedDamage(
         let maxR = 0;
         weaknesses.forEach((weakness) => {
           if (weakness.type === type || weakness.type === material) {
-            if (weakness.value < 0) {
-              maxW = Math.min(maxW, weakness.value);
-            } else if (weakness.value > 0) {
-              maxR = Math.max(maxR, weakness.value);
+            if (weakness.value + resistanceBonus < 0) {
+              maxW = Math.min(maxW, weakness.value + resistanceBonus);
+            } else if (weakness.value + resistanceBonus > 0) {
+              maxR = Math.max(maxR, weakness.value + resistanceBonus);
             }
           }
         });

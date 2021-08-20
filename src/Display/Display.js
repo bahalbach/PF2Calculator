@@ -34,7 +34,8 @@ const Display = () => {
   let title = "Expected Damage";
   if (
     graphType === graphTypes.DISTRIBUTION ||
-    graphType === graphTypes.PMDEFENSE
+    graphType === graphTypes.PMDEFENSE ||
+    graphType === graphTypes.PMRES
   ) {
     title += " Vs ";
     title += " AC: " + currentTarget[defenses.AC];
@@ -42,7 +43,6 @@ const Display = () => {
     title += " Ref: " + currentTarget[defenses.REF];
     title += " Will: " + currentTarget[defenses.WILL];
     title += " Per: " + currentTarget[defenses.PER];
-  } else if (graphType === graphTypes.BYLEVEL) {
   }
 
   const evaluator = new ActivityPathEvaluator(
@@ -59,7 +59,7 @@ const Display = () => {
 
   let minbonus = 0;
   let maxbonus = 0;
-  if (graphType === graphTypes.PMDEFENSE) {
+  if (graphType === graphTypes.PMDEFENSE || graphType === graphTypes.PMRES) {
     minbonus = -5;
     maxbonus = 5;
   }
@@ -83,6 +83,12 @@ const Display = () => {
     for (let bonus = minbonus; bonus <= maxbonus; bonus++) {
       bonusArray.push(bonus);
       // calculate distribution for this routine with this bonus
+      let ACBonus = bonus;
+      let resBonus = 0;
+      if (graphType === graphTypes.PMRES) {
+        ACBonus = 0;
+        resBonus = bonus;
+      }
       let expD = 0;
       let expP = 0;
       let routineDDist = [1];
@@ -92,7 +98,8 @@ const Display = () => {
         let [damageDist, PdamageDist] = evaluator.evalPath(
           activityPath,
           initialTargetState,
-          bonus
+          ACBonus,
+          resBonus
         );
         routineDDist = convolve(routineDDist, damageDist);
         routinePDDist = convolve(routinePDDist, PdamageDist);
@@ -167,12 +174,15 @@ const Display = () => {
           x: PdataArray,
           y: routinePDDist,
         });
-      } else if (graphType === graphTypes.PMDEFENSE) {
+      } else if (
+        graphType === graphTypes.PMDEFENSE ||
+        graphType === graphTypes.PMRES
+      ) {
         expDbyBonus.push(expD);
         expPDbyBonus.push(expP);
       }
     }
-    if (graphType === graphTypes.PMDEFENSE) {
+    if (graphType === graphTypes.PMDEFENSE || graphType === graphTypes.PMRES) {
       datasets.push({
         type: "scatter",
         name: routine.name,
@@ -207,6 +217,13 @@ const Display = () => {
     }
   } else if (graphType === graphTypes.PMDEFENSE) {
     xtitle = "+/- AC/Save Bonus";
+    ytitle = "Expected Damage";
+    for (let i = minbonus; i <= maxbonus; i++) {
+      labels.push(i);
+      Plabels.push(i);
+    }
+  } else if (graphType === graphTypes.PMRES) {
+    xtitle = "+/- Resistance/Weakness";
     ytitle = "Expected Damage";
     for (let i = minbonus; i <= maxbonus; i++) {
       labels.push(i);

@@ -1,6 +1,7 @@
 export const graphTypes = {
   DISTRIBUTION: "Damage Distribution",
   PMDEFENSE: "+/- AC/Save Bonus",
+  PMRES: "+/- Resistance/Weakness",
 };
 
 export const activityTypes = {
