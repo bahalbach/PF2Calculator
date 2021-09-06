@@ -56,6 +56,60 @@ class ActivityPathEvaluator {
     this.weaknesses = weaknesses;
   }
 
+  evalRoutine(routine, level, ACBonus, resBonus) {
+    const initialTargetState = {
+      flatfooted: false,
+      frightened: 0,
+    };
+    const dataArray = [];
+    const cumulative = [];
+    const PdataArray = [];
+    const Pcumulative = [];
+
+    let expD = 0;
+    let expP = 0;
+    let routineDDist = [1];
+    let routinePDDist = [1];
+    for (let i = 0; i < routine.apIds.length; i++) {
+      let activityPath = this.activityPaths[routine.apIds[i]];
+      let [damageDist, PdamageDist] = this.evalPath(
+        activityPath,
+        initialTargetState,
+        level,
+        ACBonus,
+        resBonus
+      );
+      routineDDist = convolve(routineDDist, damageDist);
+      routinePDDist = convolve(routinePDDist, PdamageDist);
+    }
+    let currentSum = 1;
+    for (let i = 0; i < routineDDist.length; i++) {
+      dataArray.push(i);
+      cumulative.push(currentSum);
+      currentSum -= routineDDist[i];
+
+      expD += routineDDist[i] * i;
+    }
+    currentSum = 1;
+    for (let i = 0; i < routinePDDist.length; i++) {
+      PdataArray.push(i);
+      Pcumulative.push(currentSum);
+      currentSum -= routinePDDist[i];
+
+      expP += routinePDDist[i] * i;
+    }
+    return {
+      expD,
+      expP,
+      dataArray,
+      routineDDist,
+      cumulative,
+      PdataArray,
+      routinePDDist,
+      Pcumulative,
+    };
+  }
+
   evalPath(activityPath, targetState, level, defenseBonus, resistanceBonus) {
     // evaluate this and all following APs
     let currentTarget = this.targets[0];
@@ -178,4 +232,5 @@ class ActivityPathEvaluator {
   }
 }
 
-export default ActivityPathEvaluator;
+const evaluateRoutine = (evaluator, routine) => {};
+export { ActivityPathEvaluator, evaluateRoutine };

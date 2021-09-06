@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { graphTypes } from "../types";
 
-import GenerateGraphs from "./GenerateGraphs";
+import useGenerateGraphs from "./useGenerateGraphs";
 
 const Display = () => {
   // evaluates routines and displays appropriate graphs
@@ -9,6 +9,12 @@ const Display = () => {
   const [addPersistent, setAddPersistent] = useState(false);
   const [graphType, setGraphType] = useState(graphTypes.DISTRIBUTION);
   const [displayLevel, setDisplayLevel] = useState(1);
+  const {
+    expectedDamages,
+    expectedPersistentDamages,
+    damageChart,
+    persistentDamageChart,
+  } = useGenerateGraphs(graphType, displayLevel);
   // const [perMulti, setPerMulti] = useState(2);
 
   const graphTypeOptions = [];
@@ -23,13 +29,6 @@ const Display = () => {
       </option>
     );
   }
-
-  const {
-    expectedDamages,
-    expectedPersistentDamages,
-    damageChart,
-    persistentDamageChart,
-  } = GenerateGraphs(graphType, displayLevel);
 
   return (
     <div className="box">
