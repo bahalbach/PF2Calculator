@@ -1,4 +1,5 @@
 import React from "react";
+import ReactGA from "react-ga4";
 // import { useSelector } from "react-redux";
 // import update from "immutability-helper";
 
@@ -51,9 +52,11 @@ import { selectSelectedRoutine } from "./Routine/routineSlice";
 //     </div>
 //   );
 // }
+ReactGA.initialize("G-JR2YK097BG");
 
 function PF2App(props) {
   const selectedRoutine = useSelector(selectSelectedRoutine);
+  ReactGA.send("pageview");
 
   return (
     <div className="PF2App">
