@@ -62,6 +62,9 @@ const Display = () => {
   if (graphType === graphTypes.PMDEFENSE || graphType === graphTypes.PMRES) {
     minbonus = -5;
     maxbonus = 5;
+  } else if (graphType === graphTypes.BYLEVEL) {
+    minbonus = 1;
+    maxbonus = 20;
   }
 
   let maxDamage = 0;
@@ -85,9 +88,13 @@ const Display = () => {
       // calculate distribution for this routine with this bonus
       let ACBonus = bonus;
       let resBonus = 0;
+      let level = currentTarget.level;
       if (graphType === graphTypes.PMRES) {
         ACBonus = 0;
         resBonus = bonus;
+      } else if (graphType === graphTypes.BYLEVEL) {
+        ACBonus = 0;
+        level = bonus;
       }
       let expD = 0;
       let expP = 0;
@@ -98,6 +105,7 @@ const Display = () => {
         let [damageDist, PdamageDist] = evaluator.evalPath(
           activityPath,
           initialTargetState,
+          level,
           ACBonus,
           resBonus
         );
