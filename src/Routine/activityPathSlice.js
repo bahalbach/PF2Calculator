@@ -14,6 +14,7 @@ import {
   damageTypes,
   dCond,
   defaultActivities,
+  bonusTrends,
   defenses,
   MAPs,
   materials,
@@ -46,6 +47,10 @@ function setDefault(state, apId, setChildren = true) {
 }
 export const activityPathAdapter = createEntityAdapter();
 
+const empty = {};
+for (let i = 1; i <= 20; i++) {
+  empty[i] = 0;
+}
 let activityPathId = 1;
 const defaultParentActivity = {
   level: 1,
@@ -61,6 +66,9 @@ const defaultParentActivity = {
   staticDamage: 4,
   damageType: damageTypes.S,
   material: materials.NONE,
+
+  bonusTrend: bonusTrends.MARTIALWEAPON,
+  bonusAdjustments: { ...empty },
 };
 
 export const activityPathsSlice = createSlice({
@@ -70,7 +78,7 @@ export const activityPathsSlice = createSlice({
     activityPathAdded: activityPathAdapter.addOne,
     activityPathUpdated: (state, action) => {
       activityPathAdapter.updateOne(state, action.payload);
-      setDefault(state, action.payload.id);
+      // setDefault(state, action.payload.id);
     },
     activityPathRemoved: (state, action) => {
       const { id, parentId } = action.payload;
@@ -113,6 +121,13 @@ export const activityPathsSlice = createSlice({
           damages: [],
           effects: [],
           apIds: [],
+
+          bonusTrend: parentAP.bonusTrend,
+          bonusAdjustments: { ...parentAP.bonusAdjustments },
+          damageTrend: parentAP.damageTrend,
+          damageAdjustments: { ...parentAP.damageAdjustments },
+          dieTrend: parentAP.dieTrend,
+          dieAdjustments: { ...parentAP.dieAdjustments },
         });
 
         if (parentId !== undefined) state.entities[parentId].apIds.push(id);

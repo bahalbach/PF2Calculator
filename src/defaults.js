@@ -1,10 +1,13 @@
 import {
   activityTypes,
+  ACTrends,
+  bonusTrends,
+  damageTrends,
   dCond,
   defaultActivities,
-  defaultValuesAC,
-  defaultValuesSaves,
   defenses,
+  dieTrends,
+  SaveTrends,
 } from "./types";
 
 export const defaultTypes = {
@@ -174,6 +177,30 @@ for (let i = 1; i <= 20; i++) {
   casterStatic[i] = score16[i] + (casterSpec[i] * casterProf[i]) / 2;
   casterRanged[i] = (casterSpec[i] * casterProf[i]) / 2;
 }
+export const bonusTrendValues = {
+  [bonusTrends.FIGHTERWEAPON]: fighterAB,
+  [bonusTrends.MARTIALWEAPON]: martialAB,
+  [bonusTrends.CASTERWEAPON]: casterAB,
+  [bonusTrends.DC171519]: casterSpellAttack,
+};
+
+export const damageTrendValues = {
+  [damageTrends.NONE]: zero,
+  [damageTrends.FIGHTERMELEE]: fighterStatic,
+  [damageTrends.MARTIALMELEE]: martialStatic,
+  [damageTrends.CASTERMELEE]: casterStatic,
+  [damageTrends.FIGHTERRANGED]: fighterRanged,
+  [damageTrends.MARTIALRANGED]: martialRanged,
+  [damageTrends.CASTERRANGED]: casterRanged,
+  [damageTrends.CASTERCANTRIP]: maxScore,
+};
+
+export const dieTrendValues = {
+  [dieTrends.NONE]: zero,
+  [dieTrends.WEAPON]: weaponDice,
+  [dieTrends.SPELLLEVEL1]: spellDice,
+  [dieTrends.SPELLLEVEL2]: spellDice2,
+};
 
 export const defaultValues = {
   [defaultActivities.FIGHTER]: fighterAB,
@@ -261,10 +288,10 @@ const lowAC = { ...extremeAC };
 for (let level in lowAC) lowAC[level] -= 6;
 
 export const defaultACs = {
-  [defaultValuesAC.EXTREME]: extremeAC,
-  [defaultValuesAC.HIGH]: highAC,
-  [defaultValuesAC.MODERATE]: moderateAC,
-  [defaultValuesAC.LOW]: lowAC,
+  [ACTrends.EXTREME]: extremeAC,
+  [ACTrends.HIGH]: highAC,
+  [ACTrends.MODERATE]: moderateAC,
+  [ACTrends.LOW]: lowAC,
 };
 
 const extremeSaves = {
@@ -408,9 +435,9 @@ const terribleSaves = {
   24: 32,
 };
 export const defaultSaves = {
-  [defaultValuesSaves.EXTREME]: extremeSaves,
-  [defaultValuesSaves.HIGH]: highSaves,
-  [defaultValuesSaves.MODERATE]: moderateSaves,
-  [defaultValuesSaves.LOW]: lowSaves,
-  [defaultValuesSaves.TERRIBLE]: terribleSaves,
+  [SaveTrends.EXTREME]: extremeSaves,
+  [SaveTrends.HIGH]: highSaves,
+  [SaveTrends.MODERATE]: moderateSaves,
+  [SaveTrends.LOW]: lowSaves,
+  [SaveTrends.TERRIBLE]: terribleSaves,
 };

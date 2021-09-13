@@ -4,9 +4,49 @@ export const graphTypes = {
   PMRES: "+/- Resistance/Weakness",
 };
 
+export const ACTrends = {
+  LOW: "Low",
+  MODERATE: "Moderate",
+  HIGH: "High",
+  EXTREME: "Extreme",
+};
+
+export const SaveTrends = {
+  TERRIBLE: "Terrible",
+  LOW: "Low",
+  MODERATE: "Moderate",
+  HIGH: "High",
+  EXTREME: "Extreme",
+};
+
 export const activityTypes = {
   STRIKE: "Strike",
   SAVE: "Save",
+};
+
+export const bonusTrends = {
+  FIGHTERWEAPON: "Fighter Weapon",
+  MARTIALWEAPON: "Martial Weapon",
+  CASTERWEAPON: "Caster Weapon",
+  DC171519: "Caster Spell",
+};
+
+export const damageTrends = {
+  NONE: "None",
+  FIGHTERMELEE: "Fighter Melee",
+  FIGHTERRANGED: "Fighter Ranged",
+  MARTIALMELEE: "Martial Melee",
+  MARTIALRANGED: "Martial Ranged",
+  CASTERCANTRIP: "Caster Cantrip",
+  CASTERMELEE: "Caster Melee",
+  CASTERRANGED: "Caster Ranged",
+};
+
+export const dieTrends = {
+  NONE: "None",
+  WEAPON: "Weapon",
+  SPELLLEVEL1: "1 x Spell Level",
+  SPELLLEVEL2: "2 x Spell Level",
 };
 
 export const defaultActivities = {

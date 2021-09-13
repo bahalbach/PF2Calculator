@@ -56,13 +56,67 @@ class ActivityPathEvaluator {
     this.weaknesses = weaknesses;
   }
 
-  evalPath(activityPath, targetState, defenseBonus, resistanceBonus) {
+  evalRoutine(routine, level, ACBonus, resBonus) {
+    const initialTargetState = {
+      flatfooted: false,
+      frightened: 0,
+    };
+    const dataArray = [];
+    const cumulative = [];
+    const PdataArray = [];
+    const Pcumulative = [];
+
+    let expD = 0;
+    let expP = 0;
+    let routineDDist = [1];
+    let routinePDDist = [1];
+    for (let i = 0; i < routine.apIds.length; i++) {
+      let activityPath = this.activityPaths[routine.apIds[i]];
+      let [damageDist, PdamageDist] = this.evalPath(
+        activityPath,
+        initialTargetState,
+        level,
+        ACBonus,
+        resBonus
+      );
+      routineDDist = convolve(routineDDist, damageDist);
+      routinePDDist = convolve(routinePDDist, PdamageDist);
+    }
+    let currentSum = 1;
+    for (let i = 0; i < routineDDist.length; i++) {
+      dataArray.push(i);
+      cumulative.push(currentSum);
+      currentSum -= routineDDist[i];
+
+      expD += routineDDist[i] * i;
+    }
+    currentSum = 1;
+    for (let i = 0; i < routinePDDist.length; i++) {
+      PdataArray.push(i);
+      Pcumulative.push(currentSum);
+      currentSum -= routinePDDist[i];
+
+      expP += routinePDDist[i] * i;
+    }
+    return {
+      expD,
+      expP,
+      dataArray,
+      routineDDist,
+      cumulative,
+      PdataArray,
+      routinePDDist,
+      Pcumulative,
+    };
+  }
+
+  evalPath(activityPath, targetState, level, defenseBonus, resistanceBonus) {
     // evaluate this and all following APs
     let currentTarget = this.targets[0];
     let currentDamages = activityPath.damages.map(
       (damageId) => this.damages[damageId]
     );
-    currentDamages.push(activityPath);
+    //currentDamages.push(activityPath);
     let currentEffects = activityPath.effects.map(
       (effectId) => this.effects[effectId]
     );
@@ -72,6 +126,7 @@ class ActivityPathEvaluator {
 
     // calculate the expected damage for this activity
     let [damageTrees, chances] = calculateExpectedDamage(
+      level,
       activityPath,
       currentDamages,
       currentTarget,
@@ -178,4 +233,5 @@ class ActivityPathEvaluator {
   }
 }
 
-export default ActivityPathEvaluator;
+const evaluateRoutine = (evaluator, routine) => {};
+export { ActivityPathEvaluator, evaluateRoutine };

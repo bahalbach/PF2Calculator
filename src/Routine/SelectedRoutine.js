@@ -1,14 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { LevelList } from "./LevelList";
 import {
   activityTypes,
+  bonusTrends,
   conditions,
+  damageTrends,
   damageTypes,
   dCond,
-  defaultActivities,
   defenses,
-  diceNums,
   diceSizes,
+  dieTrends,
   effectTypes,
   MAPs,
   materials,
@@ -39,13 +41,16 @@ const conditionOptions = [];
 for (let c in conditions) {
   conditionOptions.push(<option key={c}>{conditions[c]}</option>);
 }
-const defaultActivityOptions = [];
-for (let da in defaultActivities) {
-  defaultActivityOptions.push(
-    <option key={da}>{defaultActivities[da]}</option>
-  );
+// const defaultActivityOptions = [];
+// for (let da in defaultActivities) {
+//   defaultActivityOptions.push(
+//     <option key={da}>{defaultActivities[da]}</option>
+//   );
+// }
+const bonusTrendOptions = [];
+for (let bt in bonusTrends) {
+  bonusTrendOptions.push(<option key={bt}>{bonusTrends[bt]}</option>);
 }
-
 const activityTypeOptions = [];
 for (let at in activityTypes) {
   activityTypeOptions.push(<option key={at}>{activityTypes[at]}</option>);
@@ -67,14 +72,23 @@ const damageConditionOptions = [];
 for (let dc in dCond) {
   damageConditionOptions.push(<option key={dc}>{dCond[dc]}</option>);
 }
-const diceNumOptions = [];
-for (let dn in diceNums) {
-  diceNumOptions.push(<option key={dn}>{dn}</option>);
+const dieTrendOptions = [];
+for (let dt in dieTrends) {
+  dieTrendOptions.push(<option key={dt}>{dieTrends[dt]}</option>);
 }
+// const diceNumOptions = [];
+// for (let dn in diceNums) {
+//   diceNumOptions.push(<option key={dn}>{dn}</option>);
+// }
 const diceSizeOptions = [];
 for (let ds in diceSizes) {
   diceSizeOptions.push(<option key={ds}>{ds}</option>);
 }
+const damageTrendOptions = [];
+for (let dt in damageTrends) {
+  damageTrendOptions.push(<option key={dt}>{damageTrends[dt]}</option>);
+}
+
 const damageTypeOptions = [];
 for (let dt in damageTypes) {
   damageTypeOptions.push(<option key={dt}>{damageTypes[dt]}</option>);
@@ -86,6 +100,10 @@ for (let m in materials) {
 const effectTypeOptions = [];
 for (let et in effectTypes) {
   effectTypeOptions.push(<option key={et}>{effectTypes[et]}</option>);
+}
+const multiplierOptions = [];
+for (let m of [0.5, 1, 2]) {
+  multiplierOptions.push(<option key={m}>{m}</option>);
 }
 
 function SelectedRoutine({ routineId }) {
@@ -140,25 +158,27 @@ const NameInput = ({ id }) => {
 const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
   const {
     condition,
-    level,
-    override,
-    defaultActivity,
     type,
     targetType,
-    value,
+
+    bonusTrend,
+    bonusAdjustments,
+
     MAP,
     rollType,
-    damageCondition,
-    diceNum,
-    diceSize,
-    staticDamage,
-    damageType,
-    material,
     damages,
     effects,
     apIds,
   } = useSelector((state) => selectactivityPathById(state, id));
   const dispatch = useDispatch();
+
+  const bonusLevelList = LevelList(
+    "bonusAdjustments",
+    dispatch,
+    activityPathUpdated,
+    id,
+    bonusAdjustments
+  );
 
   return (
     <div className="box">
@@ -193,7 +213,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
           >
             -
           </button>
-          <span className="input">
+          {/* <span className="input">
             <label htmlFor="override">{"Override: "}</label>
             <input
               id="override"
@@ -208,8 +228,8 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
                 )
               }
             />
-          </span>
-          <span className="input">
+          </span> */}
+          {/* <span className="input">
             <label htmlFor="Level">{" Level: "}</label>
             <input
               id="Level"
@@ -230,10 +250,9 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
                 );
               }}
             />
-          </span>
-
-          <span className="input">
-            {/* <input
+          </span> */}
+          {/* <span className="input"> */}
+          {/* <input
               type="checkbox"
               checked={useDefault}
               onChange={(e) =>
@@ -245,21 +264,22 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
                 )
               }
             /> */}
-            <select
-              value={defaultActivity}
-              onChange={(e) =>
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { defaultActivity: e.target.value },
-                  })
-                )
-              }
-            >
-              {defaultActivityOptions}
-            </select>
-          </span>
-
+          {" ("}
+          <select
+            value={bonusTrend}
+            onChange={(e) =>
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { bonusTrend: e.target.value },
+                })
+              )
+            }
+          >
+            {bonusTrendOptions}
+          </select>
+          {type === activityTypes.SAVE ? "+10" : ""}+{bonusLevelList})
+          {/* </span> */}
           <span className="input">
             <select
               value={type}
@@ -271,7 +291,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             >
               {activityTypeOptions}
             </select>
-            {type === activityTypes.STRIKE ? " +" : " DC: "}
+            {/* {type === activityTypes.STRIKE ? " +" : " DC: "}
             <input
               type="number"
               value={value ? value : 0}
@@ -283,7 +303,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
                   })
                 )
               }
-            />
+            /> */}
           </span>
           <span className="input">
             {" MAP: "}
@@ -330,7 +350,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             </select>
           </span>
         </div>
-        <div className="flexbox">
+        {/* <div className="flexbox">
           Damage:
           <select
             value={damageCondition}
@@ -408,9 +428,9 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
           >
             {materialOptions}
           </select>
-        </div>
+        </div> */}
         <div className="box">
-          {"Additional Damage: "}
+          {"Damage: "}
           {damages.map((damageId) => (
             <Damage parentId={id} id={damageId} key={damageId} />
           ))}
@@ -461,14 +481,34 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
 const Damage = ({ parentId, id }) => {
   const {
     damageCondition,
-    diceNum,
-    diceSize,
-    staticDamage,
     damageType,
     material,
     persistent,
+    multiplier,
+
+    dieTrend,
+    dieAdjustments,
+    diceSize,
+    damageTrend,
+    damageAdjustments,
   } = useSelector((state) => selectdamageById(state, id));
   const dispatch = useDispatch();
+
+  const dieLevelList = LevelList(
+    "dieAdjustments",
+    dispatch,
+    damageUpdated,
+    id,
+    dieAdjustments
+  );
+
+  const damageLevelList = LevelList(
+    "damageAdjustments",
+    dispatch,
+    damageUpdated,
+    id,
+    damageAdjustments
+  );
 
   return (
     <div className="box">
@@ -490,20 +530,22 @@ const Damage = ({ parentId, id }) => {
       >
         {damageConditionOptions}
       </select>
+      {": ("}
       <select
-        value={diceNum}
+        value={dieTrend}
         onChange={(e) =>
           dispatch(
             damageUpdated({
               id,
-              changes: { diceNum: parseInt(e.target.value) },
+              changes: { dieTrend: e.target.value },
             })
           )
         }
       >
-        {diceNumOptions}
+        {dieTrendOptions}
       </select>
-      d
+      +{dieLevelList}
+      )d
       <select
         value={diceSize}
         onChange={(e) =>
@@ -517,19 +559,21 @@ const Damage = ({ parentId, id }) => {
       >
         {diceSizeOptions}
       </select>
-      {" + "}
-      <input
-        type="number"
-        value={staticDamage}
+      {" + ("}
+      <select
+        value={damageTrend}
         onChange={(e) =>
           dispatch(
             damageUpdated({
               id,
-              changes: { staticDamage: parseInt(e.target.value) },
+              changes: { damageTrend: e.target.value },
             })
           )
         }
-      />
+      >
+        {damageTrendOptions}
+      </select>
+      +{damageLevelList}){" ("}
       <select
         value={damageType}
         onChange={(e) => {
@@ -563,6 +607,17 @@ const Damage = ({ parentId, id }) => {
           )
         }
       />
+      {") damage x "}
+      <select
+        value={multiplier}
+        onChange={(e) => {
+          dispatch(
+            damageUpdated({ id, changes: { multiplier: e.target.value } })
+          );
+        }}
+      >
+        {multiplierOptions}
+      </select>
     </div>
   );
 };
