@@ -14,6 +14,8 @@ const Display = () => {
     expectedPersistentDamages,
     damageChart,
     persistentDamageChart,
+    byLevelDamageChart,
+    byLevelPerDamageChart,
   } = useGenerateGraphs(graphType, displayLevel);
   // const [perMulti, setPerMulti] = useState(2);
 
@@ -63,6 +65,7 @@ const Display = () => {
         {expectedDamages}
       </div>
       {damageChart}
+      {byLevelDamageChart}
       {!addPersistent ? (
         ""
       ) : (
@@ -72,6 +75,7 @@ const Display = () => {
             {expectedPersistentDamages}
           </div>
           {persistentDamageChart}
+          {byLevelPerDamageChart}
         </div>
       )}
     </div>

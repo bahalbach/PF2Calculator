@@ -1,4 +1,11 @@
 import {
+  bonusTrendValues,
+  damageTrendValues,
+  defaultACs,
+  defaultSaves,
+  dieTrendValues,
+} from "../defaults";
+import {
   activityTypes,
   dCond,
   defenses,
@@ -113,6 +120,7 @@ const addDamage = (
 };
 
 function calculateExpectedDamage(
+  level,
   activity,
   damages,
   target,
@@ -123,11 +131,34 @@ function calculateExpectedDamage(
 ) {
   let bonus;
   let DC;
+  let targetValue;
+  switch (activity.targetType) {
+    case defenses.AC:
+      targetValue = defaultACs[target.ACTrend][level];
+      break;
+    case defenses.FORT:
+      targetValue = defaultSaves[target.FortTrend][level];
+      break;
+    case defenses.REF:
+      targetValue = defaultSaves[target.RefTrend][level];
+      break;
+    case defenses.WILL:
+      targetValue = defaultSaves[target.WillTrend][level];
+      break;
+    case defenses.PER:
+      targetValue = defaultSaves[target.PerTrend][level];
+      break;
+
+    default:
+      targetValue = defaultACs[target.ACTrend][level];
+      break;
+  }
   switch (activity.type) {
     case activityTypes.STRIKE:
-      bonus = activity.value;
+      bonus = bonusTrendValues[activity.bonusTrend][level];
+      bonus += activity.bonusAdjustments[level];
       bonus += MAPvalues[activity.MAP];
-      DC = target[activity.targetType] + defenseBonus - targetState.frightened;
+      DC = targetValue + defenseBonus - targetState.frightened;
       if (activity.targetType === defenses.AC) {
         if (target.flatfooted || targetState.flatfooted) DC -= 2;
       } else {
@@ -136,9 +167,9 @@ function calculateExpectedDamage(
       break;
 
     case activityTypes.SAVE:
-      bonus =
-        target[activity.targetType] + defenseBonus - targetState.frightened;
-      DC = activity.value;
+      bonus = targetValue + defenseBonus - targetState.frightened;
+      DC = bonusTrendValues[activity.bonusTrend][level];
+      DC += activity.bonusAdjustments[level];
       if (activity.targetType === defenses.AC) {
         bonus -= 10;
       }
@@ -185,15 +216,21 @@ function calculateExpectedDamage(
   damages.forEach((damage) => {
     let {
       damageCondition,
-      diceNum,
+      // diceNum,
       diceSize,
-      staticDamage,
+      // staticDamage,
       damageType,
       material,
       persistent,
+      multiplier,
     } = damage;
-    if (!staticDamage) staticDamage = 0;
+    // if (!staticDamage) staticDamage = 0;
 
+    let diceNum = dieTrendValues[damage.dieTrend][level];
+    diceNum += damage.dieAdjustments[level];
+    if (diceNum < 0) diceNum = 0;
+    let staticDamage = damageTrendValues[damage.damageTrend][level];
+    staticDamage += damage.damageAdjustments[level];
     let damageDist = [1];
     const diceArray = [];
     for (let i = 0; i < diceSize; i++) {
@@ -213,7 +250,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           critDamages,
@@ -222,7 +259,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          2
+          multiplier * 2
         );
         break;
 
@@ -234,7 +271,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          0.5
+          multiplier * 0.5
         );
         addDamage(
           failDamages,
@@ -243,7 +280,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           crfaDamages,
@@ -252,7 +289,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          2
+          multiplier * 2
         );
         break;
 
@@ -264,7 +301,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 
@@ -276,7 +313,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 
@@ -288,7 +325,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 
@@ -300,7 +337,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 
@@ -312,7 +349,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           critDamages,
@@ -321,7 +358,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 
@@ -333,7 +370,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           succDamages,
@@ -342,7 +379,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           critDamages,
@@ -351,7 +388,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 
@@ -363,7 +400,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           failDamages,
@@ -372,7 +409,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 
@@ -384,7 +421,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           failDamages,
@@ -393,7 +430,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           succDamages,
@@ -402,7 +439,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
 
         break;
@@ -415,7 +452,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           failDamages,
@@ -424,7 +461,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           succDamages,
@@ -433,7 +470,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         addDamage(
           critDamages,
@@ -442,7 +479,7 @@ function calculateExpectedDamage(
           persistent,
           staticDamage,
           damageDist,
-          1
+          multiplier * 1
         );
         break;
 

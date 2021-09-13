@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selecttargetById, targetUpdated } from "./targetSlice";
-import {
-  damageTypes,
-  defaultValuesAC,
-  defaultValuesSaves,
-  defenses,
-  materials,
-} from "../types";
+import { ACTrends, damageTypes, materials, SaveTrends } from "../types";
 import {
   selectweaknessById,
   weaknessCreated,
@@ -18,36 +12,45 @@ import {
 function TargetInput({ id }) {
   const {
     name,
-    level,
-    matchRoutines,
-    levelDiff,
-    [defenses.AC]: AC,
-    defaultAC,
-    useDefaultAC,
-    [defenses.FORT]: Fort,
-    defaultFort,
-    useDefaultFort,
-    [defenses.REF]: Ref,
-    defaultRef,
-    useDefaultRef,
-    [defenses.WILL]: Will,
-    defaultWill,
-    useDefaultWill,
-    [defenses.PER]: Perception,
-    defaultPer,
-    useDefaultPer,
+
+    // level,
+    // matchRoutines,
+    // levelDiff,
+
+    // [defenses.AC]: AC,
+    // defaultAC,
+    // useDefaultAC,
+    // [defenses.FORT]: Fort,
+    // defaultFort,
+    // useDefaultFort,
+    // [defenses.REF]: Ref,
+    // defaultRef,
+    // useDefaultRef,
+    // [defenses.WILL]: Will,
+    // defaultWill,
+    // useDefaultWill,
+    // [defenses.PER]: Perception,
+    // defaultPer,
+    // useDefaultPer,
+
+    ACTrend,
+    FortTrend,
+    RefTrend,
+    WillTrend,
+    PerTrend,
+
     flatfooted,
     weaknesses,
   } = useSelector((state) => selecttargetById(state, 0));
   const dispatch = useDispatch();
 
   const ACOptions = [];
-  for (let dv in defaultValuesAC) {
-    ACOptions.push(<option key={dv}>{defaultValuesAC[dv]}</option>);
+  for (let dv in ACTrends) {
+    ACOptions.push(<option key={dv}>{ACTrends[dv]}</option>);
   }
   const SaveOptions = [];
-  for (let dv in defaultValuesSaves) {
-    SaveOptions.push(<option key={dv}>{defaultValuesSaves[dv]}</option>);
+  for (let dv in SaveTrends) {
+    SaveOptions.push(<option key={dv}>{SaveTrends[dv]}</option>);
   }
 
   // name, level, ac, fort, ref, will, perception, resistances/weaknesses
@@ -66,7 +69,7 @@ function TargetInput({ id }) {
         />
       </span>
 
-      <span className="input">
+      {/* <span className="input">
         <label htmlFor="Level">{" Level: "}</label>
         <input
           id="Level"
@@ -85,9 +88,9 @@ function TargetInput({ id }) {
             )
           }
         />
-      </span>
+      </span> */}
 
-      <span className="input">
+      {/* <span className="input">
         <label htmlFor="match">{" Match routine levels: "}</label>
         <input
           type="checkbox"
@@ -119,11 +122,11 @@ function TargetInput({ id }) {
             )
           }
         />
-      </span>
+      </span> */}
 
       <span className="input">
         <label htmlFor="AC">{" AC: "}</label>
-        <input
+        {/* <input
           type="checkbox"
           checked={useDefaultAC}
           onChange={(e) =>
@@ -131,18 +134,19 @@ function TargetInput({ id }) {
               targetUpdated({ id, changes: { useDefaultAC: e.target.checked } })
             )
           }
-        />
+        /> */}
         <select
-          value={defaultAC}
+          id="AC"
+          value={ACTrend}
           onChange={(e) =>
             dispatch(
-              targetUpdated({ id, changes: { defaultAC: e.target.value } })
+              targetUpdated({ id, changes: { ACTrend: e.target.value } })
             )
           }
         >
           {ACOptions}
         </select>
-        <input
+        {/* <input
           id="AC"
           type="number"
           value={AC}
@@ -157,12 +161,12 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
       </span>
 
       <span className="input">
         <label htmlFor="Fort">{" Fort: "}</label>
-        <input
+        {/* <input
           type="checkbox"
           checked={useDefaultFort}
           onChange={(e) =>
@@ -173,18 +177,19 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
         <select
-          value={defaultFort}
+          id="Fort"
+          value={FortTrend}
           onChange={(e) =>
             dispatch(
-              targetUpdated({ id, changes: { defaultFort: e.target.value } })
+              targetUpdated({ id, changes: { FortTrend: e.target.value } })
             )
           }
         >
           {SaveOptions}
         </select>
-        <input
+        {/* <input
           id="Fort"
           type="number"
           value={Fort}
@@ -196,12 +201,12 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
       </span>
 
       <span className="input">
         <label htmlFor="Ref">{" Ref: "}</label>
-        <input
+        {/* <input
           type="checkbox"
           checked={useDefaultRef}
           onChange={(e) =>
@@ -212,18 +217,19 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
         <select
-          value={defaultRef}
+          id="Red"
+          value={RefTrend}
           onChange={(e) =>
             dispatch(
-              targetUpdated({ id, changes: { defaultRef: e.target.value } })
+              targetUpdated({ id, changes: { RefTrend: e.target.value } })
             )
           }
         >
           {SaveOptions}
         </select>
-        <input
+        {/* <input
           id="Ref"
           type="number"
           value={Ref}
@@ -235,12 +241,12 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
       </span>
 
       <span className="input">
         <label htmlFor="Will">{" Will: "}</label>
-        <input
+        {/* <input
           type="checkbox"
           checked={useDefaultWill}
           onChange={(e) =>
@@ -251,18 +257,19 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
         <select
-          value={defaultWill}
+          id="Will"
+          value={WillTrend}
           onChange={(e) =>
             dispatch(
-              targetUpdated({ id, changes: { defaultWill: e.target.value } })
+              targetUpdated({ id, changes: { WillTrend: e.target.value } })
             )
           }
         >
           {SaveOptions}
         </select>
-        <input
+        {/* <input
           id="Will"
           type="number"
           value={Will}
@@ -274,12 +281,12 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
       </span>
 
       <span className="input">
         <label htmlFor="Perception">{" Perception: "}</label>
-        <input
+        {/* <input
           type="checkbox"
           checked={useDefaultPer}
           onChange={(e) =>
@@ -290,18 +297,19 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
         <select
-          value={defaultPer}
+          id="Perception"
+          value={PerTrend}
           onChange={(e) =>
             dispatch(
-              targetUpdated({ id, changes: { defaultPer: e.target.value } })
+              targetUpdated({ id, changes: { PerTrend: e.target.value } })
             )
           }
         >
           {SaveOptions}
         </select>
-        <input
+        {/* <input
           id="Perception"
           type="number"
           value={Perception}
@@ -313,7 +321,7 @@ function TargetInput({ id }) {
               })
             )
           }
-        />
+        /> */}
       </span>
 
       <span className="input">

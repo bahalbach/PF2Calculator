@@ -1,5 +1,11 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import { damageTypes, dCond, materials } from "../types";
+import {
+  damageTrends,
+  damageTypes,
+  dCond,
+  dieTrends,
+  materials,
+} from "../types";
 
 export const damageAdapter = createEntityAdapter();
 
@@ -12,6 +18,10 @@ export const damageAdapter = createEntityAdapter();
 //   type: damageTypes.PIERCE,
 //   material: materials.COLD_IRON,
 // });
+const empty = {};
+for (let i = 1; i <= 20; i++) {
+  empty[i] = 0;
+}
 
 let damageId = 1;
 export const damagesSlice = createSlice({
@@ -22,25 +32,20 @@ export const damagesSlice = createSlice({
     damageUpdated: damageAdapter.updateOne,
     damageCreated: {
       reducer: (state, action) => {
-        const {
-          id,
-          damageCondition,
-          diceNum,
-          diceSize,
-          staticDamage,
-          damageType,
-          material,
-          persistent,
-        } = action.payload;
+        const { id } = action.payload;
         damageAdapter.addOne(state, {
           id,
-          damageCondition,
-          diceNum,
-          diceSize,
-          staticDamage,
-          damageType,
-          material,
-          persistent,
+          damageCondition: dCond.STRIKE,
+          damageType: damageTypes.S,
+          material: materials.NONE,
+          persistent: false,
+          multiplier: 1,
+
+          dieTrend: dieTrends.NONE,
+          dieAdjustments: { ...empty },
+          diceSize: 6,
+          damageTrend: damageTrends.NONE,
+          damageAdjustments: { ...empty },
         });
       },
       prepare: ({ parentId }) => {
@@ -49,13 +54,6 @@ export const damagesSlice = createSlice({
           payload: {
             id,
             parentId,
-            damageCondition: dCond.STRIKE,
-            diceNum: 0,
-            diceSize: 8,
-            staticDamage: 0,
-            damageType: damageTypes.S,
-            material: materials.NONE,
-            persistent: false,
           },
         };
       },

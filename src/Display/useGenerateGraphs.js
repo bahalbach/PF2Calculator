@@ -5,13 +5,14 @@ import { selectdamageEntities } from "../Routine/damageSlice";
 import { selectRoutineEntities } from "../Routine/routineSlice";
 import { selecttargetEntities } from "../Target/targetSlice";
 import { selectweaknessEntities } from "../Target/weaknessSlice";
-import { defenses, graphTypes } from "../types";
+import { graphTypes } from "../types";
 import { selecteffectEntities } from "../Routine/effectSlice";
 
 import { ActivityPathEvaluator } from "../Calculation/EvaluateActivityPath";
 
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
+import { defaultACs, defaultSaves } from "../defaults";
 const Plot = createPlotlyComponent(Plotly);
 
 const useGenerateGraphs = (graphType, displayLevel) => {
@@ -31,36 +32,28 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   );
 
   const currentTarget = targets[0];
-  let title = "Expected Damage";
-  if (
-    graphType === graphTypes.DISTRIBUTION ||
-    graphType === graphTypes.PMDEFENSE ||
-    graphType === graphTypes.PMRES
-  ) {
-    title += " Vs ";
-    title += " AC: " + currentTarget[defenses.AC];
-    title += " Fort: " + currentTarget[defenses.FORT];
-    title += " Ref: " + currentTarget[defenses.REF];
-    title += " Will: " + currentTarget[defenses.WILL];
-    title += " Per: " + currentTarget[defenses.PER];
-  } else if (graphType === graphTypes.BYLEVEL) {
-    title += " Vs ";
-    title += " AC: " + defenses.AC;
-    title += " Fort: " + defenses.FORT;
-    title += " Ref: " + defenses.REF;
-    title += " Will: " + defenses.WILL;
-    title += " Per: " + defenses.PER;
-  }
+  let title = "";
+  let byLevelTile = "";
+
+  title += " Vs ";
+  title += " AC: " + defaultACs[currentTarget.ACTrend][displayLevel];
+  title += " Fort: " + defaultSaves[currentTarget.FortTrend][displayLevel];
+  title += " Ref: " + defaultSaves[currentTarget.RefTrend][displayLevel];
+  title += " Will: " + defaultSaves[currentTarget.WillTrend][displayLevel];
+  title += " Per: " + defaultSaves[currentTarget.PerTrend][displayLevel];
+
+  byLevelTile += " Vs ";
+  byLevelTile += " AC: " + currentTarget.ACTrend;
+  byLevelTile += " Fort: " + currentTarget.FortTrend;
+  byLevelTile += " Ref: " + currentTarget.RefTrend;
+  byLevelTile += " Will: " + currentTarget.WillTrend;
+  byLevelTile += " Per: " + currentTarget.PerTrend;
 
   let datasets;
   let perDatasets;
   let expectedDamages;
   let expectedPersistentDamages;
   switch (graphType) {
-    case graphTypes.BYLEVEL:
-      ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
-        evaluateByLevel(evaluator));
-      break;
     case graphTypes.DISTRIBUTION:
       ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
         evaluateDistribution(routines, evaluator, displayLevel));
@@ -76,6 +69,8 @@ const useGenerateGraphs = (graphType, displayLevel) => {
     default:
       break;
   }
+  let { datasets: byLeveldatasets, perDatasets: byLevelperDatasets } =
+    evaluateByLevel(routines, evaluator);
 
   // let maxDamage = 0;
   // let maxPDamage = 0;
@@ -142,30 +137,96 @@ const useGenerateGraphs = (graphType, displayLevel) => {
       style={{ width: "100%", height: "100%" }}
     />
   );
+  let byLevelDamageChart = (
+    <Plot
+      classname="plot"
+      data={byLeveldatasets}
+      layout={{
+        title: byLevelTile,
+        autosize: true,
+        xaxis: { title: "Level" },
+        yaxis: { title: "Expected Damage" },
+        legend: {
+          x: 1,
+          y: 1,
+          xanchor: "right",
+        },
+        margin: {
+          l: 40,
+          r: 40,
+        },
+      }}
+      useResizeHandler={true}
+      style={{ width: "100%", height: "100%" }}
+    />
+  );
+  let byLevelPerDamageChart = (
+    <Plot
+      classname="plot"
+      data={byLevelperDatasets}
+      layout={{
+        title: byLevelTile,
+        autosize: true,
+        xaxis: { title: "Level" },
+        yaxis: { title: "Expected Persistent Damage" },
+        legend: {
+          x: 1,
+          y: 1,
+          xanchor: "right",
+        },
+        margin: {
+          l: 40,
+          r: 40,
+        },
+      }}
+      useResizeHandler={true}
+      style={{ width: "100%", height: "100%" }}
+    />
+  );
   return {
     expectedDamages,
     expectedPersistentDamages,
     damageChart,
     persistentDamageChart,
+    byLevelDamageChart,
+    byLevelPerDamageChart,
   };
 };
 
 const evaluateByLevel = (routines, evaluator) => {
   let datasets = [];
   let perDatasets = [];
-  let expectedDamages = [];
-  let expectedPersistentDamages = [];
 
-  const labels = [];
-  for (let level = 1; level <= 20; level++) {
-    labels.push(level);
-    for (let id in routines) {
-      let routine = routines[id];
-      if (!routine.display) continue;
-      evaluator.evalRoutine();
+  for (let id in routines) {
+    let routine = routines[id];
+    if (!routine.display) continue;
+
+    const levelArray = [];
+    const expDbyLevel = [];
+    const expPDbyLevel = [];
+    for (let level = 1; level <= 20; level++) {
+      levelArray.push(level);
+      let { expD, expP } = evaluator.evalRoutine(routine, level, 0, 0);
+      expDbyLevel.push(expD);
+      expPDbyLevel.push(expP);
     }
+    datasets.push({
+      type: "scatter",
+      name: routine.name,
+      x: levelArray,
+      y: expDbyLevel,
+      yaxis: "y",
+    });
+    perDatasets.push({
+      type: "scatter",
+      name: routine.name,
+      x: levelArray,
+      y: expPDbyLevel,
+      yaxis: "y",
+    });
   }
-  return {};
+
+  return { datasets, perDatasets };
 };
 
 const evaluatePM = (routines, evaluator, displayLevel, defense = true) => {

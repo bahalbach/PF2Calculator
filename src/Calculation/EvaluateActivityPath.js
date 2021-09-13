@@ -116,7 +116,7 @@ class ActivityPathEvaluator {
     let currentDamages = activityPath.damages.map(
       (damageId) => this.damages[damageId]
     );
-    currentDamages.push(activityPath);
+    //currentDamages.push(activityPath);
     let currentEffects = activityPath.effects.map(
       (effectId) => this.effects[effectId]
     );
@@ -126,6 +126,7 @@ class ActivityPathEvaluator {
 
     // calculate the expected damage for this activity
     let [damageTrees, chances] = calculateExpectedDamage(
+      level,
       activityPath,
       currentDamages,
       currentTarget,
