@@ -200,10 +200,13 @@ class ActivityPathEvaluator {
             let [pathDist, pathPDist] = this.evalPath(
               ap,
               targetStates[i],
-              defenseBonus
+              level,
+              defenseBonus,
+              resistanceBonus
             );
             evaluations.set(targetStates[i], { pathDist, pathPDist });
           }
+
           damageTrees[i].normal.damageDist = convolve(
             damageTrees[i].normal.damageDist,
             evaluations.get(targetStates[i]).pathDist
@@ -228,6 +231,7 @@ class ActivityPathEvaluator {
       [damageTrees[2].persistent, chances[2]],
       [damageTrees[3].persistent, chances[3]]
     );
+    // console.log(damageDist);
 
     return [damageDist, PdamageDist];
   }

@@ -227,6 +227,7 @@ function calculateExpectedDamage(
     // if (!staticDamage) staticDamage = 0;
 
     let diceNum = dieTrendValues[damage.dieTrend][level];
+    // console.log(dieTrendValues[damage.dieTrend]);
     diceNum += damage.dieAdjustments[level];
     if (diceNum < 0) diceNum = 0;
     let staticDamage = damageTrendValues[damage.damageTrend][level];
@@ -240,6 +241,11 @@ function calculateExpectedDamage(
       damageDist = convolve(damageDist, diceArray);
     }
     staticDamage += diceNum;
+
+    // console.log(diceNum);
+    // console.log(damage);
+    // console.log(level);
+    // console.log(staticDamage);
 
     switch (damageCondition) {
       case dCond.STRIKE:
