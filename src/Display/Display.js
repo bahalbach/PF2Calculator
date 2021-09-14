@@ -43,7 +43,7 @@ const Display = () => {
       ) : (
         <select
           value={displayLevel}
-          onChange={(e) => setDisplayLevel(e.target.value)}
+          onChange={(e) => setDisplayLevel(parseInt(e.target.value))}
         >
           {displayLevelOptions}
         </select>

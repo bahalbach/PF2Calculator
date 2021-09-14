@@ -56,6 +56,13 @@ class ActivityPathEvaluator {
     this.weaknesses = weaknesses;
   }
 
+  canEvaluate(level) {
+    const levelDiff = this.targets[0].levelDiff;
+    // console.log(`level ${level}, levelDiff ${levelDiff}`);
+    if (level + levelDiff < -1 || level + levelDiff > 24) return false;
+    return true;
+  }
+
   evalRoutine(routine, level, ACBonus, resBonus) {
     const initialTargetState = {
       flatfooted: false,

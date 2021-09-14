@@ -612,7 +612,10 @@ const Damage = ({ parentId, id }) => {
         value={multiplier}
         onChange={(e) => {
           dispatch(
-            damageUpdated({ id, changes: { multiplier: e.target.value } })
+            damageUpdated({
+              id,
+              changes: { multiplier: parseFloat(e.target.value) },
+            })
           );
         }}
       >

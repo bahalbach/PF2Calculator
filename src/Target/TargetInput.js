@@ -15,7 +15,7 @@ function TargetInput({ id }) {
 
     // level,
     // matchRoutines,
-    // levelDiff,
+    levelDiff,
 
     // [defenses.AC]: AC,
     // defaultAC,
@@ -124,6 +124,24 @@ function TargetInput({ id }) {
         />
       </span> */}
 
+      <span className="input">
+        <label htmlFor="levelDiff">{" Level Difference: "}</label>
+        <input
+          type="number"
+          id="levelDiff"
+          value={levelDiff}
+          onChange={(e) =>
+            dispatch(
+              targetUpdated({
+                id,
+                changes: {
+                  levelDiff: parseInt(e.target.value),
+                },
+              })
+            )
+          }
+        />
+      </span>
       <span className="input">
         <label htmlFor="AC">{" AC: "}</label>
         {/* <input

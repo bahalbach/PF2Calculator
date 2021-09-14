@@ -134,25 +134,27 @@ function calculateExpectedDamage(
   let targetValue;
   switch (activity.targetType) {
     case defenses.AC:
-      targetValue = defaultACs[target.ACTrend][level];
+      targetValue = defaultACs[target.ACTrend];
       break;
     case defenses.FORT:
-      targetValue = defaultSaves[target.FortTrend][level];
+      targetValue = defaultSaves[target.FortTrend];
       break;
     case defenses.REF:
-      targetValue = defaultSaves[target.RefTrend][level];
+      targetValue = defaultSaves[target.RefTrend];
       break;
     case defenses.WILL:
-      targetValue = defaultSaves[target.WillTrend][level];
+      targetValue = defaultSaves[target.WillTrend];
       break;
     case defenses.PER:
-      targetValue = defaultSaves[target.PerTrend][level];
+      targetValue = defaultSaves[target.PerTrend];
       break;
 
     default:
-      targetValue = defaultACs[target.ACTrend][level];
+      targetValue = defaultACs[target.ACTrend];
       break;
   }
+  // console.log(`here ${level} ${target.levelDiff}, ${level + target.levelDiff}`);
+  targetValue = targetValue[level + target.levelDiff];
   switch (activity.type) {
     case activityTypes.STRIKE:
       bonus = bonusTrendValues[activity.bonusTrend][level];
@@ -168,7 +170,7 @@ function calculateExpectedDamage(
 
     case activityTypes.SAVE:
       bonus = targetValue + defenseBonus - targetState.frightened;
-      DC = bonusTrendValues[activity.bonusTrend][level];
+      DC = 10 + bonusTrendValues[activity.bonusTrend][level];
       DC += activity.bonusAdjustments[level];
       if (activity.targetType === defenses.AC) {
         bonus -= 10;
