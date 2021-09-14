@@ -33,7 +33,7 @@ const useGenerateGraphs = (graphType, displayLevel) => {
 
   const currentTarget = targets[0];
   let title = "";
-  let byLevelTile = "";
+  let byLevelTile = currentTarget.name;
 
   title += " Vs ";
   title += " AC: " + defaultACs[currentTarget.ACTrend][displayLevel];
@@ -42,12 +42,12 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   title += " Will: " + defaultSaves[currentTarget.WillTrend][displayLevel];
   title += " Per: " + defaultSaves[currentTarget.PerTrend][displayLevel];
 
-  byLevelTile += " Vs ";
-  byLevelTile += " AC: " + currentTarget.ACTrend;
-  byLevelTile += " Fort: " + currentTarget.FortTrend;
-  byLevelTile += " Ref: " + currentTarget.RefTrend;
-  byLevelTile += " Will: " + currentTarget.WillTrend;
-  byLevelTile += " Per: " + currentTarget.PerTrend;
+  // byLevelTile += " Vs ";
+  // byLevelTile += " AC: " + currentTarget.ACTrend;
+  // byLevelTile += " Fort: " + currentTarget.FortTrend;
+  // byLevelTile += " Ref: " + currentTarget.RefTrend;
+  // byLevelTile += " Will: " + currentTarget.WillTrend;
+  // byLevelTile += " Per: " + currentTarget.PerTrend;
 
   let datasets;
   let perDatasets;

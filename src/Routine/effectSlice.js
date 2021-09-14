@@ -17,6 +17,8 @@ export const effectsSlice = createSlice({
           id,
           effectCondition: conditions.ALWAYS,
           effectType: effectTypes.FLATFOOT,
+          startLevel: 1,
+          endLevel: 20,
         });
       },
       prepare: ({ parentId }) => {

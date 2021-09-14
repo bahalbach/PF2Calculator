@@ -148,7 +148,8 @@ class ActivityPathEvaluator {
     for (let i = 0; i < 4; i++) {
       // go though each effect and update targetStates
       currentEffects.forEach((effect) => {
-        let { effectCondition, effectType } = effect;
+        let { effectCondition, effectType, startLevel, endLevel } = effect;
+        if (level < startLevel || level > endLevel) return;
         if (validateCondition(effectCondition, i)) {
           switch (effectType) {
             case effectTypes.FLATFOOT:

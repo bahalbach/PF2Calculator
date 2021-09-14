@@ -37,6 +37,11 @@ import {
 } from "./effectSlice";
 import { routineUpdated, selectRoutineById } from "./routineSlice";
 
+const levelOptions = [];
+for (let level = 1; level <= 20; level++) {
+  levelOptions.push(<option key={level}>{level}</option>);
+}
+
 const conditionOptions = [];
 for (let c in conditions) {
   conditionOptions.push(<option key={c}>{conditions[c]}</option>);
@@ -213,57 +218,33 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
           >
             -
           </button>
-          {/* <span className="input">
-            <label htmlFor="override">{"Override: "}</label>
-            <input
-              id="override"
-              type="checkbox"
-              checked={override}
-              onChange={(e) =>
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { override: e.target.checked },
-                  })
-                )
-              }
-            />
-          </span> */}
-          {/* <span className="input">
-            <label htmlFor="Level">{" Level: "}</label>
-            <input
-              id="Level"
-              type="number"
-              value={level}
-              min={1}
-              max={20}
+          <span className="input">
+            <select
+              value={rollType}
               onChange={(e) => {
-                let level = parseInt(e.target.value) || 1;
-                if (level > 20) level = 20;
                 dispatch(
                   activityPathUpdated({
                     id,
-                    changes: {
-                      level,
-                    },
+                    changes: { rollType: e.target.value },
                   })
                 );
               }}
-            />
-          </span> */}
-          {/* <span className="input"> */}
-          {/* <input
-              type="checkbox"
-              checked={useDefault}
+            >
+              {rollOptions}
+            </select>
+          </span>
+          <span className="input">
+            <select
+              value={type}
               onChange={(e) =>
                 dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { useDefault: e.target.checked },
-                  })
+                  activityPathUpdated({ id, changes: { type: e.target.value } })
                 )
               }
-            /> */}
+            >
+              {activityTypeOptions}
+            </select>
+          </span>
           {" ("}
           <select
             value={bonusTrend}
@@ -279,45 +260,26 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
             {bonusTrendOptions}
           </select>
           {type === activityTypes.SAVE ? "+10" : ""}+{bonusLevelList})
-          {/* </span> */}
-          <span className="input">
-            <select
-              value={type}
-              onChange={(e) =>
-                dispatch(
-                  activityPathUpdated({ id, changes: { type: e.target.value } })
-                )
-              }
-            >
-              {activityTypeOptions}
-            </select>
-            {/* {type === activityTypes.STRIKE ? " +" : " DC: "}
-            <input
-              type="number"
-              value={value ? value : 0}
-              onChange={(e) =>
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { value: parseInt(e.target.value) },
-                  })
-                )
-              }
-            /> */}
-          </span>
-          <span className="input">
-            {" MAP: "}
-            <select
-              value={MAP}
-              onChange={(e) =>
-                dispatch(
-                  activityPathUpdated({ id, changes: { MAP: e.target.value } })
-                )
-              }
-            >
-              {MAPOptions}
-            </select>
-          </span>
+          {type === activityTypes.STRIKE ? (
+            <span className="input">
+              {" MAP: "}
+              <select
+                value={MAP}
+                onChange={(e) =>
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { MAP: e.target.value },
+                    })
+                  )
+                }
+              >
+                {MAPOptions}
+              </select>
+            </span>
+          ) : (
+            ""
+          )}
           <span className="input">
             {" VS: "}
             <select
@@ -334,101 +296,7 @@ const ActivityPath = ({ id, parentId, routineId, displayCondition = true }) => {
               {defenseOptions}
             </select>
           </span>
-          <span className="input">
-            <select
-              value={rollType}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { rollType: e.target.value },
-                  })
-                );
-              }}
-            >
-              {rollOptions}
-            </select>
-          </span>
         </div>
-        {/* <div className="flexbox">
-          Damage:
-          <select
-            value={damageCondition}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { damageCondition: e.target.value },
-                })
-              )
-            }
-          >
-            {damageConditionOptions}
-          </select>
-          <select
-            value={diceNum}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { diceNum: parseInt(e.target.value) },
-                })
-              )
-            }
-          >
-            {diceNumOptions}
-          </select>
-          d
-          <select
-            value={diceSize}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { diceSize: parseInt(e.target.value) },
-                })
-              )
-            }
-          >
-            {diceSizeOptions}
-          </select>
-          {" + "}
-          <input
-            type="number"
-            value={staticDamage ? staticDamage : 0}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { staticDamage: parseInt(e.target.value) },
-                })
-              )
-            }
-          />
-          <select
-            value={damageType}
-            onChange={(e) => {
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { damageType: e.target.value },
-                })
-              );
-            }}
-          >
-            {damageTypeOptions}
-          </select>
-          <select
-            value={material}
-            onChange={(e) => {
-              dispatch(
-                damageUpdated({ id, changes: { material: e.target.value } })
-              );
-            }}
-          >
-            {materialOptions}
-          </select>
-        </div> */}
         <div className="box">
           {"Damage: "}
           {damages.map((damageId) => (
@@ -530,50 +398,56 @@ const Damage = ({ parentId, id }) => {
       >
         {damageConditionOptions}
       </select>
-      {": ("}
-      <select
-        value={dieTrend}
-        onChange={(e) =>
-          dispatch(
-            damageUpdated({
-              id,
-              changes: { dieTrend: e.target.value },
-            })
-          )
-        }
-      >
-        {dieTrendOptions}
-      </select>
-      +{dieLevelList}
-      )d
-      <select
-        value={diceSize}
-        onChange={(e) =>
-          dispatch(
-            damageUpdated({
-              id,
-              changes: { diceSize: parseInt(e.target.value) },
-            })
-          )
-        }
-      >
-        {diceSizeOptions}
-      </select>
-      {" + ("}
-      <select
-        value={damageTrend}
-        onChange={(e) =>
-          dispatch(
-            damageUpdated({
-              id,
-              changes: { damageTrend: e.target.value },
-            })
-          )
-        }
-      >
-        {damageTrendOptions}
-      </select>
-      +{damageLevelList}){" ("}
+      {": "}
+      <div>
+        {"("}
+        <select
+          value={dieTrend}
+          onChange={(e) =>
+            dispatch(
+              damageUpdated({
+                id,
+                changes: { dieTrend: e.target.value },
+              })
+            )
+          }
+        >
+          {dieTrendOptions}
+        </select>
+        +{dieLevelList}
+        )d
+        <select
+          value={diceSize}
+          onChange={(e) =>
+            dispatch(
+              damageUpdated({
+                id,
+                changes: { diceSize: parseInt(e.target.value) },
+              })
+            )
+          }
+        >
+          {diceSizeOptions}
+        </select>
+      </div>
+      <div>
+        {" + ("}
+        <select
+          value={damageTrend}
+          onChange={(e) =>
+            dispatch(
+              damageUpdated({
+                id,
+                changes: { damageTrend: e.target.value },
+              })
+            )
+          }
+        >
+          {damageTrendOptions}
+        </select>
+        +{damageLevelList})
+      </div>
+      {" ("}
       <select
         value={damageType}
         onChange={(e) => {
@@ -626,8 +500,8 @@ const Damage = ({ parentId, id }) => {
 };
 
 const Effect = ({ parentId, id }) => {
-  const { effectCondition, effectType } = useSelector((state) =>
-    selecteffectById(state, id)
+  const { effectCondition, effectType, startLevel, endLevel } = useSelector(
+    (state) => selecteffectById(state, id)
   );
   const dispatch = useDispatch();
 
@@ -660,6 +534,34 @@ const Effect = ({ parentId, id }) => {
         }
       >
         {effectTypeOptions}
+      </select>
+      @
+      <select
+        value={startLevel}
+        onChange={(e) =>
+          dispatch(
+            effectUpdated({
+              id,
+              changes: { startLevel: parseInt(e.target.value) },
+            })
+          )
+        }
+      >
+        {levelOptions}
+      </select>
+      to
+      <select
+        value={endLevel}
+        onChange={(e) =>
+          dispatch(
+            effectUpdated({
+              id,
+              changes: { endLevel: parseInt(e.target.value) },
+            })
+          )
+        }
+      >
+        {levelOptions}
       </select>
     </div>
   );
