@@ -10,18 +10,19 @@ import weaknessReducer from "./Target/weaknessSlice";
 import {
   activityTypes,
   ACTrends,
-  bonusTrends,
   conditions,
   damageTrends,
   damageTypes,
   dCond,
-  defaultActivities,
   defenses,
   dieTrends,
+  itemTrends,
   MAPs,
   materials,
+  profTrends,
   rollTypes,
   SaveTrends,
+  statTrends,
 } from "./Model/types";
 
 export const store = configureStore({
@@ -47,29 +48,21 @@ store.dispatch(
   activityPathAdded({
     id: 0,
     condition: conditions.ALWAYS,
-    override: false,
-    level: 1,
-    useDefault: false,
-    defaultActivity: defaultActivities.FIGHTER,
-    type: activityTypes.STRIKE,
-    targetType: defenses.AC,
-    targetInfoId: 0,
-    value: 9,
 
     rollType: rollTypes.NORMAL,
-    damageCondition: dCond.STRIKE,
-    diceNum: 1,
-    diceSize: 8,
-    staticDamage: 4,
-    damageType: damageTypes.S,
-    material: materials.NONE,
+    type: activityTypes.STRIKE,
+    profTrend: profTrends.MARTIALWEAPON,
+    statTrend: statTrends.AS18a,
+    itemTrend: itemTrends.WEAPON,
+    bonusAdjustments: { ...empty },
+    MAP: MAPs.N1,
+
+    targetType: defenses.AC,
+    targetInfoId: 0,
+
     damages: [0],
     effects: [],
     apIds: [],
-
-    MAP: MAPs.N1,
-    bonusTrend: bonusTrends.MARTIALWEAPON,
-    bonusAdjustments: { ...empty },
   })
 );
 

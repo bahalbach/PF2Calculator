@@ -2,11 +2,13 @@ import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import {
   activityTypes,
   conditions,
-  bonusTrends,
+  profTrends,
   defenses,
   MAPs,
   nextMAPs,
   rollTypes,
+  statTrends,
+  itemTrends,
 } from "../Model/types";
 import { damageCreated, damageRemoved } from "./damageSlice";
 import { effectCreated, effectRemoved } from "./effectSlice";
@@ -21,7 +23,9 @@ let activityPathId = 1;
 const defaultParentActivity = {
   rollType: rollTypes.NORMAL,
   type: activityTypes.STRIKE,
-  bonusTrend: bonusTrends.MARTIALWEAPON,
+  profTrend: profTrends.MARTIALWEAPON,
+  statTrend: statTrends.AS18a,
+  itemTrend: itemTrends.WEAPON,
   bonusAdjustments: { ...empty },
   MAP: MAPs.N1,
   targetType: defenses.AC,
@@ -61,10 +65,17 @@ export const activityPathsSlice = createSlice({
 
           rollType: rollTypes.NORMAL,
           type: activityTypes.STRIKE,
-          bonusTrend: parentAP.bonusTrend,
+          profTrend: parentAP.profTrend,
+          statTrend: parentAP.statTrend,
+          itemTrend: parentAP.itemTrend,
           bonusAdjustments: { ...parentAP.bonusAdjustments },
           MAP: applyMAP ? nextMAPs[parentAP.MAP] : parentAP.MAP,
+
           targetType: defenses.AC,
+
+          damages: [],
+          effects: [],
+          apIds: [],
         });
 
         if (parentId !== undefined) state.entities[parentId].apIds.push(id);

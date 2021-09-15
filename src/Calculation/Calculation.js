@@ -1,15 +1,17 @@
 import {
-  bonusTrendValues,
   damageTrendValues,
   dieTrendValues,
   defaultACs,
   defaultSaves,
+  profTrendValues,
+  statTrendValues,
+  itemTrendValues,
+  MAPvalues,
 } from "../Model/defaults";
 import {
   activityTypes,
   dCond,
   defenses,
-  MAPvalues,
   materials,
   rollTypes,
 } from "../Model/types";
@@ -179,7 +181,9 @@ function calculateExpectedDamage(
   targetValue = targetValue[level + target.levelDiff];
   switch (activity.type) {
     case activityTypes.STRIKE:
-      bonus = bonusTrendValues[activity.bonusTrend][level];
+      bonus = profTrendValues[activity.profTrend][level];
+      bonus += statTrendValues[activity.statTrend][level];
+      bonus += itemTrendValues[activity.itemTrend][level];
       bonus += activity.bonusAdjustments[level];
       bonus += MAPvalues[activity.MAP];
       DC = targetValue + defenseBonus - targetState.frightened;
@@ -192,7 +196,9 @@ function calculateExpectedDamage(
 
     case activityTypes.SAVE:
       bonus = targetValue + defenseBonus - targetState.frightened;
-      DC = 10 + bonusTrendValues[activity.bonusTrend][level];
+      DC = 10 + profTrendValues[activity.profTrend][level];
+      DC += statTrendValues[activity.statTrend][level];
+      DC += itemTrendValues[activity.itemTrend][level];
       DC += activity.bonusAdjustments[level];
       if (activity.targetType === defenses.AC) {
         bonus -= 10;

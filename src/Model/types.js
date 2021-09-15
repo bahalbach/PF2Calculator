@@ -19,73 +19,53 @@ export const SaveTrends = {
   EXTREME: "Extreme",
 };
 
+export const conditions = {
+  ALWAYS: "Always",
+  CRIT: "On Crit",
+  SUCC: "On Success",
+  FAIL: "On Failure",
+  CRIF: "On Crit Fail",
+  AT_LEAST_SUCC: "Success or better",
+  AT_LEAST_FAIL: "Failure or better",
+  FAIL_WORSE: "Failure or worse",
+  SUCC_WORSE: "Success or worse",
+};
+
+export const rollTypes = {
+  NORMAL: "Normal",
+  ADVANTAGE: "Advantage",
+  DISADVANTAGE: "Disadvantage",
+};
+
 export const activityTypes = {
   STRIKE: "Strike",
   SAVE: "Save",
 };
 
-export const bonusTrends = {
-  FIGHTERWEAPON: "Fighter Weapon",
-  MARTIALWEAPON: "Martial Weapon",
-  CASTERWEAPON: "Caster Weapon",
-  DC171519: "Caster Spell",
+export const profTrends = {
+  TRAINED: "Trained Proficiency",
+  FIGHTERWEAPON: "Fighter Weapon (1, 5, 13)",
+  MARTIALWEAPON: "Martial Weapon (5, 13)",
+  CASTERWEAPON: "Caster Weapon (11)",
+  ALCHWEAPON: "Alchemist Weapon (7)",
+  CASTERSPELL: "Caster Spell (7, 15, 19)",
+  MAXSKILL: "Max skill (3, 7, 15)",
 };
 
-export const damageTrends = {
+export const statTrends = {
+  AS10: "10",
+  AS18a: "18 to 24 apex(17)",
+  AS16a: "16 to 22 apex(17)",
+  AS16pp: "16 to 20",
+  AS16p: "16 to 18",
+  AS14pp: "14 to 20",
+  AS14p: "14 to 18",
+};
+
+export const itemTrends = {
   NONE: "None",
-  FIGHTERMELEE: "Fighter Melee",
-  FIGHTERRANGED: "Fighter Ranged",
-  MARTIALMELEE: "Martial Melee",
-  MARTIALRANGED: "Martial Ranged",
-  CASTERCANTRIP: "Caster Cantrip",
-  CASTERMELEE: "Caster Melee",
-  CASTERRANGED: "Caster Ranged",
-};
-
-export const dieTrends = {
-  NONE: "None",
-  WEAPON: "Weapon",
-  SPELLLEVEL1: "1 x Spell Level",
-  SPELLLEVEL2: "2 x Spell Level",
-};
-
-export const defaultActivities = {
-  FIGHTER: "Fighter Melee",
-  MARTIAL: "Martial Melee",
-  CASTER: "Caster(16str) Melee",
-  ALCH: "Alchemist(16str) Melee",
-  FIGHTERR: "Fighter Ranged",
-  MARTIALR: "Martial Ranged",
-  CASTERR: "Caster(16dex) Ranged",
-  ALCHR: "Alchemist(16dex) Ranged",
-  CASTERCA: "Caster Cantrip Attack",
-  CASTERCS: "Caster Cantrip Save",
-  CASTERBR: "Caster 2dX Basic Save",
-  CASTERSA: "Caster Spell Attack",
-  CASTERS: "Caster Save",
-};
-
-export const defaultValuesAC = {
-  LOW: "Low",
-  MODERATE: "Moderate",
-  HIGH: "High",
-  EXTREME: "Extreme",
-};
-
-export const defaultValuesSaves = {
-  TERRIBLE: "Terrible",
-  LOW: "Low",
-  MODERATE: "Moderate",
-  HIGH: "High",
-  EXTREME: "Extreme",
-};
-
-export const defenses = {
-  AC: "AC",
-  FORT: "Fort",
-  REF: "Ref",
-  WILL: "Will",
-  PER: "Perception",
+  WEAPON: "Weapon (2, 10, 16)",
+  SKILL: "Skill (3, 9, 17)",
 };
 
 export const MAPs = {
@@ -124,28 +104,44 @@ export const nextMAPs = {
   "-2 (2x-1)": "-2 (2x-1)",
 };
 
-export const MAPvalues = {
-  "0 (0x-5)": 0,
-  "-5 (1x-5)": -5,
-  "-10 (2x-5)": -10,
-  "0 (0x-4)": 0,
-  "-4 (1x-4)": -4,
-  "-8 (2x-4)": -8,
-  "0 (0x-3)": 0,
-  "-3 (1x-3)": -3,
-  "-6 (2x-3)": -6,
-  "0 (0x-2)": 0,
-  "-2 (1x-2)": -2,
-  "-4 (2x-2)": -4,
-  "0 (0x-1)": 0,
-  "-1 (1x-1)": -1,
-  "-2 (2x-1)": -2,
+export const defenses = {
+  AC: "AC",
+  FORT: "Fort",
+  REF: "Ref",
+  WILL: "Will",
+  PER: "Perception",
 };
 
-export const rollTypes = {
-  NORMAL: "Normal",
-  ADVANTAGE: "Advantage",
-  DISADVANTAGE: "Disadvantage",
+export const dCond = {
+  STRIKE: "x1 hit, x2 crit",
+  BASIC: "Basic save",
+  ALWAYS: "Always",
+  CRIT: "On Crit",
+  SUCC: "On Success",
+  FAIL: "On Failure",
+  CRIF: "On Crit Fail",
+  AT_LEAST_SUCC: "Success or better",
+  AT_LEAST_FAIL: "Failure or better",
+  FAIL_WORSE: "Failure or worse",
+  SUCC_WORSE: "Success or worse",
+};
+
+export const damageTrends = {
+  NONE: "None",
+  FIGHTERMELEE: "Fighter Melee",
+  FIGHTERRANGED: "Fighter Ranged",
+  MARTIALMELEE: "Martial Melee",
+  MARTIALRANGED: "Martial Ranged",
+  CASTERCANTRIP: "Caster Cantrip",
+  CASTERMELEE: "Caster Melee",
+  CASTERRANGED: "Caster Ranged",
+};
+
+export const dieTrends = {
+  NONE: "None",
+  WEAPON: "Weapon",
+  SPELLLEVEL1: "1 x Spell Level",
+  SPELLLEVEL2: "2 x Spell Level",
 };
 
 export const damageTypes = {
@@ -169,32 +165,6 @@ export const effectTypes = {
   FRIGHTENED2: "Frightened 2",
   FRIGHTENED3: "Frightened 3",
   FRIGHTENED4: "Frightened 4",
-};
-
-export const conditions = {
-  ALWAYS: "Always",
-  CRIT: "On Crit",
-  SUCC: "On Success",
-  FAIL: "On Failure",
-  CRIF: "On Crit Fail",
-  AT_LEAST_SUCC: "Success or better",
-  AT_LEAST_FAIL: "Failure or better",
-  FAIL_WORSE: "Failure or worse",
-  SUCC_WORSE: "Success or worse",
-};
-
-export const dCond = {
-  STRIKE: "x1 hit, x2 crit",
-  BASIC: "Basic save",
-  ALWAYS: "Always",
-  CRIT: "On Crit",
-  SUCC: "On Success",
-  FAIL: "On Failure",
-  CRIF: "On Crit Fail",
-  AT_LEAST_SUCC: "Success or better",
-  AT_LEAST_FAIL: "Failure or better",
-  FAIL_WORSE: "Failure or worse",
-  SUCC_WORSE: "Success or worse",
 };
 
 export const diceNums = {

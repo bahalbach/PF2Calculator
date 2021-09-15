@@ -4,11 +4,13 @@ import { LevelList } from "./LevelList";
 import { damageCreated } from "./damageSlice";
 import {
   activityTypeOptions,
-  bonusTrendOptions,
+  profTrendOptions,
   conditionOptions,
   defenseOptions,
   MAPOptions,
   rollOptions,
+  statTrendOptions,
+  itemBTrendOptions,
 } from "../Model/options";
 import {
   activityPathCreated,
@@ -29,14 +31,16 @@ export const ActivityPath = ({
 }) => {
   const {
     condition,
+
+    rollType,
     type,
+    profTrend,
+    statTrend,
+    itemTrend,
+    bonusAdjustments,
+    MAP,
     targetType,
 
-    bonusTrend,
-    bonusAdjustments,
-
-    MAP,
-    rollType,
     damages,
     effects,
     apIds,
@@ -113,17 +117,43 @@ export const ActivityPath = ({
           </span>
           {" ("}
           <select
-            value={bonusTrend}
+            value={profTrend}
             onChange={(e) =>
               dispatch(
                 activityPathUpdated({
                   id,
-                  changes: { bonusTrend: e.target.value },
+                  changes: { profTrend: e.target.value },
                 })
               )
             }
           >
-            {bonusTrendOptions}
+            {profTrendOptions}
+          </select>
+          <select
+            value={statTrend}
+            onChange={(e) =>
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { statTrend: e.target.value },
+                })
+              )
+            }
+          >
+            {statTrendOptions}
+          </select>
+          <select
+            value={itemTrend}
+            onChange={(e) =>
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { itemTrend: e.target.value },
+                })
+              )
+            }
+          >
+            {itemBTrendOptions}
           </select>
           {type === activityTypes.SAVE ? "+10" : ""}+{bonusLevelList})
           {type === activityTypes.STRIKE ? (

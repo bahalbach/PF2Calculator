@@ -1,15 +1,25 @@
 import {
   ACTrends,
-  bonusTrends,
+  profTrends,
   damageTrends,
   dieTrends,
   SaveTrends,
+  statTrends,
+  itemTrends,
 } from "./types";
 
 const zero = {};
+const level = {};
+const trained = {};
+const maxSkill = {};
 
 const maxScore = {};
+const score16pp = {};
+const score16p = {};
 const score16 = {};
+const score14p = {};
+const score14 = {};
+
 const martialProf = {};
 const alchProf = {};
 const casterProf = {};
@@ -17,6 +27,8 @@ const casterProf = {};
 const spellProf = {};
 
 const weaponItem = {};
+const skillItem = {};
+
 const weaponDice = {};
 const spellDice = {};
 const spellDice2 = {};
@@ -45,9 +57,16 @@ const casterRanged = {};
 
 for (let i = 1; i <= 20; i++) {
   zero[i] = 0;
+  level[i] = i;
+  trained[i] = i + 2;
+  maxSkill[i] = i + 2;
 
   maxScore[i] = 4;
+  score16pp[i] = 3;
+  score16p[i] = 3;
   score16[i] = 3;
+  score14p[i] = 2;
+  score14[i] = 2;
 
   martialProf[i] = 2;
   alchProf[i] = 2;
@@ -56,6 +75,7 @@ for (let i = 1; i <= 20; i++) {
   spellProf[i] = 2;
 
   weaponItem[i] = 0;
+  skillItem[i] = 0;
   weaponDice[i] = 1;
 
   martialSpec[i] = 0;
@@ -64,21 +84,35 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 2) {
     weaponItem[i] = 1;
   }
+  if (i >= 3) {
+    maxSkill[i] = i + 4;
+    skillItem[i] = 1;
+  }
   if (i >= 4) {
     weaponDice[i] = 2;
   }
   if (i >= 5) {
     martialProf[i] = 4;
+    score16pp[i] = 4;
+    score16p[i] = 4;
     score16[i] = 4;
+    score14p[i] = 3;
+    score14[i] = 3;
   }
   if (i >= 7) {
     alchProf[i] = 4;
     martialSpec[i] = 1;
     spellProf[i] = 4;
+    maxSkill[i] = i + 6;
+  }
+  if (i >= 9) {
+    skillItem[i] = 2;
   }
   if (i >= 10) {
     weaponItem[i] = 2;
     maxScore[i] = 5;
+    score14p[i] = 4;
+    score14[i] = 4;
   }
   if (i >= 11) {
     casterProf[i] = 4;
@@ -92,14 +126,18 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 15) {
     martialSpec[i] = 2;
-    score16[i] = 5;
+    score16pp[i] = 5;
+    score16p[i] = 5;
     spellProf[i] = 6;
+    maxSkill[i] = i + 8;
   }
   if (i >= 16) {
     weaponItem[i] = 3;
   }
   if (i >= 17) {
+    score16pp[i] = 6;
     maxScore[i] = 6;
+    skillItem[i] = 3;
   }
   if (i >= 19) {
     weaponDice[i] = 4;
@@ -109,11 +147,11 @@ for (let i = 1; i <= 20; i++) {
     maxScore[i] = 7;
   }
 
-  fighterAB[i] = i + martialProf[i] + maxScore[i] + weaponItem[i] + 2;
-  martialAB[i] = i + martialProf[i] + maxScore[i] + weaponItem[i];
-  casterAB[i] = i + casterProf[i] + score16[i] + weaponItem[i];
-  alchAB[i] = i + alchProf[i] + score16[i] + weaponItem[i];
-  casterSpellAttack[i] = i + spellProf[i] + maxScore[i];
+  fighterAB[i] = i + martialProf[i] + 2;
+  martialAB[i] = i + martialProf[i];
+  casterAB[i] = i + casterProf[i];
+  alchAB[i] = i + alchProf[i];
+  casterSpellAttack[i] = i + spellProf[i];
   casterSaveDC[i] = 10 + i + spellProf[i] + maxScore[i];
 
   fighterStatic[i] = maxScore[i] + (martialSpec[i] * (martialProf[i] + 2)) / 2;
@@ -123,11 +161,46 @@ for (let i = 1; i <= 20; i++) {
   casterStatic[i] = score16[i] + (casterSpec[i] * casterProf[i]) / 2;
   casterRanged[i] = (casterSpec[i] * casterProf[i]) / 2;
 }
-export const bonusTrendValues = {
-  [bonusTrends.FIGHTERWEAPON]: fighterAB,
-  [bonusTrends.MARTIALWEAPON]: martialAB,
-  [bonusTrends.CASTERWEAPON]: casterAB,
-  [bonusTrends.DC171519]: casterSpellAttack,
+export const profTrendValues = {
+  [profTrends.TRAINED]: trained,
+  [profTrends.FIGHTERWEAPON]: fighterAB,
+  [profTrends.MARTIALWEAPON]: martialAB,
+  [profTrends.CASTERWEAPON]: casterAB,
+  [profTrends.ALCHWEAPON]: alchAB,
+  [profTrends.CASTERSPELL]: casterSpellAttack,
+  [profTrends.MAXSKILL]: maxSkill,
+};
+export const statTrendValues = {
+  [statTrends.AS10]: zero,
+  [statTrends.AS18a]: maxScore,
+  [statTrends.AS16a]: score16pp,
+  [statTrends.AS16pp]: score16p,
+  [statTrends.AS16p]: score16,
+  [statTrends.AS14pp]: score14p,
+  [statTrends.AS14p]: score14,
+};
+export const itemTrendValues = {
+  [itemTrends.NONE]: zero,
+  [itemTrends.WEAPON]: weaponItem,
+  [itemTrends.SKILL]: skillItem,
+};
+
+export const MAPvalues = {
+  "0 (0x-5)": 0,
+  "-5 (1x-5)": -5,
+  "-10 (2x-5)": -10,
+  "0 (0x-4)": 0,
+  "-4 (1x-4)": -4,
+  "-8 (2x-4)": -8,
+  "0 (0x-3)": 0,
+  "-3 (1x-3)": -3,
+  "-6 (2x-3)": -6,
+  "0 (0x-2)": 0,
+  "-2 (1x-2)": -2,
+  "-4 (2x-2)": -4,
+  "0 (0x-1)": 0,
+  "-1 (1x-1)": -1,
+  "-2 (2x-1)": -2,
 };
 
 export const damageTrendValues = {
