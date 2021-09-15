@@ -139,7 +139,7 @@ export const damageTrends = {
 
 export const dieTrends = {
   NONE: "None",
-  WEAPON: "Weapon",
+  WEAPON: "Weapon (1, 4, 12, 19)",
   SPELLLEVEL1: "1 x Spell Level",
   SPELLLEVEL2: "2 x Spell Level",
 };
