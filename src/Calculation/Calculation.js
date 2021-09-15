@@ -4,7 +4,7 @@ import {
   defaultACs,
   defaultSaves,
   dieTrendValues,
-} from "../defaults";
+} from "../Model/defaults";
 import {
   activityTypes,
   dCond,
@@ -12,7 +12,7 @@ import {
   MAPvalues,
   materials,
   rollTypes,
-} from "../types";
+} from "../Model/types";
 import { applyMin, convolve, multiplyDist } from "./Distribution";
 
 function getCritSuccessPercent(bonus, DC, keen = false) {
@@ -91,6 +91,7 @@ function getCritFailurePercent(bonus, DC, keen = false) {
   return chance;
 }
 
+// combine the probability distributions of the given damages into context
 const addDamage = (
   context,
   type,
@@ -119,6 +120,20 @@ const addDamage = (
   }
 };
 
+/**
+ * Calculate the chance of each result and the appropriate damage
+ * distributions for a given activity at level vs target with targetState
+ * adds defenseBonus or resistanceBonus to target if given
+ * @param {Number} level
+ * @param {*} activity
+ * @param {*} damages
+ * @param {*} target
+ * @param {*} targetState
+ * @param {*} weaknesses
+ * @param {*} defenseBonus
+ * @param {*} resistanceBonus
+ * @returns [damageTrees, chances];
+ */
 function calculateExpectedDamage(
   level,
   activity,
@@ -129,6 +144,13 @@ function calculateExpectedDamage(
   defenseBonus,
   resistanceBonus
 ) {
+  /**
+   * Get the check bonus and DC
+   * Calculate the chance of each outcome
+   * Go through each damage and evaluate it, put damage types together
+   * Go through each damage type and apply weakness/resistance
+   * Return damage trees and chances
+   */
   let bonus;
   let DC;
   let targetValue;
@@ -153,7 +175,7 @@ function calculateExpectedDamage(
       targetValue = defaultACs[target.ACTrend];
       break;
   }
-  // console.log(`here ${level} ${target.levelDiff}, ${level + target.levelDiff}`);
+
   targetValue = targetValue[level + target.levelDiff];
   switch (activity.type) {
     case activityTypes.STRIKE:
@@ -214,22 +236,18 @@ function calculateExpectedDamage(
   const crfaDamages = { normal: {}, persistent: {} };
   const damageTrees = [critDamages, succDamages, failDamages, crfaDamages];
 
-  // go through each damage and evaluate it, put damage types together
+  // Start going through each damage and evaluate it, put damage types together
   damages.forEach((damage) => {
     let {
       damageCondition,
-      // diceNum,
       diceSize,
-      // staticDamage,
       damageType,
       material,
       persistent,
       multiplier,
     } = damage;
-    // if (!staticDamage) staticDamage = 0;
 
     let diceNum = dieTrendValues[damage.dieTrend][level];
-    // console.log(dieTrendValues[damage.dieTrend]);
     diceNum += damage.dieAdjustments[level];
     if (diceNum < 0) diceNum = 0;
     let staticDamage = damageTrendValues[damage.damageTrend][level];
@@ -244,11 +262,7 @@ function calculateExpectedDamage(
     }
     staticDamage += diceNum;
 
-    // console.log(diceNum);
-    // console.log(damage);
-    // console.log(level);
-    // console.log(staticDamage);
-
+    // Add damage to damage trees appropriately
     switch (damageCondition) {
       case dCond.STRIKE:
         addDamage(
@@ -497,9 +511,9 @@ function calculateExpectedDamage(
         );
     }
   });
+  // end going through each damage and evaluate it, put damage types together
 
-  // for each damage group
-  // console.log(damageTrees);
+  // Start going through each damage type and apply weakness/resistance
   for (let damageTree of damageTrees) {
     for (let damageQuality of ["normal", "persistent"]) {
       let totalStaticDamage = 0;
@@ -531,10 +545,6 @@ function calculateExpectedDamage(
         // make min damage 0 after resistances
         [staticDamage, damageDist] = applyMin(staticDamage, damageDist, 0);
 
-        // console.log([staticDamage, damageDist]);
-
-        // damageTree[damageQuality][type].staticDamage = staticDamage;
-        // damageTree[damageQuality][type].damageDist = damageDist;
         totalStaticDamage += staticDamage;
         totalDamageDist = convolve(totalDamageDist, damageDist);
       }
@@ -542,6 +552,7 @@ function calculateExpectedDamage(
       damageTree[damageQuality].damageDist = totalDamageDist;
     }
   }
+  // End going through each damage type and apply weakness/resistance
 
   return [damageTrees, chances];
 }

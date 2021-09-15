@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import routineReducer, { routineAdded } from "./Routine/routineSlice";
+import routineReducer, { routineAdded } from "./Routines/routineSlice";
 import activityPathReducer, {
   activityPathAdded,
-} from "./Routine/activityPathSlice";
-import damageReducer, { damageAdded } from "./Routine/damageSlice";
-import effectReducer from "./Routine/effectSlice";
+} from "./SelectedRoutine/activityPathSlice";
+import damageReducer, { damageAdded } from "./SelectedRoutine/damageSlice";
+import effectReducer from "./SelectedRoutine/effectSlice";
 import targetReducer, { targetAdded } from "./Target/targetSlice";
 import weaknessReducer from "./Target/weaknessSlice";
 import {
@@ -22,7 +22,7 @@ import {
   materials,
   rollTypes,
   SaveTrends,
-} from "./types";
+} from "./Model/types";
 
 export const store = configureStore({
   reducer: {

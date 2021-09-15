@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import { conditions, effectTypes } from "../types";
+import { conditions, effectTypes } from "../Model/types";
 
 export const effectAdapter = createEntityAdapter();
 

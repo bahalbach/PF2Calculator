@@ -7,7 +7,7 @@ import {
   selectAllRoutines,
   selectSelectedRoutine,
   setRoutine,
-} from "./Routine/routineSlice";
+} from "./routineSlice";
 
 const Routines = () => {
   const routines = useSelector(selectAllRoutines);

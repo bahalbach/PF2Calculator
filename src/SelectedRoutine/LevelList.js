@@ -1,4 +1,5 @@
 import React from "react";
+import { levelOptions } from "../Model/options";
 
 export const generateEntries = (adjustments) => {
   let currentValue = adjustments[1];
@@ -45,11 +46,6 @@ export const adjustmentsFromNewEntry = (entries) => {
   entries.push([lastValue[0] + 1, lastValue[1] + 1]);
   return generateAdjustments(entries);
 };
-
-const levelOptions = [];
-for (let level = 1; level <= 20; level++) {
-  levelOptions.push(<option key={level}>{level}</option>);
-}
 
 export const LevelList = (name, dispatch, action, id, adjustments) => {
   const dieEntries = generateEntries(adjustments);

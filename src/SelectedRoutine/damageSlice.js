@@ -5,7 +5,7 @@ import {
   dCond,
   dieTrends,
   materials,
-} from "../types";
+} from "../Model/types";
 
 export const damageAdapter = createEntityAdapter();
 

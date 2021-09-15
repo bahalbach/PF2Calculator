@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selecttargetById, targetUpdated } from "./targetSlice";
-import { ACTrends, damageTypes, materials, SaveTrends } from "../types";
+import { ACTrends, damageTypes, materials, SaveTrends } from "../Model/types";
 import {
   selectweaknessById,
   weaknessCreated,

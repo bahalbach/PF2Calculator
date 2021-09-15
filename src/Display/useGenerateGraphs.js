@@ -1,18 +1,18 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectactivityPathEntities } from "../Routine/activityPathSlice";
-import { selectdamageEntities } from "../Routine/damageSlice";
-import { selectRoutineEntities } from "../Routine/routineSlice";
+import { selectactivityPathEntities } from "../SelectedRoutine/activityPathSlice";
+import { selectdamageEntities } from "../SelectedRoutine/damageSlice";
+import { selectRoutineEntities } from "../Routines/routineSlice";
 import { selecttargetEntities } from "../Target/targetSlice";
 import { selectweaknessEntities } from "../Target/weaknessSlice";
-import { graphTypes } from "../types";
-import { selecteffectEntities } from "../Routine/effectSlice";
+import { graphTypes } from "../Model/types";
+import { selecteffectEntities } from "../SelectedRoutine/effectSlice";
 
 import { ActivityPathEvaluator } from "../Calculation/EvaluateActivityPath";
 
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
-import { defaultACs, defaultSaves } from "../defaults";
+import { defaultACs, defaultSaves } from "../Model/defaults";
 const Plot = createPlotlyComponent(Plotly);
 
 const useGenerateGraphs = (graphType, displayLevel) => {
@@ -71,12 +71,6 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   }
   let { datasets: byLeveldatasets, perDatasets: byLevelperDatasets } =
     evaluateByLevel(routines, evaluator);
-
-  // let maxDamage = 0;
-  // let maxPDamage = 0;
-
-  // go through routines, evaluate them, and put data together for use in charts
-  // Done evaluating routines and putting data together
 
   let xtitle;
   let ytitle;

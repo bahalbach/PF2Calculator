@@ -1,64 +1,10 @@
 import {
-  activityTypes,
   ACTrends,
   bonusTrends,
   damageTrends,
-  dCond,
-  defaultActivities,
-  defenses,
   dieTrends,
   SaveTrends,
 } from "./types";
-
-export const defaultTypes = {
-  [defaultActivities.FIGHTER]: activityTypes.STRIKE,
-  [defaultActivities.MARTIAL]: activityTypes.STRIKE,
-  [defaultActivities.CASTER]: activityTypes.STRIKE,
-  [defaultActivities.ALCH]: activityTypes.STRIKE,
-  [defaultActivities.FIGHTERR]: activityTypes.STRIKE,
-  [defaultActivities.MARTIALR]: activityTypes.STRIKE,
-  [defaultActivities.CASTERR]: activityTypes.STRIKE,
-  [defaultActivities.ALCHR]: activityTypes.STRIKE,
-  [defaultActivities.CASTERCA]: activityTypes.STRIKE,
-  [defaultActivities.CASTERCS]: activityTypes.SAVE,
-  [defaultActivities.CASTERSA]: activityTypes.STRIKE,
-  [defaultActivities.CASTERS]: activityTypes.SAVE,
-  [defaultActivities.CASTERBR]: activityTypes.SAVE,
-};
-
-export const defaultTargetTypes = {
-  [defaultActivities.FIGHTER]: defenses.AC,
-  [defaultActivities.MARTIAL]: defenses.AC,
-  [defaultActivities.CASTER]: defenses.AC,
-  [defaultActivities.ALCH]: defenses.AC,
-  [defaultActivities.FIGHTERR]: defenses.AC,
-  [defaultActivities.MARTIALR]: defenses.AC,
-  [defaultActivities.CASTERR]: defenses.AC,
-  [defaultActivities.ALCHR]: defenses.AC,
-  [defaultActivities.CASTERCA]: defenses.AC,
-  [defaultActivities.CASTERCS]: defenses.REF,
-  [defaultActivities.CASTERSA]: defenses.AC,
-  [defaultActivities.CASTERS]: defenses.REF,
-  [defaultActivities.CASTERBR]: defenses.REF,
-};
-
-export const defaultDamageConditions = {
-  [defaultActivities.FIGHTER]: dCond.STRIKE,
-  [defaultActivities.MARTIAL]: dCond.STRIKE,
-  [defaultActivities.CASTER]: dCond.STRIKE,
-  [defaultActivities.ALCH]: dCond.STRIKE,
-  [defaultActivities.FIGHTERR]: dCond.STRIKE,
-  [defaultActivities.MARTIALR]: dCond.STRIKE,
-  [defaultActivities.CASTERR]: dCond.STRIKE,
-  [defaultActivities.ALCHR]: dCond.STRIKE,
-  [defaultActivities.CASTERC]: dCond.STRIKE,
-  [defaultActivities.CASTERS]: dCond.BASIC,
-  [defaultActivities.CASTERCA]: dCond.STRIKE,
-  [defaultActivities.CASTERCS]: dCond.BASIC,
-  [defaultActivities.CASTERSA]: dCond.STRIKE,
-  [defaultActivities.CASTERS]: dCond.BASIC,
-  [defaultActivities.CASTERBR]: dCond.BASIC,
-};
 
 const zero = {};
 
@@ -200,54 +146,6 @@ export const dieTrendValues = {
   [dieTrends.WEAPON]: weaponDice,
   [dieTrends.SPELLLEVEL1]: spellDice,
   [dieTrends.SPELLLEVEL2]: spellDice2,
-};
-
-export const defaultValues = {
-  [defaultActivities.FIGHTER]: fighterAB,
-  [defaultActivities.MARTIAL]: martialAB,
-  [defaultActivities.CASTER]: casterAB,
-  [defaultActivities.ALCH]: alchAB,
-  [defaultActivities.FIGHTERR]: fighterAB,
-  [defaultActivities.MARTIALR]: martialAB,
-  [defaultActivities.CASTERR]: casterAB,
-  [defaultActivities.ALCHR]: alchAB,
-  [defaultActivities.CASTERCA]: casterSpellAttack,
-  [defaultActivities.CASTERCS]: casterSaveDC,
-  [defaultActivities.CASTERSA]: casterSpellAttack,
-  [defaultActivities.CASTERS]: casterSaveDC,
-  [defaultActivities.CASTERBR]: casterSaveDC,
-};
-
-export const defaultDiceNum = {
-  [defaultActivities.FIGHTER]: weaponDice,
-  [defaultActivities.MARTIAL]: weaponDice,
-  [defaultActivities.CASTER]: weaponDice,
-  [defaultActivities.ALCH]: weaponDice,
-  [defaultActivities.FIGHTERR]: weaponDice,
-  [defaultActivities.MARTIALR]: weaponDice,
-  [defaultActivities.CASTERR]: weaponDice,
-  [defaultActivities.ALCHR]: weaponDice,
-  [defaultActivities.CASTERCA]: spellDice,
-  [defaultActivities.CASTERCS]: spellDice,
-  [defaultActivities.CASTERSA]: zero,
-  [defaultActivities.CASTERS]: zero,
-  [defaultActivities.CASTERBR]: spellDice2,
-};
-
-export const defaultStatic = {
-  [defaultActivities.FIGHTER]: fighterStatic,
-  [defaultActivities.MARTIAL]: martialStatic,
-  [defaultActivities.CASTER]: casterStatic,
-  [defaultActivities.ALCH]: casterStatic,
-  [defaultActivities.FIGHTERR]: fighterRanged,
-  [defaultActivities.MARTIALR]: martialRanged,
-  [defaultActivities.CASTERR]: casterRanged,
-  [defaultActivities.ALCHR]: casterRanged,
-  [defaultActivities.CASTERCA]: maxScore,
-  [defaultActivities.CASTERCS]: maxScore,
-  [defaultActivities.CASTERSA]: zero,
-  [defaultActivities.CASTERS]: zero,
-  [defaultActivities.CASTERBR]: zero,
 };
 
 const extremeAC = {

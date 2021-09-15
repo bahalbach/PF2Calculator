@@ -1,6 +1,6 @@
 import { convolve, consolidateDists } from "./Distribution";
 import { calculateExpectedDamage } from "./Calculation";
-import { conditions, effectTypes } from "../types";
+import { conditions, effectTypes } from "../Model/types";
 
 function validateCondition(condition, degreeOfSuccess) {
   let indicies = [];

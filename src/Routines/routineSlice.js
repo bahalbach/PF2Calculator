@@ -1,5 +1,8 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import { activityPathCreated, activityPathRemoved } from "./activityPathSlice";
+import {
+  activityPathCreated,
+  activityPathRemoved,
+} from "../SelectedRoutine/activityPathSlice";
 
 export const routinesAdapter = createEntityAdapter();
 

@@ -35,18 +35,15 @@ export const multiplyDist = (dam, dist, multiplier) => {
   for (let chance of dist) {
     let newValue = Math.floor((dam + i) * multiplier);
     if (newValue === oldValue) {
-      // console.log(`adding ${newValue} at ${index} with ${chance}`);
       newDist[index] += chance;
     } else {
       if (newValue > oldValue + 1) {
         for (let diff = 0; diff < newValue - (oldValue + 1); diff++) {
           index++;
-          // console.log(`adding ${newValue} at ${index} with ${0}`);
           newDist[index] = 0;
         }
       }
       index++;
-      // console.log(`adding ${newValue} at ${index} with ${chance}`);
       newDist[index] = chance;
     }
     oldValue = newValue;
@@ -57,11 +54,8 @@ export const multiplyDist = (dam, dist, multiplier) => {
 };
 
 export const consolidateDists = (...dists) => {
-  // dists = [[{staticDamage, damageDist}, chance]]...]
-  // console.log(dists);
   let maxDamage = 0;
   for (let dist of dists) {
-    // console.log(`chance is ${dist[1]}`);
     maxDamage = Math.max(
       maxDamage,
       dist[0].staticDamage + dist[0].damageDist.length
@@ -70,17 +64,14 @@ export const consolidateDists = (...dists) => {
   let damageDist = [];
   for (let i = 0; i < maxDamage; i++) {
     damageDist.push(0);
-    // console.log(`i is ${i}`);
     for (let dist of dists) {
       if (dist[0].staticDamage <= i) {
         let index = i - dist[0].staticDamage;
-        // console.log(`val ${dist[0].damageDist[index]} at index ${index}`);
         if (index < dist[0].damageDist.length)
           damageDist[i] += dist[0].damageDist[index] * dist[1];
       }
     }
   }
-  // console.log([staticDamage, damageDist]);
   return damageDist;
 };
 

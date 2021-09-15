@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { graphTypes } from "../types";
+import { graphTypes } from "../Model/types";
 
 import useGenerateGraphs from "./useGenerateGraphs";
 
