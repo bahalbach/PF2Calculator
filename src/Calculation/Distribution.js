@@ -53,6 +53,11 @@ export const multiplyDist = (dam, dist, multiplier) => {
   return [newDam, newDist];
 };
 
+/**
+ * Combine multiple distributions with their chances into one distribution starting from 0
+ * @param  {...[{staticDamage, distribution}, chance]} dists
+ * @returns
+ */
 export const consolidateDists = (...dists) => {
   let maxDamage = 0;
   for (let dist of dists) {
@@ -75,6 +80,13 @@ export const consolidateDists = (...dists) => {
   return damageDist;
 };
 
+/**
+ * apply a minimum to a distribution, like for damage penalties or resistances
+ * @param {number} staticDamage
+ * @param {[number]} damageDist
+ * @param {number} min
+ * @returns
+ */
 export const applyMin = (staticDamage, damageDist, min) => {
   while (staticDamage < min) {
     if (damageDist.length >= 2) {

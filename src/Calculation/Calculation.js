@@ -1,9 +1,9 @@
 import {
   bonusTrendValues,
   damageTrendValues,
+  dieTrendValues,
   defaultACs,
   defaultSaves,
-  dieTrendValues,
 } from "../Model/defaults";
 import {
   activityTypes,

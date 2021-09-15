@@ -2,6 +2,13 @@ import { convolve, consolidateDists } from "./Distribution";
 import { calculateExpectedDamage } from "./Calculation";
 import { conditions, effectTypes } from "../Model/types";
 
+/**
+ * Checks given degreeOfSuccess is in the condition
+ * like Success is in Success or better
+ * @param {*} condition
+ * @param {*} degreeOfSuccess
+ * @returns
+ */
 function validateCondition(condition, degreeOfSuccess) {
   let indicies = [];
   // console.log(`cond is: ${ap.condition}`);
