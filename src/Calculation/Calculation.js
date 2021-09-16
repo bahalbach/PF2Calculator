@@ -247,6 +247,7 @@ function calculateExpectedDamage(
     let {
       damageCondition,
       diceSize,
+      damageTrend,
       damageType,
       material,
       persistent,
@@ -256,7 +257,10 @@ function calculateExpectedDamage(
     let diceNum = dieTrendValues[damage.dieTrend][level];
     diceNum += damage.dieAdjustments[level];
     if (diceNum < 0) diceNum = 0;
-    let staticDamage = damageTrendValues[damage.damageTrend][level];
+    let staticDamage = 0;
+    for (let i = 0; i < damageTrend.length; i++) {
+      staticDamage += damageTrendValues[damageTrend[i]][level];
+    }
     staticDamage += damage.damageAdjustments[level];
     let damageDist = [1];
     const diceArray = [];

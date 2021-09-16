@@ -11,6 +11,7 @@ import {
   materialOptions,
   multiplierOptions,
 } from "../Model/options";
+import { damageTrends } from "../Model/types";
 
 export const Damage = ({ parentId, id }) => {
   const {
@@ -43,6 +44,31 @@ export const Damage = ({ parentId, id }) => {
     id,
     damageAdjustments
   );
+
+  const damageTrendList = damageTrend.map((dt, index) => {
+    return (
+      <select
+        key={index} // no stable id
+        value={dt}
+        onChange={(e) => {
+          let newdt = damageTrend.slice();
+          if (e.target.value === damageTrends.NONE) {
+            newdt.splice(index, 1);
+          } else {
+            newdt[index] = e.target.value;
+          }
+          dispatch(
+            damageUpdated({
+              id,
+              changes: { damageTrend: newdt },
+            })
+          );
+        }}
+      >
+        {damageTrendOptions}
+      </select>
+    );
+  });
 
   return (
     <div className="box">
@@ -99,19 +125,25 @@ export const Damage = ({ parentId, id }) => {
         <div>
           <span className="input">
             {"Static: ("}
-            <select
-              value={damageTrend}
-              onChange={(e) =>
+            {damageTrendList}
+            <button
+              key="addButton"
+              className="add"
+              onClick={() => {
+                let newdt = damageTrend.slice();
+                newdt.push(damageTrends.NONE);
                 dispatch(
                   damageUpdated({
                     id,
-                    changes: { damageTrend: e.target.value },
+                    changes: {
+                      damageTrend: newdt,
+                    },
                   })
-                )
-              }
+                );
+              }}
             >
-              {damageTrendOptions}
-            </select>
+              +
+            </button>
             +{damageLevelList})
           </span>
         </div>

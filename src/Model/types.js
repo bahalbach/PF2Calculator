@@ -50,7 +50,7 @@ export const profTrends = {
   ALCHWEAPON: "Alchemist Weapon (7)",
   CASTERSPELL: "Caster Spell (7, 15, 19)",
   MAGUSSPELL: "Magus Spell (9, 17)",
-  MCSPELL: "MC SPELL (12, 18)",
+  MCSPELL: "MC Spell (12, 18)",
   MAXSKILL: "Max skill (3, 7, 15)",
 };
 
@@ -128,22 +128,21 @@ export const dCond = {
   SUCC_WORSE: "Success or worse",
 };
 
-export const damageTrends = {
-  NONE: "None",
-  FIGHTERMELEE: "Fighter Melee",
-  FIGHTERRANGED: "Fighter Ranged",
-  MARTIALMELEE: "Martial Melee",
-  MARTIALRANGED: "Martial Ranged",
-  CASTERCANTRIP: "Caster Cantrip",
-  CASTERMELEE: "Caster Melee",
-  CASTERRANGED: "Caster Ranged",
-};
-
 export const dieTrends = {
   NONE: "None",
   WEAPON: "Weapon (1, 4, 12, 19)",
   SPELLLEVEL1: "1 x Spell Level",
   SPELLLEVEL2: "2 x Spell Level",
+  RUNE: "Runes (8, 15)",
+  DEADLY: "Deadly (1, 12, 19)",
+};
+
+export const damageTrends = {
+  NONE: "None",
+  FIGHTERWEAPONSPEC: "Fighter Weapon Specialization",
+  MARTIALWEAPONSPEC: "Martial Weapon Specializaton",
+  CASTERWEAPONSPEC: "Caster Weapon Specializaton",
+  ...statTrends,
 };
 
 export const damageTypes = {

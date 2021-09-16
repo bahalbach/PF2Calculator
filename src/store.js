@@ -78,7 +78,7 @@ store.dispatch(
     dieTrend: dieTrends.WEAPON,
     dieAdjustments: { ...empty },
     diceSize: 8,
-    damageTrend: damageTrends.MARTIALMELEE,
+    damageTrend: [damageTrends.AS18a, damageTrends.MARTIALWEAPONSPEC],
     damageAdjustments: { ...empty },
   })
 );

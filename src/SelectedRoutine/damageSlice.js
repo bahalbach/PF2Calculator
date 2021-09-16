@@ -1,11 +1,5 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import {
-  damageTrends,
-  damageTypes,
-  dCond,
-  dieTrends,
-  materials,
-} from "../Model/types";
+import { damageTypes, dCond, dieTrends, materials } from "../Model/types";
 
 export const damageAdapter = createEntityAdapter();
 
@@ -44,7 +38,7 @@ export const damagesSlice = createSlice({
           dieTrend: dieTrends.NONE,
           dieAdjustments: { ...empty },
           diceSize: 6,
-          damageTrend: damageTrends.NONE,
+          damageTrend: [],
           damageAdjustments: { ...empty },
         });
       },

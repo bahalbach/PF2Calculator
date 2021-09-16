@@ -36,6 +36,8 @@ for (let i = 1; i <= 20; i++) {
   spellDice[i] = Math.floor((i + 1) / 2);
   spellDice2[i] = 2 * Math.floor((i + 1) / 2);
 }
+const runes = {};
+const deadly = {};
 
 const martialSpec = {};
 const casterSpec = {};
@@ -81,6 +83,8 @@ for (let i = 1; i <= 20; i++) {
   weaponItem[i] = 0;
   skillItem[i] = 0;
   weaponDice[i] = 1;
+  runes[i] = 0;
+  deadly[i] = 1;
 
   martialSpec[i] = 0;
   casterSpec[i] = 0;
@@ -109,6 +113,9 @@ for (let i = 1; i <= 20; i++) {
     spellProf[i] = 4;
     maxSkill[i] = i + 6;
   }
+  if (i >= 8) {
+    runes[i] = 1;
+  }
   if (i >= 9) {
     skillItem[i] = 2;
     magusspell[i] = i + 4;
@@ -125,6 +132,7 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 12) {
     weaponDice[i] = 3;
     mcspell[i] = i + 4;
+    deadly[i] = 2;
   }
   if (i >= 13) {
     martialProf[i] = 6;
@@ -136,6 +144,7 @@ for (let i = 1; i <= 20; i++) {
     score16p[i] = 5;
     spellProf[i] = 6;
     maxSkill[i] = i + 8;
+    runes[i] = 2;
   }
   if (i >= 16) {
     weaponItem[i] = 3;
@@ -152,6 +161,7 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 19) {
     weaponDice[i] = 4;
     spellProf[i] = 8;
+    deadly[i] = 3;
   }
   if (i >= 20) {
     maxScore[i] = 7;
@@ -216,14 +226,11 @@ export const MAPvalues = {
 };
 
 export const damageTrendValues = {
+  ...statTrendValues,
   [damageTrends.NONE]: zero,
-  [damageTrends.FIGHTERMELEE]: fighterStatic,
-  [damageTrends.MARTIALMELEE]: martialStatic,
-  [damageTrends.CASTERMELEE]: casterStatic,
-  [damageTrends.FIGHTERRANGED]: fighterRanged,
-  [damageTrends.MARTIALRANGED]: martialRanged,
-  [damageTrends.CASTERRANGED]: casterRanged,
-  [damageTrends.CASTERCANTRIP]: maxScore,
+  [damageTrends.FIGHTERWEAPONSPEC]: fighterRanged,
+  [damageTrends.MARTIALWEAPONSPEC]: martialRanged,
+  [damageTrends.CASTERWEAPONSPEC]: casterRanged,
 };
 
 export const dieTrendValues = {
@@ -231,6 +238,8 @@ export const dieTrendValues = {
   [dieTrends.WEAPON]: weaponDice,
   [dieTrends.SPELLLEVEL1]: spellDice,
   [dieTrends.SPELLLEVEL2]: spellDice2,
+  [dieTrends.RUNE]: runes,
+  [dieTrends.DEADLY]: deadly,
 };
 
 const extremeAC = {
