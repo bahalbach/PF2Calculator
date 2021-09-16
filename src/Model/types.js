@@ -135,6 +135,9 @@ export const dieTrends = {
   SPELLLEVEL2: "2 x Spell Level",
   RUNE: "Runes (8, 15)",
   DEADLY: "Deadly (1, 12, 19)",
+  SNEAK: "Sneak Attack (1, 5, 11, 17)",
+  STRATEGIC: "Strategic Strike (1, 5, 9, 13, 17)",
+  PRECISE: "Precise Strike (1, 1, 5, 9, 13, 17)",
 };
 
 export const damageTrends = {
@@ -143,6 +146,12 @@ export const damageTrends = {
   MARTIALWEAPONSPEC: "Martial Weapon Specializaton",
   CASTERWEAPONSPEC: "Caster Weapon Specializaton",
   ...statTrends,
+  WEAPON: "Weapon (1, 4, 12, 19)",
+  SPELLLEVEL1: "1 x Spell Level",
+  RAGE: "Rage",
+  ANIMALRAGE: "Animal Rage",
+  DRAGONRAGE: "Dragon Rage",
+  GIANTRAGE: "Giant Rage",
 };
 
 export const damageTypes = {

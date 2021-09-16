@@ -39,8 +39,17 @@ for (let i = 1; i <= 20; i++) {
 const runes = {};
 const deadly = {};
 
+const sneak = {};
+const strategic = {};
+const precise = {};
+
 const martialSpec = {};
 const casterSpec = {};
+
+const rage = {};
+const animalrage = {};
+const dragonrage = {};
+const giantrage = {};
 
 const fighterAB = {};
 const martialAB = {};
@@ -86,8 +95,17 @@ for (let i = 1; i <= 20; i++) {
   runes[i] = 0;
   deadly[i] = 1;
 
+  sneak[i] = 1;
+  strategic[i] = 1;
+  precise[i] = 2;
+
   martialSpec[i] = 0;
   casterSpec[i] = 0;
+
+  rage[i] = 2;
+  animalrage[i] = 2;
+  dragonrage[i] = 4;
+  giantrage[i] = 6;
 
   if (i >= 2) {
     weaponItem[i] = 1;
@@ -106,12 +124,21 @@ for (let i = 1; i <= 20; i++) {
     score16[i] = 4;
     score14p[i] = 3;
     score14[i] = 3;
+
+    sneak[i] = 2;
+    strategic[i] = 2;
+    precise[i] = 3;
   }
   if (i >= 7) {
     alchProf[i] = 4;
     martialSpec[i] = 1;
     spellProf[i] = 4;
     maxSkill[i] = i + 6;
+
+    rage[i] = 6;
+    animalrage[i] = 5;
+    dragonrage[i] = 8;
+    giantrage[i] = 10;
   }
   if (i >= 8) {
     runes[i] = 1;
@@ -119,6 +146,9 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 9) {
     skillItem[i] = 2;
     magusspell[i] = i + 4;
+
+    strategic[i] = 3;
+    precise[i] = 4;
   }
   if (i >= 10) {
     weaponItem[i] = 2;
@@ -128,6 +158,8 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 11) {
     casterProf[i] = 4;
+
+    sneak[i] = 3;
   }
   if (i >= 12) {
     weaponDice[i] = 3;
@@ -137,6 +169,9 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 13) {
     martialProf[i] = 6;
     casterSpec[i] = 1;
+
+    strategic[i] = 4;
+    precise[i] = 5;
   }
   if (i >= 15) {
     martialSpec[i] = 2;
@@ -145,6 +180,11 @@ for (let i = 1; i <= 20; i++) {
     spellProf[i] = 6;
     maxSkill[i] = i + 8;
     runes[i] = 2;
+
+    rage[i] = 12;
+    animalrage[i] = 12;
+    dragonrage[i] = 16;
+    giantrage[i] = 18;
   }
   if (i >= 16) {
     weaponItem[i] = 3;
@@ -154,6 +194,10 @@ for (let i = 1; i <= 20; i++) {
     maxScore[i] = 6;
     skillItem[i] = 3;
     magusspell[i] = i + 6;
+
+    sneak[i] = 4;
+    strategic[i] = 5;
+    precise[i] = 6;
   }
   if (i >= 18) {
     mcspell[i] = i + 6;
@@ -225,14 +269,6 @@ export const MAPvalues = {
   "-2 (2x-1)": -2,
 };
 
-export const damageTrendValues = {
-  ...statTrendValues,
-  [damageTrends.NONE]: zero,
-  [damageTrends.FIGHTERWEAPONSPEC]: fighterRanged,
-  [damageTrends.MARTIALWEAPONSPEC]: martialRanged,
-  [damageTrends.CASTERWEAPONSPEC]: casterRanged,
-};
-
 export const dieTrendValues = {
   [dieTrends.NONE]: zero,
   [dieTrends.WEAPON]: weaponDice,
@@ -240,6 +276,23 @@ export const dieTrendValues = {
   [dieTrends.SPELLLEVEL2]: spellDice2,
   [dieTrends.RUNE]: runes,
   [dieTrends.DEADLY]: deadly,
+  [dieTrends.SNEAK]: sneak,
+  [dieTrends.STRATEGIC]: strategic,
+  [dieTrends.PRECISE]: precise,
+};
+
+export const damageTrendValues = {
+  ...statTrendValues,
+  [damageTrends.NONE]: zero,
+  [damageTrends.FIGHTERWEAPONSPEC]: fighterRanged,
+  [damageTrends.MARTIALWEAPONSPEC]: martialRanged,
+  [damageTrends.CASTERWEAPONSPEC]: casterRanged,
+  [damageTrends.WEAPON]: weaponDice,
+  [damageTrends.SPELLLEVEL1]: spellDice,
+  [damageTrends.RAGE]: rage,
+  [damageTrends.ANIMALRAGE]: animalrage,
+  [damageTrends.DRAGONRAGE]: dragonrage,
+  [damageTrends.GIANTRAGE]: giantrage,
 };
 
 const extremeAC = {
