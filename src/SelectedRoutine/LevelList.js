@@ -2,9 +2,9 @@ import React from "react";
 import { levelOptions } from "../Model/options";
 
 export const generateEntries = (adjustments) => {
-  let currentValue = adjustments[1];
-  const entries = [[1, currentValue]];
-  for (let level = 2; level <= 20; level++) {
+  let currentValue = 0;
+  const entries = [];
+  for (let level = 1; level <= 20; level++) {
     if (currentValue !== adjustments[level]) {
       currentValue = adjustments[level];
       entries.push([level, currentValue]);
@@ -42,7 +42,7 @@ export const adjustmentsFromValueChange = (entries, index, newValue) => {
 };
 
 export const adjustmentsFromNewEntry = (entries) => {
-  let lastValue = entries[entries.length - 1];
+  let lastValue = entries.length > 0 ? entries[entries.length - 1] : [0, 0];
   entries.push([lastValue[0] + 1, lastValue[1] + 1]);
   return generateAdjustments(entries);
 };

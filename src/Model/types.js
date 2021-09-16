@@ -49,6 +49,8 @@ export const profTrends = {
   CASTERWEAPON: "Caster Weapon (11)",
   ALCHWEAPON: "Alchemist Weapon (7)",
   CASTERSPELL: "Caster Spell (7, 15, 19)",
+  MAGUSSPELL: "Magus Spell (9, 17)",
+  MCSPELL: "MC SPELL (12, 18)",
   MAXSKILL: "Max skill (3, 7, 15)",
 };
 

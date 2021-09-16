@@ -114,48 +114,50 @@ export const ActivityPath = ({
             >
               {activityTypeOptions}
             </select>
+          </span>{" "}
+          <span className="input">
+            {type === activityTypes.SAVE ? "DC: (10 + " : "Bonus: ("}
+            <select
+              value={profTrend}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { profTrend: e.target.value },
+                  })
+                )
+              }
+            >
+              {profTrendOptions}
+            </select>
+            <select
+              value={statTrend}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { statTrend: e.target.value },
+                  })
+                )
+              }
+            >
+              {statTrendOptions}
+            </select>
+            <select
+              value={itemTrend}
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { itemTrend: e.target.value },
+                  })
+                )
+              }
+            >
+              {itemBTrendOptions}
+            </select>
+            +{bonusLevelList})
           </span>
-          {" ("}
-          <select
-            value={profTrend}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { profTrend: e.target.value },
-                })
-              )
-            }
-          >
-            {profTrendOptions}
-          </select>
-          <select
-            value={statTrend}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { statTrend: e.target.value },
-                })
-              )
-            }
-          >
-            {statTrendOptions}
-          </select>
-          <select
-            value={itemTrend}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { itemTrend: e.target.value },
-                })
-              )
-            }
-          >
-            {itemBTrendOptions}
-          </select>
-          {type === activityTypes.SAVE ? "+10" : ""}+{bonusLevelList})
           {type === activityTypes.STRIKE ? (
             <span className="input">
               {" MAP: "}

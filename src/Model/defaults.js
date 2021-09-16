@@ -47,6 +47,8 @@ const alchAB = {};
 
 const casterSpellAttack = {};
 const casterSaveDC = {};
+const magusspell = {};
+const mcspell = {};
 
 const fighterStatic = {};
 const fighterRanged = {};
@@ -73,6 +75,8 @@ for (let i = 1; i <= 20; i++) {
   casterProf[i] = 2;
 
   spellProf[i] = 2;
+  magusspell[i] = i + 2;
+  mcspell[i] = i + 2;
 
   weaponItem[i] = 0;
   skillItem[i] = 0;
@@ -107,6 +111,7 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 9) {
     skillItem[i] = 2;
+    magusspell[i] = i + 4;
   }
   if (i >= 10) {
     weaponItem[i] = 2;
@@ -119,6 +124,7 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 12) {
     weaponDice[i] = 3;
+    mcspell[i] = i + 4;
   }
   if (i >= 13) {
     martialProf[i] = 6;
@@ -138,6 +144,10 @@ for (let i = 1; i <= 20; i++) {
     score16pp[i] = 6;
     maxScore[i] = 6;
     skillItem[i] = 3;
+    magusspell[i] = i + 6;
+  }
+  if (i >= 18) {
+    mcspell[i] = i + 6;
   }
   if (i >= 19) {
     weaponDice[i] = 4;
@@ -168,6 +178,8 @@ export const profTrendValues = {
   [profTrends.CASTERWEAPON]: casterAB,
   [profTrends.ALCHWEAPON]: alchAB,
   [profTrends.CASTERSPELL]: casterSpellAttack,
+  [profTrends.MAGUSSPELL]: magusspell,
+  [profTrends.MCSPELL]: mcspell,
   [profTrends.MAXSKILL]: maxSkill,
 };
 export const statTrendValues = {

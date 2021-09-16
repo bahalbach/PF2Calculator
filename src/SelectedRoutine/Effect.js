@@ -33,6 +33,7 @@ export const Effect = ({ parentId, id }) => {
       >
         {conditionOptions}
       </select>
+      {": "}
       <select
         value={effectType}
         onChange={(e) =>
