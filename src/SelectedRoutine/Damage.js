@@ -24,6 +24,8 @@ export const Damage = ({ parentId, id }) => {
     dieTrend,
     dieAdjustments,
     diceSize,
+    fatal,
+    fatalDie,
     damageTrend,
     damageAdjustments,
   } = useSelector((state) => selectdamageById(state, id));
@@ -107,7 +109,10 @@ export const Damage = ({ parentId, id }) => {
           >
             {dieTrendOptions}
           </select>
-          +{dieLevelList}) d
+          +{dieLevelList})
+        </span>
+        <span className="input">
+          {" d"}
           <select
             value={diceSize}
             onChange={(e) =>
@@ -121,6 +126,38 @@ export const Damage = ({ parentId, id }) => {
           >
             {diceSizeOptions}
           </select>
+        </span>
+        <span className="input">
+          {" Fatal "}
+          <input
+            type="checkbox"
+            checked={fatal}
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { fatal: e.target.checked },
+                })
+              )
+            }
+          />
+          {fatal ? (
+            <select
+              value={fatalDie}
+              onChange={(e) =>
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: { fatalDie: parseInt(e.target.value) },
+                  })
+                )
+              }
+            >
+              {diceSizeOptions}
+            </select>
+          ) : (
+            ""
+          )}
         </span>
         <div>
           <span className="input">
@@ -170,6 +207,8 @@ export const Damage = ({ parentId, id }) => {
         >
           {materialOptions}
         </select>
+      </span>
+      <span className="input">
         {" Persistent: "}
         <input
           type="checkbox"

@@ -247,6 +247,9 @@ function calculateExpectedDamage(
     let {
       damageCondition,
       diceSize,
+      fatal,
+      fatalDie,
+
       damageTrend,
       damageType,
       material,
@@ -263,12 +266,22 @@ function calculateExpectedDamage(
     }
     staticDamage += damage.damageAdjustments[level];
     let damageDist = [1];
-    const diceArray = [];
+    let fatalDist = [1];
+    let diceArray = [];
     for (let i = 0; i < diceSize; i++) {
       diceArray.push(1 / diceSize);
     }
     for (let i = 0; i < diceNum; i++) {
       damageDist = convolve(damageDist, diceArray);
+    }
+    if (fatal) {
+      let diceArray = [];
+      for (let i = 0; i < fatalDie; i++) {
+        diceArray.push(1 / fatalDie);
+      }
+      for (let i = 0; i < diceNum; i++) {
+        fatalDist = convolve(fatalDist, diceArray);
+      }
     }
     staticDamage += diceNum;
 
@@ -290,7 +303,7 @@ function calculateExpectedDamage(
           material,
           persistent,
           staticDamage,
-          damageDist,
+          fatal ? fatalDist : damageDist,
           multiplier * 2
         );
         break;

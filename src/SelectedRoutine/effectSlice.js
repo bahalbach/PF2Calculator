@@ -3,7 +3,7 @@ import { conditions, effectTypes } from "../Model/types";
 
 export const effectAdapter = createEntityAdapter();
 
-let effectId = 1;
+let effectId = 1000;
 export const effectsSlice = createSlice({
   name: "effects",
   initialState: effectAdapter.getInitialState(),

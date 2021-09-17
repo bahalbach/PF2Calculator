@@ -17,7 +17,7 @@ for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
 }
 
-let damageId = 1;
+let damageId = 1000;
 export const damagesSlice = createSlice({
   name: "damages",
   initialState: damageAdapter.getInitialState(),
@@ -38,6 +38,8 @@ export const damagesSlice = createSlice({
           dieTrend: dieTrends.NONE,
           dieAdjustments: { ...empty },
           diceSize: 6,
+          fatal: false,
+          fatalDie: 10,
           damageTrend: [],
           damageAdjustments: { ...empty },
         });

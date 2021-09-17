@@ -6,7 +6,7 @@ import {
 
 export const routinesAdapter = createEntityAdapter();
 
-let routineId = 1;
+let routineId = 100;
 export const routinesSlice = createSlice({
   name: "routines",
   initialState: routinesAdapter.getInitialState({ selectedRoutine: 0 }),
@@ -23,13 +23,22 @@ export const routinesSlice = createSlice({
     },
     routineCreated: {
       reducer: (state, action) => {
-        const { id, name, apIds } = action.payload;
+        const { id } = action.payload;
         state.selectedRoutine = id;
-        routinesAdapter.addOne(state, { id, name, display: true, apIds });
+        routinesAdapter.addOne(state, {
+          id,
+          name: "New Routine",
+          display: true,
+          apIds: [],
+          levelDiff: 0,
+          description: "Enter a description here.",
+          startLevel: 1,
+          endLevel: 20,
+        });
       },
       prepare: () => {
         const id = ++routineId;
-        return { payload: { id, name: "New Routine", apIds: [] } };
+        return { payload: { id } };
       },
     },
   },

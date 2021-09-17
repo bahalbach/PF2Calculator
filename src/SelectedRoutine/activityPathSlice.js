@@ -19,7 +19,7 @@ const empty = {};
 for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
 }
-let activityPathId = 1;
+let activityPathId = 1000;
 const defaultParentActivity = {
   rollType: rollTypes.NORMAL,
   type: activityTypes.STRIKE,
