@@ -1,12 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectactivityPathEntities } from "../SelectedRoutine/activityPathSlice";
-import { selectdamageEntities } from "../SelectedRoutine/damageSlice";
+import { selectactivityPathEntities } from "../Routines/routineSlice";
+import { selectdamageEntities } from "../Routines/routineSlice";
 import { selectRoutineEntities } from "../Routines/routineSlice";
 import { selecttargetEntities } from "../Target/targetSlice";
 import { selectweaknessEntities } from "../Target/weaknessSlice";
 import { graphTypes } from "../Model/types";
-import { selecteffectEntities } from "../SelectedRoutine/effectSlice";
+import { selecteffectEntities } from "../Routines/routineSlice";
 
 import { ActivityPathEvaluator } from "../Calculation/EvaluateActivityPath";
 

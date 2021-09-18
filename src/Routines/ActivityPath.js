@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LevelList } from "./LevelList";
-import { damageCreated } from "./damageSlice";
+import { damageCreated } from "./routineSlice";
 import {
   activityTypeOptions,
   profTrendOptions,
@@ -17,11 +17,11 @@ import {
   activityPathRemoved,
   activityPathUpdated,
   selectactivityPathById,
-} from "./activityPathSlice";
+} from "./routineSlice";
 import { activityTypes } from "../Model/types";
 import { Damage } from "./Damage";
 import { Effect } from "./Effect";
-import { effectCreated } from "./effectSlice";
+import { effectCreated } from "./routineSlice";
 
 export const ActivityPath = ({
   id,

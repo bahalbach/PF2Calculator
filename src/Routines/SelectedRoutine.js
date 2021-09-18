@@ -1,7 +1,10 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { activityPathCreated } from "./activityPathSlice";
-import { routineUpdated, selectRoutineById } from "../Routines/routineSlice";
+import {
+  activityPathCreated,
+  routineUpdated,
+  selectRoutineById,
+} from "./routineSlice";
 import { ActivityPath } from "./ActivityPath";
 
 function SelectedRoutine({ routineId }) {

@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import routineReducer, { routineAdded } from "./Routines/routineSlice";
-import activityPathReducer, {
+import routineReducer, {
   activityPathAdded,
-} from "./SelectedRoutine/activityPathSlice";
-import damageReducer, { damageAdded } from "./SelectedRoutine/damageSlice";
-import effectReducer, { effectAdded } from "./SelectedRoutine/effectSlice";
+  damageAdded,
+  effectAdded,
+  routineAdded,
+} from "./Routines/routineSlice";
 import targetReducer, { targetAdded } from "./Target/targetSlice";
 import weaknessReducer from "./Target/weaknessSlice";
 import {
@@ -44,12 +44,26 @@ for (let i = 1; i <= 20; i++) {
   }
 }
 
+// const activityPathRemoved = createAction(
+//   "RemoveActivityPath",
+//   (id, parentId) => ({ payload: { id, parentId } })
+// );
+// const globalReducer = createReducer(, (builder) => {
+//   builder.addCase(activityPathRemoved, (state, action) => {
+//     const { id, parentId } = action.payload;
+//     // activityPathAdapter.removeMany(state, state.entities[id].apIds);
+//     activityPathAdapter.removeOne(state, id);
+//     if (parentId !== undefined) {
+//       state.entities[parentId].apIds = state.entities[parentId].apIds.filter(
+//         (apId) => apId !== id
+//       );
+//     }
+//   });
+// });
+
 export const store = configureStore({
   reducer: {
     routines: routineReducer,
-    activityPaths: activityPathReducer,
-    damages: damageReducer,
-    effects: effectReducer,
     weaknesses: weaknessReducer,
     targets: targetReducer,
   },

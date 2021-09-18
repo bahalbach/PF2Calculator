@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LevelList } from "./LevelList";
-import { damageRemoved, damageUpdated, selectdamageById } from "./damageSlice";
+import { damageRemoved, damageUpdated, selectdamageById } from "./routineSlice";
 import {
   damageConditionOptions,
   damageTrendOptions,

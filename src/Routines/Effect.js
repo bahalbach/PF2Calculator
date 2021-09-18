@@ -5,7 +5,7 @@ import {
   effectTypeOptions,
   levelOptions,
 } from "../Model/options";
-import { effectRemoved, effectUpdated, selecteffectById } from "./effectSlice";
+import { effectRemoved, effectUpdated, selecteffectById } from "./routineSlice";
 
 export const Effect = ({ parentId, id }) => {
   const { effectCondition, effectType, startLevel, endLevel } = useSelector(

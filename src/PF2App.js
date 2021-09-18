@@ -3,7 +3,7 @@ import ReactGA from "react-ga4";
 
 import TargetInput from "./Target/TargetInput";
 import Display from "./Display/Display";
-import SelectedRoutine from "./SelectedRoutine/SelectedRoutine";
+import SelectedRoutine from "./Routines/SelectedRoutine";
 import Routines from "./Routines/Routines";
 import Export from "./Export";
 
