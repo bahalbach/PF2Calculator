@@ -36,6 +36,58 @@ const defaultParentActivity = {
   bonusAdjustments: { ...empty },
   MAP: MAPs.N1,
   targetType: defenses.AC,
+
+  damages: [],
+  effects: [],
+};
+const defaultDamage = {
+  damageCondition: dCond.STRIKE,
+  damageType: damageTypes.S,
+  material: materials.NONE,
+  persistent: false,
+  multiplier: 1,
+
+  dieTrend: dieTrends.NONE,
+  dieAdjustments: { ...empty },
+  diceSize: 6,
+  fatal: false,
+  fatalDie: 10,
+  damageTrend: [],
+  damageAdjustments: { ...empty },
+};
+
+const removeActivityPaths = (state, ids) => {
+  let index = 0;
+  while (index < ids.length) {
+    let ap = state.activityPaths.entities[ids[index]];
+    ids.push(...ap.apIds);
+    damageAdapter.removeMany(state.damages, ap.damages);
+    effectAdapter.removeMany(state.effects, ap.effects);
+    activityPathAdapter.removeOne(state.activityPaths, ap.id);
+    index += 1;
+  }
+};
+const copyDamages = (state, damages) => {
+  const newDamages = [];
+  for (let did of damages) {
+    let damage = state.damages.entities[did];
+    // create a new damage entity and add it's id to newDamages
+    const id = ++damageId;
+    damageAdapter.addOne(state.damages, { ...damage, id });
+    newDamages.push(id);
+  }
+  return newDamages;
+};
+const copyEffects = (state, effects) => {
+  const newEffects = [];
+  for (let eid of effects) {
+    let effect = state.effects.entities[eid];
+    // create a new effect entity and add it's id to newEffects
+    const id = ++effectId;
+    effectAdapter.addOne(state.effects, { ...effect, id });
+    newEffects.push(id);
+  }
+  return newEffects;
 };
 
 export const routinesSlice = createSlice({
@@ -98,8 +150,13 @@ export const routinesSlice = createSlice({
       },
     },
     routineRemoved: (state, action) => {
-      routinesAdapter.removeOne(state.routines, action);
-      if (action.payload === state.selectedRoutine)
+      // recursively remove all children
+      const routineId = action.payload;
+      let childrenIds = state.routines.entities[routineId].apIds;
+      removeActivityPaths(state, childrenIds);
+
+      routinesAdapter.removeOne(state.routines, routineId);
+      if (routineId === state.selectedRoutine)
         state.selectedRoutine = state.routines.ids
           ? state.routines.ids[0]
           : undefined;
@@ -117,6 +174,9 @@ export const routinesSlice = createSlice({
         } else {
           parentAP = defaultParentActivity;
         }
+        // copy parent damages and effects
+        let newDamages = copyDamages(state, parentAP.damages);
+        let newEffects = copyEffects(state, parentAP.effects);
 
         activityPathAdapter.addOne(state.activityPaths, {
           id,
@@ -132,8 +192,8 @@ export const routinesSlice = createSlice({
 
           targetType: defenses.AC,
 
-          damages: [],
-          effects: [],
+          damages: newDamages,
+          effects: newEffects,
           apIds: [],
         });
       },
@@ -151,8 +211,10 @@ export const routinesSlice = createSlice({
     },
     activityPathRemoved: (state, action) => {
       const { id, parentId, routineId } = action.payload;
-      // activityPathAdapter.removeMany(state, state.entities[id].apIds);
-      activityPathAdapter.removeOne(state.activityPaths, id);
+
+      // recursively remove all children
+      let childrenIds = [id];
+      removeActivityPaths(state, childrenIds);
 
       if (parentId !== undefined) {
         state.activityPaths.entities[parentId].apIds =
@@ -166,75 +228,61 @@ export const routinesSlice = createSlice({
         ].apIds.filter((apId) => apId !== id);
       }
     },
-  },
-  damageCreated: {
-    reducer: (state, action) => {
-      const { id, parentId } = action.payload;
-      state.activityPaths.entities[parentId].damages.push(id);
-      damageAdapter.addOne(state.damages, {
-        id,
-        damageCondition: dCond.STRIKE,
-        damageType: damageTypes.S,
-        material: materials.NONE,
-        persistent: false,
-        multiplier: 1,
 
-        dieTrend: dieTrends.NONE,
-        dieAdjustments: { ...empty },
-        diceSize: 6,
-        fatal: false,
-        fatalDie: 10,
-        damageTrend: [],
-        damageAdjustments: { ...empty },
-      });
+    damageCreated: {
+      reducer: (state, action) => {
+        const { id, parentId } = action.payload;
+        state.activityPaths.entities[parentId].damages.push(id);
+        damageAdapter.addOne(state.damages, { id, ...defaultDamage });
+      },
+      prepare: ({ parentId }) => {
+        const id = ++damageId;
+        return {
+          payload: {
+            id,
+            parentId,
+          },
+        };
+      },
     },
-    prepare: ({ parentId }) => {
-      const id = ++damageId;
-      return {
-        payload: {
-          id,
-          parentId,
-        },
-      };
-    },
-  },
-  damageRemoved: (state, action) => {
-    const { id, parentId } = action.payload;
-    state.activityPaths.entities[parentId].damages =
-      state.activityPaths.entities[parentId].damages.filter(
-        (did) => did !== id
-      );
-    damageAdapter.removeOne(state.damages, id);
-  },
-  effectCreated: {
-    reducer: (state, action) => {
+    damageRemoved: (state, action) => {
       const { id, parentId } = action.payload;
-      state.activityPaths.entities[parentId].effects.push(id);
-      effectAdapter.addOne(state.effects, {
-        id,
-        effectCondition: conditions.ALWAYS,
-        effectType: effectTypes.FLATFOOT,
-        startLevel: 1,
-        endLevel: 20,
-      });
+      state.activityPaths.entities[parentId].damages =
+        state.activityPaths.entities[parentId].damages.filter(
+          (did) => did !== id
+        );
+      damageAdapter.removeOne(state.damages, id);
     },
-    prepare: ({ parentId }) => {
-      const id = ++effectId;
-      return {
-        payload: {
+    effectCreated: {
+      reducer: (state, action) => {
+        const { id, parentId } = action.payload;
+        state.activityPaths.entities[parentId].effects.push(id);
+        effectAdapter.addOne(state.effects, {
           id,
-          parentId,
-        },
-      };
+          effectCondition: conditions.ALWAYS,
+          effectType: effectTypes.FLATFOOT,
+          startLevel: 1,
+          endLevel: 20,
+        });
+      },
+      prepare: ({ parentId }) => {
+        const id = ++effectId;
+        return {
+          payload: {
+            id,
+            parentId,
+          },
+        };
+      },
     },
-  },
-  effectRemoved: (state, action) => {
-    const { id, parentId } = action.payload;
-    state.activityPaths.entities[parentId].effects =
-      state.activityPaths.entities[parentId].effects.filter(
-        (eid) => eid !== id
-      );
-    effectAdapter.removeOne(state.effects, id);
+    effectRemoved: (state, action) => {
+      const { id, parentId } = action.payload;
+      state.activityPaths.entities[parentId].effects =
+        state.activityPaths.entities[parentId].effects.filter(
+          (eid) => eid !== id
+        );
+      effectAdapter.removeOne(state.effects, id);
+    },
   },
 });
 
@@ -296,4 +344,4 @@ export const {
   selectTotal: selectTotaleffects,
 } = effectAdapter.getSelectors((state) => state.routines.effects);
 
-export const selectSelectedRoutine = (state) => state.selectedRoutine;
+export const selectSelectedRoutine = (state) => state.routines.selectedRoutine;
