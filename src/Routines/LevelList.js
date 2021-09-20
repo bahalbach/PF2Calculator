@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { levelOptions } from "../Model/options";
 
 export const generateEntries = (adjustments) => {
@@ -21,7 +21,7 @@ const generateAdjustments = (entries) => {
   for (let level = 1; level <= 20; level++) {
     if (entries[currentIndex] && entries[currentIndex][0] === level) {
       // console.log("here");
-      currentValue = entries[currentIndex][1];
+      currentValue = parseInt(entries[currentIndex][1]);
       if (!currentValue) currentValue = 0;
       currentIndex++;
     }
@@ -48,23 +48,26 @@ export const adjustmentsFromNewEntry = (entries) => {
 };
 
 export const LevelList = (name, dispatch, action, id, adjustments) => {
-  const dieEntries = generateEntries(adjustments);
+  const baseEntries = generateEntries(adjustments);
+  let [entries, setEntries] = useState(baseEntries);
+  let be = JSON.stringify(baseEntries);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setEntries(baseEntries), [be]);
+  let levelList = [];
 
-  let dieLevelList = [];
-
-  for (let i = 0; i < dieEntries.length; i++) {
-    dieLevelList.push(
+  for (let i = 0; i < entries.length; i++) {
+    levelList.push(
       <span className="input" key={i}>
         @
         <select
-          value={dieEntries[i][0]}
+          value={entries[i][0]}
           onChange={(e) =>
             dispatch(
               action({
                 id,
                 changes: {
                   [name]: adjustmentsFromLevelChange(
-                    dieEntries,
+                    entries,
                     i,
                     parseInt(e.target.value)
                   ),
@@ -78,17 +81,19 @@ export const LevelList = (name, dispatch, action, id, adjustments) => {
         +
         <input
           type="number"
-          value={dieEntries[i][1]}
-          onChange={(e) =>
+          value={entries[i][1]}
+          onChange={(e) => {
+            let newEntries = entries.slice();
+            newEntries[i][1] = e.target.value;
+            setEntries(newEntries);
+            e.target.focus();
+          }}
+          onBlur={(e) =>
             dispatch(
               action({
                 id,
                 changes: {
-                  [name]: adjustmentsFromValueChange(
-                    dieEntries,
-                    i,
-                    parseInt(e.target.value)
-                  ),
+                  [name]: generateAdjustments(entries),
                 },
               })
             )
@@ -97,7 +102,7 @@ export const LevelList = (name, dispatch, action, id, adjustments) => {
       </span>
     );
   }
-  dieLevelList.push(
+  levelList.push(
     <button
       key="addButton"
       className="add"
@@ -106,7 +111,7 @@ export const LevelList = (name, dispatch, action, id, adjustments) => {
           action({
             id,
             changes: {
-              [name]: adjustmentsFromNewEntry(dieEntries),
+              [name]: adjustmentsFromNewEntry(entries),
             },
           })
         )
@@ -115,5 +120,5 @@ export const LevelList = (name, dispatch, action, id, adjustments) => {
       +
     </button>
   );
-  return dieLevelList;
+  return levelList;
 };

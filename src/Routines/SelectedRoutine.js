@@ -20,7 +20,6 @@ function SelectedRoutine({ routineId }) {
       <div className="box">
         <div>
           <NameInput id={routineId} name={name} />
-
           <span className="input">
             @
             <select

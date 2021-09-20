@@ -125,7 +125,7 @@ const copyActivityPaths = (state, apIds) => {
 export const routinesSlice = createSlice({
   name: "routines",
   initialState: {
-    selectedRoutine: 0,
+    selectedRoutine: 1,
     routines: routinesAdapter.getInitialState(),
     activityPaths: activityPathAdapter.getInitialState(),
     damages: damageAdapter.getInitialState(),
