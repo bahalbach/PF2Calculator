@@ -24,6 +24,14 @@ body {
   max-width: 7.5rem;
 }
 
+.routineDescription {
+  width: 100%;
+  padding: 5px;
+  padding-right: 0px;
+  margin: 5px;
+  margin-right: 0px;
+}
+
 .flexbox {
   display: flex;
   flex-flow: wrap;

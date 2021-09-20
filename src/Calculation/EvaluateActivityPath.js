@@ -63,9 +63,10 @@ class ActivityPathEvaluator {
     this.weaknesses = weaknesses;
   }
 
-  canEvaluate(level) {
+  canEvaluate(level, routine) {
     const levelDiff = this.targets[0].levelDiff;
     // console.log(`level ${level}, levelDiff ${levelDiff}`);
+    if (level < routine.startLevel || level > routine.endLevel) return false;
     if (level + levelDiff < -1 || level + levelDiff > 24) return false;
     return true;
   }

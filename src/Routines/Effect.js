@@ -44,34 +44,36 @@ export const Effect = ({ parentId, id }) => {
       >
         {effectTypeOptions}
       </select>
-      @
-      <select
-        value={startLevel}
-        onChange={(e) =>
-          dispatch(
-            effectUpdated({
-              id,
-              changes: { startLevel: parseInt(e.target.value) },
-            })
-          )
-        }
-      >
-        {levelOptions}
-      </select>
-      to
-      <select
-        value={endLevel}
-        onChange={(e) =>
-          dispatch(
-            effectUpdated({
-              id,
-              changes: { endLevel: parseInt(e.target.value) },
-            })
-          )
-        }
-      >
-        {levelOptions}
-      </select>
+      <span className="input">
+        @
+        <select
+          value={startLevel}
+          onChange={(e) =>
+            dispatch(
+              effectUpdated({
+                id,
+                changes: { startLevel: parseInt(e.target.value) },
+              })
+            )
+          }
+        >
+          {levelOptions}
+        </select>
+        to
+        <select
+          value={endLevel}
+          onChange={(e) =>
+            dispatch(
+              effectUpdated({
+                id,
+                changes: { endLevel: parseInt(e.target.value) },
+              })
+            )
+          }
+        >
+          {levelOptions}
+        </select>
+      </span>
     </div>
   );
 };

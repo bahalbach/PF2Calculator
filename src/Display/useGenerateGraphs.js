@@ -199,7 +199,7 @@ const evaluateByLevel = (routines, evaluator) => {
     const expDbyLevel = [];
     const expPDbyLevel = [];
     for (let level = 1; level <= 20; level++) {
-      if (!evaluator.canEvaluate(level)) continue;
+      if (!evaluator.canEvaluate(level, routine)) continue;
       levelArray.push(level);
       let { expD, expP } = evaluator.evalRoutine(routine, level, 0, 0);
       expDbyLevel.push(expD);
@@ -230,17 +230,17 @@ const evaluatePM = (routines, evaluator, displayLevel, defense = true) => {
   let expectedDamages = [];
   let expectedPersistentDamages = [];
 
-  if (!evaluator.canEvaluate(displayLevel))
-    return {
-      expectedDamages,
-      expectedPersistentDamages,
-      datasets,
-      perDatasets,
-    };
+  // return {
+  //   expectedDamages,
+  //   expectedPersistentDamages,
+  //   datasets,
+  //   perDatasets,
+  // };
 
   for (let id in routines) {
     let routine = routines[id];
     if (!routine.display) continue;
+    if (!evaluator.canEvaluate(displayLevel, routine)) continue;
 
     const bonusArray = [];
     const expDbyBonus = [];
@@ -300,17 +300,18 @@ const evaluateDistribution = (routines, evaluator, displayLevel) => {
   let expectedDamages = [];
   let expectedPersistentDamages = [];
 
-  if (!evaluator.canEvaluate(displayLevel))
-    return {
-      expectedDamages,
-      expectedPersistentDamages,
-      datasets,
-      perDatasets,
-    };
+  // if (!evaluator.canEvaluate(displayLevel))
+  //   return {
+  //     expectedDamages,
+  //     expectedPersistentDamages,
+  //     datasets,
+  //     perDatasets,
+  //   };
 
   for (let id in routines) {
     let routine = routines[id];
     if (!routine.display) continue;
+    if (!evaluator.canEvaluate(displayLevel, routine)) continue;
     let {
       expD,
       expP,

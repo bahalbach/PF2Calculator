@@ -1,22 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   activityPathCreated,
   routineUpdated,
   selectRoutineById,
 } from "./routineSlice";
+import { levelOptions } from "../Model/options";
 import { ActivityPath } from "./ActivityPath";
 
 function SelectedRoutine({ routineId }) {
   // const selectedRoutine = useSelector(selectSelectedRoutine);
-  const apIds = useSelector((state) =>
-    selectRoutineById(state, routineId)
-  ).apIds;
+  const { name, startLevel, endLevel, description, apIds } = useSelector(
+    (state) => selectRoutineById(state, routineId)
+  );
   const dispatch = useDispatch();
 
   return (
     <div className="selectedRoutine">
-      <NameInput id={routineId} />
+      <div className="box">
+        <div>
+          <NameInput id={routineId} name={name} />
+
+          <span className="input">
+            @
+            <select
+              value={startLevel}
+              onChange={(e) =>
+                dispatch(
+                  routineUpdated({
+                    id: routineId,
+                    changes: { startLevel: parseInt(e.target.value) },
+                  })
+                )
+              }
+            >
+              {levelOptions}
+            </select>
+            to
+            <select
+              value={endLevel}
+              onChange={(e) =>
+                dispatch(
+                  routineUpdated({
+                    id: routineId,
+                    changes: { endLevel: parseInt(e.target.value) },
+                  })
+                )
+              }
+            >
+              {levelOptions}
+            </select>
+          </span>
+        </div>
+        <DescriptionInput id={routineId} description={description} />
+      </div>
       {apIds.map((apId) => (
         <ActivityPath
           id={apId}
@@ -46,20 +83,41 @@ function SelectedRoutine({ routineId }) {
   );
 }
 
-const NameInput = ({ id }) => {
+const NameInput = ({ id, name: baseName }) => {
   const dispatch = useDispatch();
-  const name = useSelector((state) => selectRoutineById(state, id)).name;
+  let [name, setName] = useState(baseName);
+  useEffect(() => setName(baseName), [baseName]);
+  // const name = useSelector((state) => selectRoutineById(state, id)).name;
 
   return (
-    <div className="box">
+    <React.Fragment>
       <label htmlFor="routineName">Routine Name:</label>
       <input
         id="routineName"
         type="text"
         placeholder="Enter routine name"
         value={name}
-        onChange={(e) =>
-          dispatch(routineUpdated({ id, changes: { name: e.target.value } }))
+        onChange={(e) => setName(e.target.value)}
+        onBlur={() => dispatch(routineUpdated({ id, changes: { name } }))}
+      />
+    </React.Fragment>
+  );
+};
+const DescriptionInput = ({ id, description: baseDescription }) => {
+  const dispatch = useDispatch();
+  const [description, setDescription] = useState(baseDescription);
+  useEffect(() => setDescription(baseDescription), [baseDescription]);
+
+  return (
+    <div>
+      <textarea
+        className="routineDescription"
+        id="routineDescription"
+        placeholder="Enter routine description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        onBlur={() =>
+          dispatch(routineUpdated({ id, changes: { description } }))
         }
       />
     </div>
