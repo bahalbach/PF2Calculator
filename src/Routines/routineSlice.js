@@ -27,7 +27,7 @@ const empty = {};
 for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
 }
-const defaultParentActivity = {
+const defaultStrikeParent = {
   rollType: rollTypes.NORMAL,
   type: activityTypes.STRIKE,
   profTrend: profTrends.MARTIALWEAPON,
@@ -37,7 +37,20 @@ const defaultParentActivity = {
   MAP: MAPs.N1,
   targetType: defenses.AC,
 
-  damages: [],
+  damages: [0, 1],
+  effects: [0],
+};
+const defaultSaveParent = {
+  rollType: rollTypes.NORMAL,
+  type: activityTypes.SAVE,
+  profTrend: profTrends.CASTERSPELL,
+  statTrend: statTrends.AS18a,
+  itemTrend: itemTrends.NONE,
+  bonusAdjustments: { ...empty },
+  MAP: MAPs.N1,
+  targetType: defenses.REF,
+
+  damages: [2],
   effects: [],
 };
 const defaultDamage = {
@@ -89,6 +102,25 @@ const copyEffects = (state, effects) => {
   }
   return newEffects;
 };
+const copyActivityPaths = (state, apIds) => {
+  let newApIds = [];
+  for (let apId of apIds) {
+    const ap = state.activityPaths.entities[apId];
+    const apIds = copyActivityPaths(state, ap.apIds);
+    const damages = copyDamages(state, ap.damages);
+    const effects = copyEffects(state, ap.effects);
+    const id = ++activityPathId;
+    activityPathAdapter.addOne(state.activityPaths, {
+      ...ap,
+      id,
+      damages,
+      effects,
+      apIds,
+    });
+    newApIds.push(id);
+  }
+  return newApIds;
+};
 
 export const routinesSlice = createSlice({
   name: "routines",
@@ -131,22 +163,34 @@ export const routinesSlice = createSlice({
 
     routineCreated: {
       reducer: (state, action) => {
-        const { id } = action.payload;
+        const { id, copy } = action.payload;
+        if (copy) {
+          const routine = state.routines.entities[state.selectedRoutine];
+          const name = "Copy of " + routine.name;
+          const apIds = copyActivityPaths(state, routine.apIds);
+          routinesAdapter.addOne(state.routines, {
+            ...routine,
+            id,
+            name,
+            apIds,
+          });
+        } else {
+          routinesAdapter.addOne(state.routines, {
+            id,
+            name: "New Routine",
+            display: true,
+            apIds: [],
+            levelDiff: 0,
+            description: "Enter a description here.",
+            startLevel: 1,
+            endLevel: 20,
+          });
+        }
         state.selectedRoutine = id;
-        routinesAdapter.addOne(state.routines, {
-          id,
-          name: "New Routine",
-          display: true,
-          apIds: [],
-          levelDiff: 0,
-          description: "Enter a description here.",
-          startLevel: 1,
-          endLevel: 20,
-        });
       },
-      prepare: () => {
+      prepare: ({ copy = false }) => {
         const id = ++routineId;
-        return { payload: { id } };
+        return { payload: { id, copy } };
       },
     },
     routineRemoved: (state, action) => {
@@ -163,7 +207,7 @@ export const routinesSlice = createSlice({
     },
     activityPathCreated: {
       reducer: (state, action) => {
-        const { id, parentId, routineId, applyMAP } = action.payload;
+        const { id, parentId, routineId, isStrike, applyMAP } = action.payload;
 
         let parentAP;
         if (routineId !== undefined)
@@ -172,7 +216,7 @@ export const routinesSlice = createSlice({
           state.activityPaths.entities[parentId].apIds.push(id);
           parentAP = state.activityPaths.entities[parentId];
         } else {
-          parentAP = defaultParentActivity;
+          parentAP = isStrike ? defaultStrikeParent : defaultSaveParent;
         }
         // copy parent damages and effects
         let newDamages = copyDamages(state, parentAP.damages);
@@ -183,27 +227,28 @@ export const routinesSlice = createSlice({
           condition: conditions.ALWAYS,
 
           rollType: rollTypes.NORMAL,
-          type: activityTypes.STRIKE,
+          type: parentAP.type,
           profTrend: parentAP.profTrend,
           statTrend: parentAP.statTrend,
           itemTrend: parentAP.itemTrend,
           bonusAdjustments: { ...parentAP.bonusAdjustments },
           MAP: applyMAP ? nextMAPs[parentAP.MAP] : parentAP.MAP,
 
-          targetType: defenses.AC,
+          targetType: parentAP.targetType,
 
           damages: newDamages,
           effects: newEffects,
           apIds: [],
         });
       },
-      prepare: ({ parentId, routineId, applyMAP }) => {
+      prepare: ({ parentId, routineId, isStrike = true, applyMAP = false }) => {
         const id = ++activityPathId;
         return {
           payload: {
             id,
             parentId,
             routineId,
+            isStrike,
             applyMAP,
           },
         };

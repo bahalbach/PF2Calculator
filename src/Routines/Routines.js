@@ -59,6 +59,12 @@ const Routines = () => {
       <button className="add" onClick={() => dispatch(routineCreated())}>
         +
       </button>
+      <button
+        className="add"
+        onClick={() => dispatch(routineCreated({ copy: true }))}
+      >
+        Copy Selected Routine
+      </button>
       <div className="routines">{routineDisplays}</div>
     </div>
   );

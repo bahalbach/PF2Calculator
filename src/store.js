@@ -68,6 +68,73 @@ export const store = configureStore({
     targets: targetReducer,
   },
 });
+// default damages and effects
+store.dispatch(
+  damageAdded({
+    id: 0,
+    damageCondition: dCond.STRIKE,
+
+    dieTrend: dieTrends.WEAPON,
+    dieAdjustments: { ...empty },
+    diceSize: 8,
+    fatal: false,
+    fatalDie: 10,
+    damageTrend: [damageTrends.AS18a, damageTrends.MARTIALWEAPONSPEC],
+    damageAdjustments: { ...empty },
+
+    damageType: damageTypes.S,
+    material: materials.NONE,
+    persistent: false,
+    multiplier: 1,
+  })
+);
+store.dispatch(
+  damageAdded({
+    id: 1,
+    damageCondition: dCond.STRIKE,
+
+    dieTrend: dieTrends.RUNE,
+    dieAdjustments: { ...empty },
+    diceSize: 6,
+    fatal: false,
+    fatalDie: 10,
+    damageTrend: [],
+    damageAdjustments: { ...empty },
+
+    damageType: damageTypes.FIRE,
+    material: materials.NONE,
+    persistent: false,
+    multiplier: 1,
+  })
+);
+store.dispatch(
+  damageAdded({
+    id: 2,
+    damageCondition: dCond.BASIC,
+
+    dieTrend: dieTrends.SPELLLEVEL2,
+    dieAdjustments: { ...empty },
+    diceSize: 6,
+    fatal: false,
+    fatalDie: 10,
+    damageTrend: [],
+    damageAdjustments: { ...empty },
+
+    damageType: damageTypes.FIRE,
+    material: materials.NONE,
+    persistent: false,
+    multiplier: 1,
+  })
+);
+store.dispatch(
+  effectAdded({
+    id: 0,
+    effectCondition: conditions.CRIT,
+    effectType: effectTypes.FLATFOOT,
+    startLevel: 5,
+    endLevel: 20,
+  })
+);
 
 store.dispatch(
   targetAdded({
@@ -87,6 +154,7 @@ store.dispatch(
   })
 );
 
+// add in some example routines
 store.dispatch(
   routineAdded({
     id: 0,
@@ -129,14 +197,14 @@ store.dispatch(
     targetType: defenses.AC,
     targetInfoId: 0,
 
-    damages: [0, 1],
-    effects: [0],
+    damages: [3, 4],
+    effects: [1],
     apIds: [1],
   })
 );
 store.dispatch(
   damageAdded({
-    id: 0,
+    id: 3,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.WEAPON,
@@ -155,7 +223,7 @@ store.dispatch(
 );
 store.dispatch(
   damageAdded({
-    id: 1,
+    id: 4,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.RUNE,
@@ -174,7 +242,7 @@ store.dispatch(
 );
 store.dispatch(
   effectAdded({
-    id: 0,
+    id: 1,
     effectCondition: conditions.CRIT,
     effectType: effectTypes.FLATFOOT,
     startLevel: 5,
@@ -197,14 +265,14 @@ store.dispatch(
     targetType: defenses.AC,
     targetInfoId: 0,
 
-    damages: [2, 3],
-    effects: [1],
+    damages: [5, 6],
+    effects: [2],
     apIds: [],
   })
 );
 store.dispatch(
   damageAdded({
-    id: 2,
+    id: 5,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.WEAPON,
@@ -223,7 +291,7 @@ store.dispatch(
 );
 store.dispatch(
   damageAdded({
-    id: 3,
+    id: 6,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.RUNE,
@@ -242,7 +310,7 @@ store.dispatch(
 );
 store.dispatch(
   effectAdded({
-    id: 1,
+    id: 2,
     effectCondition: conditions.CRIT,
     effectType: effectTypes.FLATFOOT,
     startLevel: 5,
@@ -278,14 +346,14 @@ store.dispatch(
     targetType: defenses.REF,
     targetInfoId: 0,
 
-    damages: [4],
+    damages: [7],
     effects: [],
     apIds: [],
   })
 );
 store.dispatch(
   damageAdded({
-    id: 4,
+    id: 7,
     damageCondition: dCond.BASIC,
 
     dieTrend: dieTrends.SPELLLEVEL2,
@@ -332,14 +400,14 @@ store.dispatch(
     targetType: defenses.AC,
     targetInfoId: 0,
 
-    damages: [5, 6, 7],
+    damages: [8, 9, 10],
     effects: [],
     apIds: [],
   })
 );
 store.dispatch(
   damageAdded({
-    id: 5,
+    id: 8,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.WEAPON,
@@ -358,7 +426,7 @@ store.dispatch(
 );
 store.dispatch(
   damageAdded({
-    id: 6,
+    id: 9,
     damageCondition: dCond.CRIT,
 
     dieTrend: dieTrends.NONE,
@@ -377,7 +445,7 @@ store.dispatch(
 );
 store.dispatch(
   damageAdded({
-    id: 7,
+    id: 10,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.RUNE,
@@ -410,14 +478,14 @@ store.dispatch(
     targetType: defenses.AC,
     targetInfoId: 0,
 
-    damages: [8, 9, 10],
+    damages: [11, 12, 13],
     effects: [],
     apIds: [],
   })
 );
 store.dispatch(
   damageAdded({
-    id: 8,
+    id: 11,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.WEAPON,
@@ -436,7 +504,7 @@ store.dispatch(
 );
 store.dispatch(
   damageAdded({
-    id: 9,
+    id: 12,
     damageCondition: dCond.CRIT,
 
     dieTrend: dieTrends.NONE,
@@ -455,7 +523,7 @@ store.dispatch(
 );
 store.dispatch(
   damageAdded({
-    id: 10,
+    id: 13,
     damageCondition: dCond.STRIKE,
 
     dieTrend: dieTrends.RUNE,

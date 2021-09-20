@@ -227,17 +227,25 @@ export const ActivityPath = ({
         ))}
         <button
           className="add"
-          onClick={() => dispatch(activityPathCreated({ parentId: id }))}
+          onClick={() =>
+            dispatch(
+              activityPathCreated({
+                parentId: id,
+                isStrike: true,
+                applyMAP: true,
+              })
+            )
+          }
         >
-          +
+          + Strike
         </button>
         <button
           className="add"
           onClick={() =>
-            dispatch(activityPathCreated({ parentId: id, applyMAP: true }))
+            dispatch(activityPathCreated({ parentId: id, isStrike: false }))
           }
         >
-          +MAP
+          + Save
         </button>
       </div>
     </div>

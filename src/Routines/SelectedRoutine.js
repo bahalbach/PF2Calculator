@@ -27,9 +27,19 @@ function SelectedRoutine({ routineId }) {
       ))}
       <button
         className="add"
-        onClick={() => dispatch(activityPathCreated({ routineId: routineId }))}
+        onClick={() =>
+          dispatch(activityPathCreated({ routineId, isStrike: true }))
+        }
       >
-        +
+        + Strike
+      </button>
+      <button
+        className="add"
+        onClick={() =>
+          dispatch(activityPathCreated({ routineId, isStrike: false }))
+        }
+      >
+        + Save
       </button>
       {/* <EffectInput /> */}
     </div>
