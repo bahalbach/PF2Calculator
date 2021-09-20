@@ -32,7 +32,7 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   );
 
   const currentTarget = targets[0];
-  let title = "";
+  let title = "@" + displayLevel;
   let byLevelTile = currentTarget.name;
 
   title += " Vs ";
@@ -141,9 +141,9 @@ const useGenerateGraphs = (graphType, displayLevel) => {
         xaxis: { title: "Level" },
         yaxis: { title: "Expected Damage" },
         legend: {
-          x: 1,
+          x: 0,
           y: 1,
-          xanchor: "right",
+          xanchor: "left",
         },
         margin: {
           l: 40,

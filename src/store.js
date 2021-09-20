@@ -139,7 +139,7 @@ store.dispatch(
 store.dispatch(
   targetAdded({
     id: 0,
-    name: "AC: High, saves: Moderate",
+    name: "AC: High, Saves: Moderate",
 
     levelDiff: 0,
 
