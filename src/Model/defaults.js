@@ -52,6 +52,8 @@ const animalrage = {};
 const dragonrage = {};
 const giantrage = {};
 
+const implementEmpower = {};
+
 const fighterAB = {};
 const martialAB = {};
 const casterAB = {};
@@ -59,7 +61,8 @@ const alchAB = {};
 
 const casterSpellAttack = {};
 const casterSaveDC = {};
-const magusspell = {};
+const classdc1 = {};
+const classdc2 = {};
 const mcspell = {};
 
 const fighterStatic = {};
@@ -87,7 +90,8 @@ for (let i = 1; i <= 20; i++) {
   casterProf[i] = 2;
 
   spellProf[i] = 2;
-  magusspell[i] = i + 2;
+  classdc1[i] = i + 2;
+  classdc2[i] = i + 2;
   mcspell[i] = i + 2;
 
   weaponItem[i] = 0;
@@ -109,12 +113,16 @@ for (let i = 1; i <= 20; i++) {
   dragonrage[i] = 4;
   giantrage[i] = 6;
 
+  implementEmpower[i] = 2;
+
   if (i >= 2) {
     weaponItem[i] = 1;
   }
   if (i >= 3) {
     maxSkill[i] = i + 4;
     skillItem[i] = 1;
+
+    implementEmpower[i] = 4;
   }
   if (i >= 4) {
     weaponDice[i] = 2;
@@ -148,7 +156,7 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 9) {
     skillItem[i] = 2;
-    magusspell[i] = i + 4;
+    classdc1[i] = i + 4;
 
     strategic[i] = 3;
     precise[i] = 4;
@@ -162,8 +170,10 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 11) {
     casterProf[i] = 4;
+    classdc2[i] = i + 4;
 
     sneak[i] = 3;
+    implementEmpower[i] = 6;
   }
   if (i >= 12) {
     weaponDice[i] = 3;
@@ -198,7 +208,7 @@ for (let i = 1; i <= 20; i++) {
     score16pp[i] = 6;
     maxScore[i] = 6;
     skillItem[i] = 3;
-    magusspell[i] = i + 6;
+    classdc1[i] = i + 6;
 
     sneak[i] = 4;
     strategic[i] = 5;
@@ -210,7 +220,10 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 19) {
     weaponDice[i] = 4;
     spellProf[i] = 8;
+    classdc2[i] = i + 6;
     deadly[i] = 3;
+
+    implementEmpower[i] = 8;
   }
   if (i >= 20) {
     maxScore[i] = 7;
@@ -237,7 +250,8 @@ export const profTrendValues = {
   [profTrends.CASTERWEAPON]: casterAB,
   [profTrends.ALCHWEAPON]: alchAB,
   [profTrends.CASTERSPELL]: casterSpellAttack,
-  [profTrends.MAGUSSPELL]: magusspell,
+  [profTrends.CLASSDC1]: classdc1,
+  [profTrends.CLASSDC2]: classdc2,
   [profTrends.MCSPELL]: mcspell,
   [profTrends.MAXSKILL]: maxSkill,
 };
@@ -299,6 +313,7 @@ export const damageTrendValues = {
   [damageTrends.ANIMALRAGE]: animalrage,
   [damageTrends.DRAGONRAGE]: dragonrage,
   [damageTrends.GIANTRAGE]: giantrage,
+  [damageTrends.IMPLEMENT]: implementEmpower,
 };
 
 const extremeAC = {

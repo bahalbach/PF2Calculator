@@ -49,7 +49,8 @@ export const profTrends = {
   CASTERWEAPON: "Caster Weapon (11)",
   ALCHWEAPON: "Alchemist Weapon (7)",
   CASTERSPELL: "Caster Spell (7, 15, 19)",
-  MAGUSSPELL: "Magus Spell (9, 17)",
+  CLASSDC1: "Class/Spell (9, 17)",
+  CLASSDC2: "Class/Spell (11, 19)",
   MCSPELL: "MC Spell (12, 18)",
   MAXSKILL: "Max skill (3, 7, 15)",
 };
@@ -134,6 +135,8 @@ export const dieTrends = {
   WEAPON: "Weapon (1, 4, 12, 19)",
   SPELLLEVEL1: "1 x Spell Level",
   SPELLLEVEL2: "2 x Spell Level",
+  LEVEL: "Level",
+  HALFLEVEL: "1/2 Level",
   RUNE: "Runes (8, 15)",
   RUNE2: "Runes (8, 10, 16)",
   DEADLY: "Deadly (1, 12, 19)",
@@ -150,10 +153,13 @@ export const damageTrends = {
   ...statTrends,
   WEAPON: "Weapon (1, 4, 12, 19)",
   SPELLLEVEL1: "1 x Spell Level",
+  LEVEL: "Level",
+  HALFLEVEL: "1/2 Level",
   RAGE: "Rage",
   ANIMALRAGE: "Animal Rage",
   DRAGONRAGE: "Dragon Rage",
   GIANTRAGE: "Giant Rage",
+  IMPLEMENT: "Implement's Empowerment",
 };
 
 export const damageTypes = {
