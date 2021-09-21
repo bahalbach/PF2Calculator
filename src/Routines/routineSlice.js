@@ -10,6 +10,7 @@ import {
   statTrends,
   itemTrends,
   effectTypes,
+  damageTrends,
 } from "../Model/types";
 import { damageTypes, dCond, dieTrends, materials } from "../Model/types";
 
@@ -126,11 +127,194 @@ const getActivityPaths = (state, apIds) => {
   for (let apId of apIds) {
     const ap = state.activityPaths.entities[apId];
     const aps = getActivityPaths(state, ap.apIds);
-    newAps.push({ ...ap, apIds: aps });
+    const damages = getDamages(state, ap.damages);
+    const effects = getEffects(state, ap.effects);
+    newAps.push({ ...ap, apIds: aps, damages, effects });
   }
   return newAps;
 };
-const validateRoutine = (routine) => {};
+const getDamages = (state, damages) => {
+  let newDamages = [];
+  for (let did of damages) {
+    const damage = state.damages.entities[did];
+    newDamages.push({ ...damage });
+  }
+  return newDamages;
+};
+const getEffects = (state, effects) => {
+  let newEffects = [];
+  for (let eid of effects) {
+    const damage = state.effects.entities[eid];
+    newEffects.push({ ...damage });
+  }
+  return newEffects;
+};
+
+const validateRoutine = (routine) => {
+  return (
+    typeof routine.name === "string" &&
+    typeof routine.display === "boolean" &&
+    typeof routine.levelDiff === "number" &&
+    typeof routine.description === "string" &&
+    validateActivityPaths(routine.apIds) &&
+    typeof routine.startLevel === "number" &&
+    typeof routine.endLevel === "number"
+  );
+};
+const validateActivityPaths = (apIds) => {
+  if (Array.isArray(apIds)) {
+    for (let apId of apIds) {
+      if (
+        !(
+          Object.values(conditions).includes(apId.condition) &&
+          Object.values(rollTypes).includes(apId.rollType) &&
+          Object.values(activityTypes).includes(apId.type) &&
+          Object.values(profTrends).includes(apId.profTrend) &&
+          Object.values(statTrends).includes(apId.statTrend) &&
+          Object.values(itemTrends).includes(apId.itemTrend) &&
+          validateAdjustments(apId.bonusAdjustments) &&
+          Object.values(MAPs).includes(apId.MAP) &&
+          Object.values(defenses).includes(apId.targetType) &&
+          validateActivityPaths(apId.apIds) &&
+          validateDamages(apId.damages) &&
+          validateEffects(apId.effects)
+        )
+      ) {
+        console.log(apId);
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+};
+const validateAdjustments = (adjustments) => {
+  if (typeof adjustments !== "object") {
+    console.log("1");
+    return false;
+  }
+  for (let i = 1; i <= 20; i++) {
+    if (typeof adjustments[i] !== "number") {
+      console.log(2);
+      return false;
+    }
+  }
+  return true;
+};
+const validateDamages = (damages) => {
+  if (Array.isArray(damages)) {
+    for (let damage of damages) {
+      if (Array.isArray(damage.damageTrend)) {
+        for (let dt of damage.damageTrend) {
+          if (!Object.values(damageTrends).includes(dt)) {
+            console.log("3");
+            return false;
+          }
+        }
+      } else {
+        console.log("4");
+        return false;
+      }
+      if (
+        !(
+          Object.values(dCond).includes(damage.damageCondition) &&
+          Object.values(dieTrends).includes(damage.dieTrend) &&
+          validateAdjustments(damage.dieAdjustments) &&
+          typeof damage.diceSize === "number" &&
+          typeof damage.fatal === "boolean" &&
+          typeof damage.fatalDie === "number" &&
+          validateAdjustments(damage.damageAdjustments) &&
+          Object.values(damageTypes).includes(damage.damageType) &&
+          Object.values(materials).includes(damage.material) &&
+          typeof damage.persistent === "boolean" &&
+          damage.multiplier in [0.5, 1, 2]
+        )
+      ) {
+        console.log(damage);
+        return false;
+      }
+    }
+    return true;
+  }
+};
+const validateEffects = (effects) => {
+  if (Array.isArray(effects)) {
+    for (let effect of effects) {
+      if (
+        !(
+          Object.values(conditions).includes(effect.effectCondition) &&
+          Object.values(effectTypes).includes(effect.effectType) &&
+          typeof effect.startLevel === "number" &&
+          typeof effect.endLevel === "number"
+        )
+      ) {
+        console.log(effect);
+        return false;
+      }
+    }
+    return true;
+  }
+};
+const insertRoutine = (state, routine) => {
+  const apIds = insertActivityPaths(state, routine.apIds);
+  const id = ++routineId;
+  routinesAdapter.addOne(state.routines, { ...routine, id, apIds });
+  return id;
+};
+const insertActivityPaths = (state, aps) => {
+  let newApIds = [];
+  for (let ap of aps) {
+    const apIds = insertActivityPaths(state, ap.apIds);
+    const damages = insertDamages(state, ap.damages);
+    const effects = insertEffects(state, ap.effects);
+    const id = ++activityPathId;
+    activityPathAdapter.addOne(state.activityPaths, {
+      ...ap,
+      id,
+      damages,
+      effects,
+      apIds,
+    });
+    newApIds.push(id);
+  }
+  return newApIds;
+};
+const insertDamages = (state, damages) => {
+  const newDamages = [];
+  for (let damage of damages) {
+    // create a new damage entity and add it's id to newDamages
+    const id = ++damageId;
+    damageAdapter.addOne(state.damages, { ...damage, id });
+    newDamages.push(id);
+  }
+  return newDamages;
+};
+const insertEffects = (state, effects) => {
+  const newEffects = [];
+  for (let effect of effects) {
+    // create a new effect entity and add it's id to newEffects
+    const id = ++effectId;
+    effectAdapter.addOne(state.effects, { ...effect, id });
+    newEffects.push(id);
+  }
+  return newEffects;
+};
+// if ( true ) {
+//   const id = ++routineId;
+
+//   routinesAdapter.addOne(state.routines, {
+//       id,
+//       name: "New Routine",
+//       display: true,
+//       apIds: [],
+//       levelDiff: 0,
+//       description: "Enter a description here.",
+//       startLevel: 1,
+//       endLevel: 20,
+//     });
+
+//   state.selectedRoutine = id;
+// }
 
 export const routinesSlice = createSlice({
   name: "routines",
@@ -346,9 +530,16 @@ export const routinesSlice = createSlice({
     },
     importRoutine: (state, action) => {
       try {
-        const { routineObject } = JSON.parse(action.payload);
-        validateRoutine(routineObject);
+        // console.log(action.payload);
+        const routineObject = JSON.parse(action.payload);
+        // console.log("parsed");
+        // console.log(routineObject);
+        // console.log(validateRoutine(routineObject));
+        if (validateRoutine(routineObject)) {
+          state.selectedRoutine = insertRoutine(state, routineObject);
+        }
       } catch (error) {
+        console.log(error);
         console.log("Parsing failed");
       }
     },
@@ -421,6 +612,6 @@ export const selectSelectedRoutineObject = (state) => {
     ...state.routines.routines.entities[state.routines.selectedRoutine],
   };
   routine.apIds = getActivityPaths(state.routines, routine.apIds);
-  routine.name = "test";
+  // routine.name = "test";
   return routine;
 };
