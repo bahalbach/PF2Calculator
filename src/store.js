@@ -3,7 +3,9 @@ import routineReducer, {
   activityPathAdded,
   damageAdded,
   effectAdded,
+  importRoutine,
   routineAdded,
+  setRoutine,
 } from "./Routines/routineSlice";
 import targetReducer, { targetAdded } from "./Target/targetSlice";
 import weaknessReducer from "./Target/weaknessSlice";
@@ -25,6 +27,7 @@ import {
   SaveTrends,
   statTrends,
 } from "./Model/types";
+import { exampleRoutines } from "./Model/exampleRoutines";
 
 const empty = {};
 const pickCritSpec = {};
@@ -540,6 +543,10 @@ store.dispatch(
     multiplier: 1,
   })
 );
+for (let r of exampleRoutines) {
+  store.dispatch(importRoutine(r));
+}
+store.dispatch(setRoutine(1));
 // store.dispatch(weaknessAdded({ id: 0, type: damageTypes.FIRE, value: 10 }));
 // store.dispatch(
 //   damageAdded({

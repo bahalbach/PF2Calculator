@@ -180,12 +180,31 @@ const validateActivityPaths = (apIds) => {
           validateEffects(apId.effects)
         )
       ) {
-        console.log(apId);
+        // console.log(apId);
+        // console.log(
+        //   Object.values(conditions).includes(apId.condition) &&
+        //     Object.values(rollTypes).includes(apId.rollType) &&
+        //     Object.values(activityTypes).includes(apId.type)
+        // );
+        // console.log(
+        //   Object.values(profTrends).includes(apId.profTrend) &&
+        //     Object.values(statTrends).includes(apId.statTrend) &&
+        //     Object.values(itemTrends).includes(apId.itemTrend)
+        // );
+        // console.log(
+        //   Object.values(MAPs).includes(apId.MAP) &&
+        //     Object.values(defenses).includes(apId.targetType)
+        // );
+        // console.log(validateActivityPaths(apId.apIds));
+        // console.log(validateDamages(apId.damages));
+        // console.log(validateEffects(apId.effects));
+        // console.log(validateAdjustments(apId.bonusAdjustments));
         return false;
       }
     }
     return true;
   }
+  console.log("6");
   return false;
 };
 const validateAdjustments = (adjustments) => {
@@ -227,10 +246,25 @@ const validateDamages = (damages) => {
           Object.values(damageTypes).includes(damage.damageType) &&
           Object.values(materials).includes(damage.material) &&
           typeof damage.persistent === "boolean" &&
-          damage.multiplier in [0.5, 1, 2]
+          [0.5, 1, 2].includes(damage.multiplier)
         )
       ) {
         console.log(damage);
+        console.log(
+          Object.values(dCond).includes(damage.damageCondition) &&
+            Object.values(dieTrends).includes(damage.dieTrend)
+        );
+        console.log(
+          typeof damage.diceSize === "number" &&
+            typeof damage.fatal === "boolean" &&
+            typeof damage.fatalDie === "number"
+        );
+        console.log(
+          Object.values(damageTypes).includes(damage.damageType) &&
+            Object.values(materials).includes(damage.material) &&
+            typeof damage.persistent === "boolean"
+        );
+
         return false;
       }
     }
