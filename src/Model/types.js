@@ -112,6 +112,7 @@ export const defenses = {
   REF: "Ref",
   WILL: "Will",
   PER: "Perception",
+  DC: "Standard DC",
 };
 
 export const dCond = {

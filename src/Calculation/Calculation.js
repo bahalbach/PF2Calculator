@@ -7,6 +7,7 @@ import {
   statTrendValues,
   itemTrendValues,
   MAPvalues,
+  standardDC,
 } from "../Model/defaults";
 import {
   activityTypes,
@@ -172,7 +173,9 @@ function calculateExpectedDamage(
     case defenses.PER:
       targetValue = defaultSaves[target.PerTrend];
       break;
-
+    case defenses.DC:
+      targetValue = standardDC;
+      break;
     default:
       targetValue = defaultACs[target.ACTrend];
       break;
@@ -190,7 +193,7 @@ function calculateExpectedDamage(
       if (activity.targetType === defenses.AC) {
         if (target.flatfooted || targetState.flatfooted) DC -= 2;
       } else {
-        DC += 10;
+        if (activity.targetType !== defenses.DC) DC += 10;
       }
       break;
 
@@ -200,7 +203,10 @@ function calculateExpectedDamage(
       DC += statTrendValues[activity.statTrend][level];
       DC += itemTrendValues[activity.itemTrend][level];
       DC += activity.bonusAdjustments[level];
-      if (activity.targetType === defenses.AC) {
+      if (
+        activity.targetType === defenses.AC ||
+        activity.targetType === defenses.DC
+      ) {
         bonus -= 10;
       }
       break;
