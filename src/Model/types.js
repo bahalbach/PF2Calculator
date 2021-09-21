@@ -134,6 +134,7 @@ export const dieTrends = {
   SPELLLEVEL1: "1 x Spell Level",
   SPELLLEVEL2: "2 x Spell Level",
   RUNE: "Runes (8, 15)",
+  RUNE2: "Runes (8, 10, 16)",
   DEADLY: "Deadly (1, 12, 19)",
   SNEAK: "Sneak Attack (1, 5, 11, 17)",
   STRATEGIC: "Strategic Strike (1, 5, 9, 13, 17)",

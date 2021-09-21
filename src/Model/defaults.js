@@ -37,6 +37,7 @@ for (let i = 1; i <= 20; i++) {
   spellDice2[i] = 2 * Math.floor((i + 1) / 2);
 }
 const runes = {};
+const runes2 = {};
 const deadly = {};
 
 const sneak = {};
@@ -93,6 +94,7 @@ for (let i = 1; i <= 20; i++) {
   skillItem[i] = 0;
   weaponDice[i] = 1;
   runes[i] = 0;
+  runes2[i] = 0;
   deadly[i] = 1;
 
   sneak[i] = 1;
@@ -142,6 +144,7 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 8) {
     runes[i] = 1;
+    runes2[i] = 1;
   }
   if (i >= 9) {
     skillItem[i] = 2;
@@ -155,6 +158,7 @@ for (let i = 1; i <= 20; i++) {
     maxScore[i] = 5;
     score14p[i] = 4;
     score14[i] = 4;
+    runes2[i] = 2;
   }
   if (i >= 11) {
     casterProf[i] = 4;
@@ -188,6 +192,7 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 16) {
     weaponItem[i] = 3;
+    runes2[i] = 3;
   }
   if (i >= 17) {
     score16pp[i] = 6;
@@ -275,6 +280,7 @@ export const dieTrendValues = {
   [dieTrends.SPELLLEVEL1]: spellDice,
   [dieTrends.SPELLLEVEL2]: spellDice2,
   [dieTrends.RUNE]: runes,
+  [dieTrends.RUNE2]: runes2,
   [dieTrends.DEADLY]: deadly,
   [dieTrends.SNEAK]: sneak,
   [dieTrends.STRATEGIC]: strategic,
