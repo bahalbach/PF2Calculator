@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/PF2Calculator/static/css/main.57ba2d5b.chunk.css",
-    "main.js": "/PF2Calculator/static/js/main.d4ccaa2a.chunk.js",
-    "main.js.map": "/PF2Calculator/static/js/main.d4ccaa2a.chunk.js.map",
+    "main.css": "/PF2Calculator/static/css/main.ff510461.chunk.css",
+    "main.js": "/PF2Calculator/static/js/main.49899ead.chunk.js",
+    "main.js.map": "/PF2Calculator/static/js/main.49899ead.chunk.js.map",
     "runtime-main.js": "/PF2Calculator/static/js/runtime-main.ce999422.js",
     "runtime-main.js.map": "/PF2Calculator/static/js/runtime-main.ce999422.js.map",
     "static/js/2.931deea0.chunk.js": "/PF2Calculator/static/js/2.931deea0.chunk.js",
     "static/js/2.931deea0.chunk.js.map": "/PF2Calculator/static/js/2.931deea0.chunk.js.map",
     "index.html": "/PF2Calculator/index.html",
-    "static/css/main.57ba2d5b.chunk.css.map": "/PF2Calculator/static/css/main.57ba2d5b.chunk.css.map",
+    "static/css/main.ff510461.chunk.css.map": "/PF2Calculator/static/css/main.ff510461.chunk.css.map",
     "static/js/2.931deea0.chunk.js.LICENSE.txt": "/PF2Calculator/static/js/2.931deea0.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.ce999422.js",
     "static/js/2.931deea0.chunk.js",
-    "static/css/main.57ba2d5b.chunk.css",
-    "static/js/main.d4ccaa2a.chunk.js"
+    "static/css/main.ff510461.chunk.css",
+    "static/js/main.49899ead.chunk.js"
   ]
 }
