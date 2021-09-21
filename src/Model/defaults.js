@@ -10,6 +10,8 @@ import {
 
 const zero = {};
 const level = {};
+const halfLevel = {};
+
 const trained = {};
 const maxSkill = {};
 
@@ -75,6 +77,7 @@ const casterRanged = {};
 for (let i = 1; i <= 20; i++) {
   zero[i] = 0;
   level[i] = i;
+  halfLevel[i] = Math.floor(i / 2);
   trained[i] = i + 2;
   maxSkill[i] = i + 2;
 
@@ -293,6 +296,8 @@ export const dieTrendValues = {
   [dieTrends.WEAPON]: weaponDice,
   [dieTrends.SPELLLEVEL1]: spellDice,
   [dieTrends.SPELLLEVEL2]: spellDice2,
+  [dieTrends.LEVEL]: level,
+  [dieTrends.HALFLEVEL]: halfLevel,
   [dieTrends.RUNE]: runes,
   [dieTrends.RUNE2]: runes2,
   [dieTrends.DEADLY]: deadly,
@@ -309,6 +314,8 @@ export const damageTrendValues = {
   [damageTrends.CASTERWEAPONSPEC]: casterRanged,
   [damageTrends.WEAPON]: weaponDice,
   [damageTrends.SPELLLEVEL1]: spellDice,
+  [damageTrends.LEVEL]: level,
+  [damageTrends.HALFLEVEL]: halfLevel,
   [damageTrends.RAGE]: rage,
   [damageTrends.ANIMALRAGE]: animalrage,
   [damageTrends.DRAGONRAGE]: dragonrage,
