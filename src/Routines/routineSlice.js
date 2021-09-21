@@ -121,6 +121,16 @@ const copyActivityPaths = (state, apIds) => {
   }
   return newApIds;
 };
+const getActivityPaths = (state, apIds) => {
+  let newAps = [];
+  for (let apId of apIds) {
+    const ap = state.activityPaths.entities[apId];
+    const aps = getActivityPaths(state, ap.apIds);
+    newAps.push({ ...ap, apIds: aps });
+  }
+  return newAps;
+};
+const validateRoutine = (routine) => {};
 
 export const routinesSlice = createSlice({
   name: "routines",
@@ -215,6 +225,12 @@ export const routinesSlice = createSlice({
         if (parentId !== undefined) {
           state.activityPaths.entities[parentId].apIds.push(id);
           parentAP = state.activityPaths.entities[parentId];
+          if (isStrike && parentAP.type !== activityTypes.STRIKE) {
+            parentAP = defaultStrikeParent;
+          }
+          if (!isStrike && parentAP.type !== activityTypes.SAVE) {
+            parentAP = defaultSaveParent;
+          }
         } else {
           parentAP = isStrike ? defaultStrikeParent : defaultSaveParent;
         }
@@ -328,6 +344,14 @@ export const routinesSlice = createSlice({
         );
       effectAdapter.removeOne(state.effects, id);
     },
+    importRoutine: (state, action) => {
+      try {
+        const { routineObject } = JSON.parse(action.payload);
+        validateRoutine(routineObject);
+      } catch (error) {
+        console.log("Parsing failed");
+      }
+    },
   },
 });
 
@@ -353,6 +377,8 @@ export const {
   effectUpdated,
   effectCreated,
   effectRemoved,
+
+  importRoutine,
 } = routinesSlice.actions;
 
 export default routinesSlice.reducer;
@@ -390,3 +416,11 @@ export const {
 } = effectAdapter.getSelectors((state) => state.routines.effects);
 
 export const selectSelectedRoutine = (state) => state.routines.selectedRoutine;
+export const selectSelectedRoutineObject = (state) => {
+  let routine = {
+    ...state.routines.routines.entities[state.routines.selectedRoutine],
+  };
+  routine.apIds = getActivityPaths(state.routines, routine.apIds);
+  routine.name = "test";
+  return routine;
+};

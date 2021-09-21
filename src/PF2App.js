@@ -5,7 +5,7 @@ import TargetInput from "./Target/TargetInput";
 import Display from "./Display/Display";
 import SelectedRoutine from "./Routines/SelectedRoutine";
 import Routines from "./Routines/Routines";
-import Export from "./Export";
+import Export from "./Sharing/Export";
 
 import "./PF2App.css";
 import { useSelector } from "react-redux";
