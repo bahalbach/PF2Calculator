@@ -56,7 +56,7 @@ export const ActivityPath = ({
   );
 
   return (
-    <div className="box">
+    <div className="ImportantBox">
       {displayCondition ? (
         <div>
           {"Condition: "}

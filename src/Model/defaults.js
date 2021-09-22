@@ -46,6 +46,10 @@ const sneak = {};
 const strategic = {};
 const precise = {};
 
+const preEdge1 = {};
+const preEdge2 = {};
+const preEdge3 = {};
+
 const martialSpec = {};
 const casterSpec = {};
 
@@ -107,6 +111,10 @@ for (let i = 1; i <= 20; i++) {
   sneak[i] = 1;
   strategic[i] = 1;
   precise[i] = 2;
+
+  preEdge1[i] = 1;
+  preEdge2[i] = 0;
+  preEdge3[i] = 0;
 
   martialSpec[i] = 0;
   casterSpec[i] = 0;
@@ -177,6 +185,8 @@ for (let i = 1; i <= 20; i++) {
 
     sneak[i] = 3;
     implementEmpower[i] = 6;
+
+    preEdge1[i] = 2;
   }
   if (i >= 12) {
     weaponDice[i] = 3;
@@ -216,6 +226,8 @@ for (let i = 1; i <= 20; i++) {
     sneak[i] = 4;
     strategic[i] = 5;
     precise[i] = 6;
+
+    preEdge2[i] = 1;
   }
   if (i >= 18) {
     mcspell[i] = i + 6;
@@ -227,6 +239,10 @@ for (let i = 1; i <= 20; i++) {
     deadly[i] = 3;
 
     implementEmpower[i] = 8;
+
+    preEdge1[i] = 3;
+    preEdge2[i] = 2;
+    preEdge3[i] = 1;
   }
   if (i >= 20) {
     maxScore[i] = 7;
@@ -304,6 +320,9 @@ export const dieTrendValues = {
   [dieTrends.SNEAK]: sneak,
   [dieTrends.STRATEGIC]: strategic,
   [dieTrends.PRECISE]: precise,
+  [dieTrends.PRECISIONEDGE]: preEdge1,
+  [dieTrends.PRECISIONEDGE2]: preEdge2,
+  [dieTrends.PRECISIONEDGE3]: preEdge3,
 };
 
 export const damageTrendValues = {

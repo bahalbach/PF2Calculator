@@ -45,7 +45,16 @@ body {
 .box {
   padding: 5px;
   margin: 5px;
-  border-left: 1px solid black;
+  border-left: 1px dotted gray;
+  background-color: rgba(196, 196, 196, 0.322);
+}
+
+.ImportantBox {
+  padding: 10px;
+  padding-right: 5px;
+  margin: 15px;
+  margin-right: 5px;
+  border-left: 3px solid black;
   background-color: rgba(196, 196, 196, 0.322);
 }
 

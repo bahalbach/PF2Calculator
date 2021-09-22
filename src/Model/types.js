@@ -143,6 +143,9 @@ export const dieTrends = {
   SNEAK: "Sneak Attack (1, 5, 11, 17)",
   STRATEGIC: "Strategic Strike (1, 5, 9, 13, 17)",
   PRECISE: "Precise Strike (1, 1, 5, 9, 13, 17)",
+  PRECISIONEDGE: "Precision Edge 1(1, 11, 19)",
+  PRECISIONEDGE2: "Precision Edge 2(17, 19)",
+  PRECISIONEDGE3: "Precision Edge 3(19)",
 };
 
 export const damageTrends = {
