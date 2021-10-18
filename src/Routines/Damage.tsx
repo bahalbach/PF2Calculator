@@ -11,9 +11,10 @@ import {
   materialOptions,
   multiplierOptions,
 } from "../Model/options";
-import { damageTrends } from "../Model/types";
+import { DamageTrend, damageTrends } from "../Model/types";
+import { RootState } from "../store";
 
-export const Damage = ({ parentId, id }) => {
+export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
   const {
     damageCondition,
     damageType,
@@ -28,7 +29,7 @@ export const Damage = ({ parentId, id }) => {
     fatalDie,
     damageTrend,
     damageAdjustments,
-  } = useSelector((state) => selectdamageById(state, id));
+  } = useSelector((state: RootState) => selectdamageById(state, id)!);
   const dispatch = useDispatch();
 
   const dieLevelList = LevelList(
@@ -57,7 +58,7 @@ export const Damage = ({ parentId, id }) => {
           if (e.target.value === damageTrends.NONE) {
             newdt.splice(index, 1);
           } else {
-            newdt[index] = e.target.value;
+            newdt[index] = e.target.value as DamageTrend;
           }
           dispatch(
             damageUpdated({

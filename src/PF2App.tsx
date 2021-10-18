@@ -14,7 +14,7 @@ import { selectSelectedRoutine } from "./Routines/routineSlice";
 // Initialize google analytics
 ReactGA.initialize("G-JR2YK097BG");
 
-function PF2App(props) {
+function PF2App() {
   const selectedRoutine = useSelector(selectSelectedRoutine);
   ReactGA.send("pageview");
 

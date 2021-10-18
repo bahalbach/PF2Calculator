@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectactivityPathEntities } from "../Routines/routineSlice";
+import { Routine, selectactivityPathEntities } from "../Routines/routineSlice";
 import { selectdamageEntities } from "../Routines/routineSlice";
 import { selectRoutineEntities } from "../Routines/routineSlice";
 import { selecttargetEntities } from "../Target/targetSlice";
@@ -13,9 +13,10 @@ import { ActivityPathEvaluator } from "../Calculation/EvaluateActivityPath";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
 import { defaultACs, defaultSaves } from "../Model/defaults";
+import { Dictionary } from "@reduxjs/toolkit";
 const Plot = createPlotlyComponent(Plotly);
 
-const useGenerateGraphs = (graphType, displayLevel) => {
+const useGenerateGraphs = (graphType: string, displayLevel: number) => {
   const routines = useSelector(selectRoutineEntities);
   const activityPaths = useSelector(selectactivityPathEntities);
   const targets = useSelector(selecttargetEntities);
@@ -31,7 +32,7 @@ const useGenerateGraphs = (graphType, displayLevel) => {
     weaknesses
   );
 
-  const currentTarget = targets[0];
+  const currentTarget = targets[0]!;
   let title = "@" + displayLevel;
   let byLevelTile = currentTarget.name;
 
@@ -49,8 +50,8 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   // byLevelTile += " Will: " + currentTarget.WillTrend;
   // byLevelTile += " Per: " + currentTarget.PerTrend;
 
-  let datasets;
-  let perDatasets;
+  let datasets: Plotly.Data[] = [];
+  let perDatasets: Plotly.Data[] = [];
   let expectedDamages;
   let expectedPersistentDamages;
   switch (graphType) {
@@ -87,7 +88,7 @@ const useGenerateGraphs = (graphType, displayLevel) => {
 
   let damageChart = (
     <Plot
-      classname="plot"
+      className="plot"
       data={datasets}
       layout={{
         title: title,
@@ -110,7 +111,7 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   );
   let persistentDamageChart = (
     <Plot
-      classname="plot"
+      className="plot"
       data={perDatasets}
       layout={{
         title: "Expected Persistent Damage",
@@ -133,7 +134,7 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   );
   let byLevelDamageChart = (
     <Plot
-      classname="plot"
+      className="plot"
       data={byLeveldatasets}
       layout={{
         title: byLevelTile,
@@ -156,7 +157,7 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   );
   let byLevelPerDamageChart = (
     <Plot
-      classname="plot"
+      className="plot"
       data={byLevelperDatasets}
       layout={{
         title: byLevelTile,
@@ -187,12 +188,15 @@ const useGenerateGraphs = (graphType, displayLevel) => {
   };
 };
 
-const evaluateByLevel = (routines, evaluator) => {
+const evaluateByLevel = (
+  routines: Dictionary<Routine>,
+  evaluator: ActivityPathEvaluator
+) => {
   let datasets = [];
   let perDatasets = [];
 
   for (let id in routines) {
-    let routine = routines[id];
+    let routine = routines[id]!;
     if (!routine.display) continue;
 
     const levelArray = [];
@@ -211,20 +215,25 @@ const evaluateByLevel = (routines, evaluator) => {
       x: levelArray,
       y: expDbyLevel,
       yaxis: "y",
-    });
+    } as const);
     perDatasets.push({
       type: "scatter",
       name: routine.name,
       x: levelArray,
       y: expPDbyLevel,
       yaxis: "y",
-    });
+    } as const);
   }
 
   return { datasets, perDatasets };
 };
 
-const evaluatePM = (routines, evaluator, displayLevel, defense = true) => {
+const evaluatePM = (
+  routines: Dictionary<Routine>,
+  evaluator: ActivityPathEvaluator,
+  displayLevel: number,
+  defense = true
+) => {
   let datasets = [];
   let perDatasets = [];
   let expectedDamages = [];
@@ -238,7 +247,7 @@ const evaluatePM = (routines, evaluator, displayLevel, defense = true) => {
   // };
 
   for (let id in routines) {
-    let routine = routines[id];
+    let routine = routines[id]!;
     if (!routine.display) continue;
     if (!evaluator.canEvaluate(displayLevel, routine)) continue;
 
@@ -282,19 +291,23 @@ const evaluatePM = (routines, evaluator, displayLevel, defense = true) => {
       x: bonusArray,
       y: expDbyBonus,
       yaxis: "y",
-    });
+    } as const);
     perDatasets.push({
       type: "scatter",
       name: routine.name,
       x: bonusArray,
       y: expPDbyBonus,
       yaxis: "y",
-    });
+    } as const);
   }
   return { expectedDamages, expectedPersistentDamages, datasets, perDatasets };
 };
 
-const evaluateDistribution = (routines, evaluator, displayLevel) => {
+const evaluateDistribution = (
+  routines: Dictionary<Routine>,
+  evaluator: ActivityPathEvaluator,
+  displayLevel: number
+) => {
   let datasets = [];
   let perDatasets = [];
   let expectedDamages = [];
@@ -309,7 +322,7 @@ const evaluateDistribution = (routines, evaluator, displayLevel) => {
   //   };
 
   for (let id in routines) {
-    let routine = routines[id];
+    let routine = routines[id]!;
     if (!routine.display) continue;
     if (!evaluator.canEvaluate(displayLevel, routine)) continue;
     let {
@@ -342,25 +355,25 @@ const evaluateDistribution = (routines, evaluator, displayLevel) => {
       x: dataArray,
       y: cumulative,
       yaxis: "y",
-    });
+    } as const);
     datasets.push({
       type: "bar",
       name: expD.toFixed(2),
       x: dataArray,
       y: routineDDist,
-    });
+    } as const);
     perDatasets.push({
       type: "scatter",
       name: routine.name,
       x: PdataArray,
       y: Pcumulative,
-    });
+    } as const);
     perDatasets.push({
       type: "bar",
       name: expP.toFixed(2),
       x: PdataArray,
       y: routinePDDist,
-    });
+    } as const);
   }
   return { expectedDamages, expectedPersistentDamages, datasets, perDatasets };
 };

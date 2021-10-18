@@ -14,8 +14,8 @@ const Routines = () => {
   const selectedRoutine = useSelector(selectSelectedRoutine);
   const dispatch = useDispatch();
 
-  const routineOptions = [];
-  const routineDisplays = [];
+  const routineOptions: JSX.Element[] = [];
+  const routineDisplays: JSX.Element[] = [];
   routines.forEach((routine) => {
     routineOptions.push(
       <option value={routine.id} key={routine.id}>

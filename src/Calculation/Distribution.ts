@@ -1,11 +1,11 @@
-export const convolve = (vec1, vec2) => {
+export const convolve = (vec1: number[], vec2: number[]) => {
   if (vec1.length === 0 || vec2.length === 0) {
     throw new Error("Vectors can not be empty!");
   }
   const volume = vec1;
   const kernel = vec2;
   let displacement = 0;
-  const convVec = [];
+  const convVec: number[] = [];
 
   for (let i = 0; i < volume.length; i++) {
     for (let j = 0; j < kernel.length; j++) {
@@ -22,9 +22,13 @@ export const convolve = (vec1, vec2) => {
   return convVec;
 };
 
-export const multiplyDist = (dam, dist, multiplier) => {
-  if (multiplier === 0) return [0, [1]];
-  if (multiplier === 1) return [dam, [...dist]];
+export const multiplyDist = (
+  dam: number,
+  dist: number[],
+  multiplier: number
+) => {
+  if (multiplier === 0) return { staticDamage: 0, damageDist: [1] };
+  if (multiplier === 1) return { staticDamage: dam, damageDist: [...dist] };
 
   const newDist = [0];
   let index = 0;
@@ -50,30 +54,34 @@ export const multiplyDist = (dam, dist, multiplier) => {
     i++;
   }
 
-  return [newDam, newDist];
+  return { staticDamage: newDam, damageDist: newDist };
 };
 
+type Dist = {
+  distribution: { staticDamage: number; damageDist: number[] };
+  chance: number;
+};
 /**
  * Combine multiple distributions with their chances into one distribution starting from 0
  * @param  {...[{staticDamage, distribution}, chance]} dists
  * @returns
  */
-export const consolidateDists = (...dists) => {
+export const consolidateDists = (...dists: Dist[]) => {
   let maxDamage = 0;
   for (let dist of dists) {
     maxDamage = Math.max(
       maxDamage,
-      dist[0].staticDamage + dist[0].damageDist.length
+      dist.distribution.staticDamage + dist.distribution.damageDist.length
     );
   }
   let damageDist = [];
   for (let i = 0; i < maxDamage; i++) {
     damageDist.push(0);
     for (let dist of dists) {
-      if (dist[0].staticDamage <= i) {
-        let index = i - dist[0].staticDamage;
-        if (index < dist[0].damageDist.length)
-          damageDist[i] += dist[0].damageDist[index] * dist[1];
+      if (dist.distribution.staticDamage <= i) {
+        let index = i - dist.distribution.staticDamage;
+        if (index < dist.distribution.damageDist.length)
+          damageDist[i] += dist.distribution.damageDist[index] * dist.chance;
       }
     }
   }
@@ -87,7 +95,11 @@ export const consolidateDists = (...dists) => {
  * @param {number} min
  * @returns
  */
-export const applyMin = (staticDamage, damageDist, min) => {
+export const applyMin = (
+  staticDamage: number,
+  damageDist: number[],
+  min: number
+) => {
   while (staticDamage < min) {
     if (damageDist.length >= 2) {
       damageDist[1] += damageDist[0];
@@ -95,5 +107,5 @@ export const applyMin = (staticDamage, damageDist, min) => {
     }
     staticDamage++;
   }
-  return [staticDamage, damageDist];
+  return { staticDamage, damageDist };
 };

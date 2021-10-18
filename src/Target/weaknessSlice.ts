@@ -1,6 +1,20 @@
-import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import {
+  createEntityAdapter,
+  createSlice,
+  EntityId,
+  PayloadAction,
+} from "@reduxjs/toolkit";
+import { damageTypes, materials } from "../Model/types";
+import { RootState } from "../store";
 
-export const weaknessAdapter = createEntityAdapter();
+export interface Weakness {
+  id: number;
+  type:
+    | typeof damageTypes[keyof typeof damageTypes]
+    | typeof materials[keyof typeof materials];
+  value: number;
+}
+export const weaknessAdapter = createEntityAdapter<Weakness>();
 
 let weakness = 0;
 
@@ -11,11 +25,11 @@ export const weaknessesSlice = createSlice({
     weaknessAdded: weaknessAdapter.addOne,
     weaknessUpdated: weaknessAdapter.updateOne,
     weaknessCreated: {
-      reducer: (state, action) => {
+      reducer(state, action: PayloadAction<Weakness>) {
         const { id, type, value } = action.payload;
         weaknessAdapter.addOne(state, { id, type, value });
       },
-      prepare: ({ parentId, type, value }) => {
+      prepare({ parentId, type, value }) {
         const id = ++weakness;
         return {
           payload: {
@@ -27,7 +41,12 @@ export const weaknessesSlice = createSlice({
         };
       },
     },
-    weaknessRemoved: weaknessAdapter.removeOne,
+    weaknessRemoved(
+      state,
+      action: PayloadAction<{ parentId: EntityId; id: EntityId }>
+    ) {
+      weaknessAdapter.removeOne(state, action.payload.id);
+    },
   },
 });
 
@@ -46,4 +65,4 @@ export const {
   selectEntities: selectweaknessEntities,
   selectAll: selectAllweaknesses,
   selectTotal: selectTotalweaknesses,
-} = weaknessAdapter.getSelectors((state) => state.weaknesses);
+} = weaknessAdapter.getSelectors((state: RootState) => state.weaknesses);

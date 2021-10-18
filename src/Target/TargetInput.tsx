@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selecttargetById, targetUpdated } from "./targetSlice";
-import { ACTrends, damageTypes, materials, SaveTrends } from "../Model/types";
+import { selecttargetById, Target, targetUpdated } from "./targetSlice";
+import { damageTypes } from "../Model/types";
 import {
   selectweaknessById,
+  Weakness,
   weaknessCreated,
   weaknessRemoved,
   weaknessUpdated,
 } from "./weaknessSlice";
+import { EntityId } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+import { ACOptions, SaveOptions, weaknessOptions } from "../Model/options";
 
-function TargetInput({ id }) {
+function TargetInput({ id }: { id: EntityId }) {
   const {
     name,
 
@@ -41,17 +45,8 @@ function TargetInput({ id }) {
 
     flatfooted,
     weaknesses,
-  } = useSelector((state) => selecttargetById(state, 0));
+  } = useSelector((state: RootState) => selecttargetById(state, 0)) as Target;
   const dispatch = useDispatch();
-
-  const ACOptions = [];
-  for (let dv in ACTrends) {
-    ACOptions.push(<option key={dv}>{ACTrends[dv]}</option>);
-  }
-  const SaveOptions = [];
-  for (let dv in SaveTrends) {
-    SaveOptions.push(<option key={dv}>{SaveTrends[dv]}</option>);
-  }
 
   // name, level, ac, fort, ref, will, perception, resistances/weaknesses
   return (
@@ -359,7 +354,7 @@ function TargetInput({ id }) {
       <div className="box flexbox">
         {" Resistance/Weakness: "}
         {weaknesses.map((weaknessId) => (
-          <Weakness parentId={id} id={weaknessId} key={weaknessId} />
+          <WeaknessInput parentId={id} id={weaknessId} key={weaknessId} />
         ))}
         <AddWeakness parentId={id} />
       </div>
@@ -411,21 +406,34 @@ function TargetInput({ id }) {
 //   );
 // };
 
-const Weakness = ({ id, parentId }) => {
+const WeaknessInput = ({
+  id,
+  parentId,
+}: {
+  id: EntityId;
+  parentId: EntityId;
+}) => {
   // needs to have parent id to remove weakness
-  const { type, value } = useSelector((state) => selectweaknessById(state, id));
+  const { type, value } = useSelector((state: RootState) =>
+    selectweaknessById(state, id)
+  ) as Weakness;
   const dispatch = useDispatch();
 
-  const updateOrRemoveWeakness = (e) => {
-    if (e.target.value === damageTypes.NONE) {
+  const updateOrRemoveWeakness = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (e?.target?.value === damageTypes.NONE) {
       // remove this weakness
       dispatch(weaknessRemoved({ id, parentId }));
     } else {
-      dispatch(weaknessUpdated({ id, changes: { type: e.target.value } }));
+      dispatch(
+        weaknessUpdated({
+          id,
+          changes: { type: e.target.value as Weakness["type"] },
+        })
+      );
     }
   };
-  const updateWeaknessValue = (e) => {
-    if (!isNaN(e.target.value)) {
+  const updateWeaknessValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isNaN(parseInt(e.target.value))) {
       dispatch(
         weaknessUpdated({ id, changes: { value: parseInt(e.target.value) } })
       );
@@ -441,12 +449,12 @@ const Weakness = ({ id, parentId }) => {
 
 let weaknessId = 0;
 
-const AddWeakness = ({ parentId }) => {
+const AddWeakness = ({ parentId }: { parentId: EntityId }) => {
   const dispatch = useDispatch();
   let [weaknessValue, setWeaknessValue] = useState(0);
 
   // add a Weakness to TargetInfo id
-  const addWeakness = (e) => {
+  const addWeakness = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value !== damageTypes.NONE) {
       // need to create a new weakness
       weaknessId++;
@@ -473,19 +481,17 @@ const AddWeakness = ({ parentId }) => {
   );
 };
 
-const WeaknessSelect = ({ value, onChange }) => {
-  const options = [];
-  for (let dt in damageTypes) {
-    options.push(<option key={dt}>{damageTypes[dt]}</option>);
-  }
-  for (let m in materials) {
-    if (materials[m] === materials.NONE) continue;
-    options.push(<option key={m}>{materials[m]}</option>);
-  }
+const WeaknessSelect = ({
+  value,
+  onChange,
+}: {
+  value: Weakness["type"];
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}) => {
   return (
     <span>
       <select value={value} onChange={(e) => onChange(e)}>
-        {options}
+        {weaknessOptions}
       </select>
     </span>
   );

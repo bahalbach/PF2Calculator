@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { graphTypeOptions, levelOptions } from "../Model/options";
 import { graphTypes } from "../Model/types";
 
 import useGenerateGraphs from "./useGenerateGraphs";
@@ -7,7 +8,7 @@ const Display = () => {
   // evaluates routines and displays appropriate graphs
 
   const [addPersistent, setAddPersistent] = useState(false);
-  const [graphType, setGraphType] = useState(graphTypes.DISTRIBUTION);
+  const [graphType, setGraphType] = useState<string>(graphTypes.DISTRIBUTION);
   const [displayLevel, setDisplayLevel] = useState(1);
   const {
     expectedDamages,
@@ -19,36 +20,20 @@ const Display = () => {
   } = useGenerateGraphs(graphType, displayLevel);
   // const [perMulti, setPerMulti] = useState(2);
 
-  const graphTypeOptions = [];
-  for (let gt in graphTypes) {
-    graphTypeOptions.push(<option key={gt}>{graphTypes[gt]}</option>);
-  }
-  const displayLevelOptions = [];
-  for (let i = 1; i <= 20; i++) {
-    displayLevelOptions.push(
-      <option key={i} value={i}>
-        {i}
-      </option>
-    );
-  }
-
   return (
     <div className="box">
       {"Graph Type: "}
       <select value={graphType} onChange={(e) => setGraphType(e.target.value)}>
         {graphTypeOptions}
       </select>
-      {graphType === graphTypes.BYLEVEL ? (
-        ""
-      ) : (
-        <select
-          value={displayLevel}
-          onChange={(e) => setDisplayLevel(parseInt(e.target.value))}
-        >
-          {displayLevelOptions}
-        </select>
-      )}
-      {" Show persistent damage: "}
+      (
+      <select
+        value={displayLevel}
+        onChange={(e) => setDisplayLevel(parseInt(e.target.value))}
+      >
+        {levelOptions}
+      </select>
+      ){" Show persistent damage: "}
       <input
         type="checkbox"
         checked={addPersistent}

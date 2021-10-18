@@ -1,6 +1,20 @@
 import { convolve, consolidateDists } from "./Distribution";
-import { calculateExpectedDamage } from "./Calculation";
-import { conditions, effectTypes } from "../Model/types";
+import { calculateExpectedDamage, DamageContext } from "./Calculation";
+import {
+  Condition,
+  conditions,
+  effectTypes,
+  TargetState,
+} from "../Model/types";
+import {
+  ActivityPath,
+  Damage,
+  Effect,
+  Routine,
+} from "../Routines/routineSlice";
+import { Dictionary } from "@reduxjs/toolkit";
+import { Target } from "../Target/targetSlice";
+import { Weakness } from "../Target/weaknessSlice";
 
 /**
  * Checks given degreeOfSuccess is in the condition
@@ -9,8 +23,8 @@ import { conditions, effectTypes } from "../Model/types";
  * @param {*} degreeOfSuccess
  * @returns
  */
-function validateCondition(condition, degreeOfSuccess) {
-  let indicies = [];
+function validateCondition(condition: Condition, degreeOfSuccess: number) {
+  let indicies: number[] = [];
   // console.log(`cond is: ${ap.condition}`);
   switch (condition) {
     case conditions.ALWAYS:
@@ -55,7 +69,18 @@ function validateCondition(condition, degreeOfSuccess) {
 }
 
 class ActivityPathEvaluator {
-  constructor(activityPaths, targets, damages, effects, weaknesses) {
+  activityPaths: Dictionary<ActivityPath>;
+  targets: Dictionary<Target>;
+  damages: Dictionary<Damage>;
+  effects: Dictionary<Effect>;
+  weaknesses: Dictionary<Weakness>;
+  constructor(
+    activityPaths: Dictionary<ActivityPath>,
+    targets: Dictionary<Target>,
+    damages: Dictionary<Damage>,
+    effects: Dictionary<Effect>,
+    weaknesses: Dictionary<Weakness>
+  ) {
     this.activityPaths = activityPaths;
     this.targets = targets;
     this.damages = damages;
@@ -63,15 +88,20 @@ class ActivityPathEvaluator {
     this.weaknesses = weaknesses;
   }
 
-  canEvaluate(level, routine) {
-    const levelDiff = this.targets[0].levelDiff;
+  canEvaluate(level: number, routine: Routine) {
+    const levelDiff = this.targets[0]!.levelDiff;
     // console.log(`level ${level}, levelDiff ${levelDiff}`);
     if (level < routine.startLevel || level > routine.endLevel) return false;
     if (level + levelDiff < -1 || level + levelDiff > 24) return false;
     return true;
   }
 
-  evalRoutine(routine, level, ACBonus, resBonus) {
+  evalRoutine(
+    routine: Routine,
+    level: number,
+    ACBonus: number,
+    resBonus: number
+  ) {
     const initialTargetState = {
       flatfooted: false,
       frightened: 0,
@@ -86,7 +116,7 @@ class ActivityPathEvaluator {
     let routineDDist = [1];
     let routinePDDist = [1];
     for (let i = 0; i < routine.apIds.length; i++) {
-      let activityPath = this.activityPaths[routine.apIds[i]];
+      let activityPath = this.activityPaths[routine.apIds[i]]!;
       let [damageDist, PdamageDist] = this.evalPath(
         activityPath,
         initialTargetState,
@@ -125,22 +155,28 @@ class ActivityPathEvaluator {
     };
   }
 
-  evalPath(activityPath, targetState, level, defenseBonus, resistanceBonus) {
+  evalPath(
+    activityPath: ActivityPath,
+    targetState: TargetState,
+    level: number,
+    defenseBonus: number,
+    resistanceBonus: number
+  ) {
     // evaluate this and all following APs
-    let currentTarget = this.targets[0];
+    let currentTarget = this.targets[0]!;
     let currentDamages = activityPath.damages.map(
-      (damageId) => this.damages[damageId]
+      (damageId) => this.damages[damageId]!
     );
     //currentDamages.push(activityPath);
     let currentEffects = activityPath.effects.map(
-      (effectId) => this.effects[effectId]
+      (effectId) => this.effects[effectId]!
     );
     let currentWeaknesses = currentTarget.weaknesses.map(
-      (weaknessId) => this.weaknesses[weaknessId]
+      (weaknessId) => this.weaknesses[weaknessId]!
     );
 
     // calculate the expected damage for this activity
-    let [damageTrees, chances] = calculateExpectedDamage(
+    let { damageTrees, chances } = calculateExpectedDamage(
       level,
       activityPath,
       currentDamages,
@@ -203,7 +239,7 @@ class ActivityPathEvaluator {
 
     // go through each activity path, depending on its condition add its damage distributions to this activities appropriately
     activityPath.apIds.forEach((apId) => {
-      let ap = this.activityPaths[apId];
+      let ap = this.activityPaths[apId]!;
 
       const evaluations = new Map();
       // go through each degree of success
@@ -222,8 +258,7 @@ class ActivityPathEvaluator {
             );
             evaluations.set(targetStates[i], { pathDist, pathPDist });
           }
-
-          damageTrees[i].normal.damageDist = convolve(
+          (damageTrees[i].normal as DamageContext).damageDist = convolve(
             damageTrees[i].normal.damageDist,
             evaluations.get(targetStates[i]).pathDist
           );
@@ -236,16 +271,16 @@ class ActivityPathEvaluator {
     });
 
     let damageDist = consolidateDists(
-      [damageTrees[0].normal, chances[0]],
-      [damageTrees[1].normal, chances[1]],
-      [damageTrees[2].normal, chances[2]],
-      [damageTrees[3].normal, chances[3]]
+      { distribution: damageTrees[0].normal, chance: chances[0] },
+      { distribution: damageTrees[1].normal, chance: chances[1] },
+      { distribution: damageTrees[2].normal, chance: chances[2] },
+      { distribution: damageTrees[3].normal, chance: chances[3] }
     );
     let PdamageDist = consolidateDists(
-      [damageTrees[0].persistent, chances[0]],
-      [damageTrees[1].persistent, chances[1]],
-      [damageTrees[2].persistent, chances[2]],
-      [damageTrees[3].persistent, chances[3]]
+      { distribution: damageTrees[0].persistent, chance: chances[0] },
+      { distribution: damageTrees[1].persistent, chance: chances[1] },
+      { distribution: damageTrees[2].persistent, chance: chances[2] },
+      { distribution: damageTrees[3].persistent, chance: chances[3] }
     );
     // console.log(damageDist);
 
@@ -253,5 +288,4 @@ class ActivityPathEvaluator {
   }
 }
 
-const evaluateRoutine = (evaluator, routine) => {};
-export { ActivityPathEvaluator, evaluateRoutine };
+export { ActivityPathEvaluator };
