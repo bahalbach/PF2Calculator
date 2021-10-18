@@ -5,11 +5,12 @@ import {
   effectTypeOptions,
   levelOptions,
 } from "../Model/options";
+import { RootState } from "../store";
 import { effectRemoved, effectUpdated, selecteffectById } from "./routineSlice";
 
-export const Effect = ({ parentId, id }) => {
+export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
   const { effectCondition, effectType, startLevel, endLevel } = useSelector(
-    (state) => selecteffectById(state, id)
+    (state: RootState) => selecteffectById(state, id)!
   );
   const dispatch = useDispatch();
 

@@ -8,75 +8,78 @@ import {
   itemTrends,
 } from "./types";
 
-const zero = {};
-const level = {};
-const halfLevel = {};
+interface defaultValue {
+  [x: number]: number;
+}
+const zero: defaultValue = {};
+const level: defaultValue = {};
+const halfLevel: defaultValue = {};
 
-const trained = {};
-const maxSkill = {};
+const trained: defaultValue = {};
+const maxSkill: defaultValue = {};
 
-const maxScore = {};
-const score16pp = {};
-const score16p = {};
-const score16 = {};
-const score14p = {};
-const score14 = {};
+const maxScore: defaultValue = {};
+const score16pp: defaultValue = {};
+const score16p: defaultValue = {};
+const score16: defaultValue = {};
+const score14p: defaultValue = {};
+const score14: defaultValue = {};
 
-const martialProf = {};
-const alchProf = {};
-const casterProf = {};
+const martialProf: defaultValue = {};
+const alchProf: defaultValue = {};
+const casterProf: defaultValue = {};
 
-const spellProf = {};
+const spellProf: defaultValue = {};
 
-const weaponItem = {};
-const skillItem = {};
+const weaponItem: defaultValue = {};
+const skillItem: defaultValue = {};
 
-const weaponDice = {};
-const spellDice = {};
-const spellDice2 = {};
+const weaponDice: defaultValue = {};
+const spellDice: defaultValue = {};
+const spellDice2: defaultValue = {};
 for (let i = 1; i <= 20; i++) {
   spellDice[i] = Math.floor((i + 1) / 2);
   spellDice2[i] = 2 * Math.floor((i + 1) / 2);
 }
-const runes = {};
-const runes2 = {};
-const deadly = {};
+const runes: defaultValue = {};
+const runes2: defaultValue = {};
+const deadly: defaultValue = {};
 
-const sneak = {};
-const strategic = {};
-const precise = {};
+const sneak: defaultValue = {};
+const strategic: defaultValue = {};
+const precise: defaultValue = {};
 
-const preEdge1 = {};
-const preEdge2 = {};
-const preEdge3 = {};
+const preEdge1: defaultValue = {};
+const preEdge2: defaultValue = {};
+const preEdge3: defaultValue = {};
 
-const martialSpec = {};
-const casterSpec = {};
+const martialSpec: defaultValue = {};
+const casterSpec: defaultValue = {};
 
-const rage = {};
-const animalrage = {};
-const dragonrage = {};
-const giantrage = {};
+const rage: defaultValue = {};
+const animalrage: defaultValue = {};
+const dragonrage: defaultValue = {};
+const giantrage: defaultValue = {};
 
-const implementEmpower = {};
+const implementEmpower: defaultValue = {};
 
-const fighterAB = {};
-const martialAB = {};
-const casterAB = {};
-const alchAB = {};
+const fighterAB: defaultValue = {};
+const martialAB: defaultValue = {};
+const casterAB: defaultValue = {};
+const alchAB: defaultValue = {};
 
-const casterSpellAttack = {};
-const casterSaveDC = {};
-const classdc1 = {};
-const classdc2 = {};
-const mcspell = {};
+const casterSpellAttack: defaultValue = {};
+const casterSaveDC: defaultValue = {};
+const classdc1: defaultValue = {};
+const classdc2: defaultValue = {};
+const mcspell: defaultValue = {};
 
-const fighterStatic = {};
-const fighterRanged = {};
-const martialStatic = {};
-const martialRanged = {};
-const casterStatic = {};
-const casterRanged = {};
+const fighterStatic: defaultValue = {};
+const fighterRanged: defaultValue = {};
+const martialStatic: defaultValue = {};
+const martialRanged: defaultValue = {};
+const casterStatic: defaultValue = {};
+const casterRanged: defaultValue = {};
 
 for (let i = 1; i <= 20; i++) {
   zero[i] = 0;
@@ -342,7 +345,7 @@ export const damageTrendValues = {
   [damageTrends.IMPLEMENT]: implementEmpower,
 };
 
-const extremeAC = {
+const extremeAC: defaultValue = {
   "-1": 18,
   0: 19,
   1: 19,
@@ -386,7 +389,7 @@ export const defaultACs = {
   [ACTrends.LOW]: lowAC,
 };
 
-const extremeSaves = {
+const extremeSaves: defaultValue = {
   "-1": 9,
   0: 10,
   1: 11,
@@ -414,7 +417,7 @@ const extremeSaves = {
   23: 44,
   24: 46,
 };
-const highSaves = {
+const highSaves: defaultValue = {
   "-1": 8,
   0: 9,
   1: 10,
@@ -442,7 +445,7 @@ const highSaves = {
   23: 40,
   24: 42,
 };
-const moderateSaves = {
+const moderateSaves: defaultValue = {
   "-1": 5,
   0: 6,
   1: 7,
@@ -470,7 +473,7 @@ const moderateSaves = {
   23: 37,
   24: 38,
 };
-const lowSaves = {
+const lowSaves: defaultValue = {
   "-1": 2,
   0: 3,
   1: 4,
@@ -498,7 +501,7 @@ const lowSaves = {
   23: 34,
   24: 36,
 };
-const terribleSaves = {
+const terribleSaves: defaultValue = {
   "-1": 0,
   0: 1,
   1: 2,

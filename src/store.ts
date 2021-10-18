@@ -29,9 +29,9 @@ import {
 } from "./Model/types";
 import { exampleRoutines } from "./Model/exampleRoutines";
 
-const empty = {};
-const pickCritSpec = {};
-const one = {};
+const empty: { [key: number]: number } = {};
+const pickCritSpec: { [key: number]: number } = {};
+const one: { [key: number]: number } = {};
 for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
   one[i] = 1;
@@ -71,6 +71,11 @@ export const store = configureStore({
     targets: targetReducer,
   },
 });
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;
 // default damages and effects
 store.dispatch(
   damageAdded({

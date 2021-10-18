@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { RefObject, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   importRoutine,
@@ -8,7 +8,7 @@ import {
 
 const ImportExport = () => {
   const routine = useSelector(selectSelectedRoutineObject);
-  const textAreaRef = useRef(null);
+  const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
   const [textValue, setTextValue] = useState("");
   const dispatch = useDispatch();
 
@@ -19,10 +19,12 @@ const ImportExport = () => {
     setTextValue(JSON.stringify(routine));
   };
   const copy = () => {
-    textAreaRef.current.select();
-    textAreaRef.current.setSelectionRange(0, 99999); /* For mobile devices */
-    navigator.clipboard.writeText(textAreaRef.current.value);
-    // document.execCommand("copy");
+    if (textAreaRef.current) {
+      textAreaRef.current.select();
+      textAreaRef!.current.setSelectionRange(0, 99999); /* For mobile devices */
+      navigator.clipboard.writeText(textAreaRef.current.value);
+      // document.execCommand("copy");
+    }
   };
   return (
     <div className="box">

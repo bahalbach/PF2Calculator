@@ -22,12 +22,18 @@ import { activityTypes } from "../Model/types";
 import { Damage } from "./Damage";
 import { Effect } from "./Effect";
 import { effectCreated } from "./routineSlice";
+import { RootState } from "../store";
 
 export const ActivityPath = ({
   id,
   parentId,
   routineId,
   displayCondition = true,
+}: {
+  id: number;
+  parentId?: number;
+  routineId?: number;
+  displayCondition?: boolean;
 }) => {
   const {
     condition,
@@ -44,7 +50,7 @@ export const ActivityPath = ({
     damages,
     effects,
     apIds,
-  } = useSelector((state) => selectactivityPathById(state, id));
+  } = useSelector((state: RootState) => selectactivityPathById(state, id)!);
   const dispatch = useDispatch();
 
   const bonusLevelList = LevelList(

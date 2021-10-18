@@ -2,14 +2,16 @@ export const graphTypes = {
   DISTRIBUTION: "Damage Distribution",
   PMDEFENSE: "+/- AC/Save Bonus",
   PMRES: "+/- Resistance/Weakness",
-};
-
+} as const;
+export type GraphType = typeof graphTypes[keyof typeof graphTypes];
+export type TargetState = { flatfooted: boolean; frightened: number };
 export const ACTrends = {
   LOW: "Low",
   MODERATE: "Moderate",
   HIGH: "High",
   EXTREME: "Extreme",
-};
+} as const;
+export type ACTrend = typeof ACTrends[keyof typeof ACTrends];
 
 export const SaveTrends = {
   TERRIBLE: "Terrible",
@@ -17,7 +19,8 @@ export const SaveTrends = {
   MODERATE: "Moderate",
   HIGH: "High",
   EXTREME: "Extreme",
-};
+} as const;
+export type SaveTrend = typeof SaveTrends[keyof typeof SaveTrends];
 
 export const conditions = {
   ALWAYS: "Always",
@@ -29,18 +32,21 @@ export const conditions = {
   AT_LEAST_FAIL: "Failure or better",
   FAIL_WORSE: "Failure or worse",
   SUCC_WORSE: "Success or worse",
-};
+} as const;
+export type Condition = typeof conditions[keyof typeof conditions];
 
 export const rollTypes = {
   NORMAL: "Normal",
   ADVANTAGE: "Advantage",
   DISADVANTAGE: "Disadvantage",
-};
+} as const;
+export type RollType = typeof rollTypes[keyof typeof rollTypes];
 
 export const activityTypes = {
   STRIKE: "Strike",
   SAVE: "Save",
-};
+} as const;
+export type ActivityType = typeof activityTypes[keyof typeof activityTypes];
 
 export const profTrends = {
   TRAINED: "Trained Proficiency",
@@ -53,7 +59,8 @@ export const profTrends = {
   CLASSDC2: "Class/Spell (11, 19)",
   MCSPELL: "MC Spell (12, 18)",
   MAXSKILL: "Max skill (3, 7, 15)",
-};
+} as const;
+export type ProfTrend = typeof profTrends[keyof typeof profTrends];
 
 export const statTrends = {
   AS10: "10",
@@ -63,13 +70,15 @@ export const statTrends = {
   AS16p: "16 to 18",
   AS14pp: "14 to 20",
   AS14p: "14 to 18",
-};
+} as const;
+export type StatTrend = typeof statTrends[keyof typeof statTrends];
 
 export const itemTrends = {
   NONE: "None",
   WEAPON: "Weapon (2, 10, 16)",
   SKILL: "Skill (3, 9, 17)",
-};
+} as const;
+export type ItemTrend = typeof itemTrends[keyof typeof itemTrends];
 
 export const MAPs = {
   N1: "0 (0x-5)",
@@ -87,7 +96,8 @@ export const MAPs = {
   RAA1: "0 (0x-1)",
   RAA2: "-1 (1x-1)",
   RAA3: "-2 (2x-1)",
-};
+} as const;
+export type MAP = typeof MAPs[keyof typeof MAPs];
 
 export const nextMAPs = {
   "0 (0x-5)": "-5 (1x-5)",
@@ -105,7 +115,7 @@ export const nextMAPs = {
   "0 (0x-1)": "-1 (1x-1)",
   "-1 (1x-1)": "-2 (2x-1)",
   "-2 (2x-1)": "-2 (2x-1)",
-};
+} as const;
 
 export const defenses = {
   AC: "AC",
@@ -114,7 +124,8 @@ export const defenses = {
   WILL: "Will",
   PER: "Perception",
   DC: "Standard DC",
-};
+} as const;
+export type Defense = typeof defenses[keyof typeof defenses];
 
 export const dCond = {
   STRIKE: "x1 hit, x2 crit",
@@ -128,7 +139,8 @@ export const dCond = {
   AT_LEAST_FAIL: "Failure or better",
   FAIL_WORSE: "Failure or worse",
   SUCC_WORSE: "Success or worse",
-};
+} as const;
+export type DamageCond = typeof dCond[keyof typeof dCond];
 
 export const dieTrends = {
   NONE: "None",
@@ -146,7 +158,8 @@ export const dieTrends = {
   PRECISIONEDGE: "Precision Edge 1(1, 11, 19)",
   PRECISIONEDGE2: "Precision Edge 2(17, 19)",
   PRECISIONEDGE3: "Precision Edge 3(19)",
-};
+} as const;
+export type DieTrend = typeof dieTrends[keyof typeof dieTrends];
 
 export const damageTrends = {
   NONE: "None",
@@ -163,7 +176,8 @@ export const damageTrends = {
   DRAGONRAGE: "Dragon Rage",
   GIANTRAGE: "Giant Rage",
   IMPLEMENT: "Implement's Empowerment",
-};
+} as const;
+export type DamageTrend = typeof damageTrends[keyof typeof damageTrends];
 
 export const damageTypes = {
   NONE: "None",
@@ -171,14 +185,16 @@ export const damageTypes = {
   P: "piercing",
   S: "slashing",
   FIRE: "fire",
-};
+} as const;
+export type DamageType = typeof damageTypes[keyof typeof damageTypes];
 
 export const materials = {
   NONE: "none",
   COLD_IRON: "cold iron",
   SILVER: "silver",
   ADAMANTINE: "adamantine",
-};
+} as const;
+export type Material = typeof materials[keyof typeof materials];
 
 export const effectTypes = {
   FLATFOOT: "Flatfooted",
@@ -186,7 +202,8 @@ export const effectTypes = {
   FRIGHTENED2: "Frightened 2",
   FRIGHTENED3: "Frightened 3",
   FRIGHTENED4: "Frightened 4",
-};
+} as const;
+export type EffectType = typeof effectTypes[keyof typeof effectTypes];
 
 export const diceNums = {
   0: 0,
@@ -210,12 +227,12 @@ export const diceNums = {
   18: 18,
   19: 19,
   20: 20,
-};
+} as const;
 
 export const diceSizes = {
-  4: 4,
-  6: 6,
-  8: 8,
-  10: 10,
-  12: 12,
-};
+  "4": 4,
+  "6": 6,
+  "8": 8,
+  "10": 10,
+  "12": 12,
+} as const;

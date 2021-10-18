@@ -1,20 +1,28 @@
+import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import React, { useEffect, useState } from "react";
+import { Dispatch } from "redux";
 import { levelOptions } from "../Model/options";
+import { Adjustment } from "./routineSlice";
 
-export const generateEntries = (adjustments) => {
+type Adjustments = {
+  [level: number]: number;
+};
+type Entry = [number, string];
+
+export const generateEntries = (adjustments: Adjustments) => {
   let currentValue = 0;
-  const entries = [];
+  const entries: Entry[] = [];
   for (let level = 1; level <= 20; level++) {
     if (currentValue !== adjustments[level]) {
       currentValue = adjustments[level];
-      entries.push([level, currentValue]);
+      entries.push([level, currentValue.toString()]);
     }
   }
   return entries;
 };
 
-const generateAdjustments = (entries) => {
-  const adjustments = {};
+const generateAdjustments = (entries: Entry[]) => {
+  const adjustments: Adjustments = {};
   let currentValue = 0;
   let currentIndex = 0;
   // console.log(entries);
@@ -30,24 +38,39 @@ const generateAdjustments = (entries) => {
   return adjustments;
 };
 
-export const adjustmentsFromLevelChange = (entries, index, newLevel) => {
+export const adjustmentsFromLevelChange = (
+  entries: Entry[],
+  index: number,
+  newLevel: number
+) => {
   entries[index] = [newLevel, entries[index][1]];
   entries.sort((a, b) => a[0] - b[0]);
   return generateAdjustments(entries);
 };
 
-export const adjustmentsFromValueChange = (entries, index, newValue) => {
+export const adjustmentsFromValueChange = (
+  entries: Entry[],
+  index: number,
+  newValue: string
+) => {
   entries[index] = [entries[index][0], newValue];
   return generateAdjustments(entries);
 };
 
-export const adjustmentsFromNewEntry = (entries) => {
-  let lastValue = entries.length > 0 ? entries[entries.length - 1] : [0, 0];
-  entries.push([lastValue[0] + 1, lastValue[1] + 1]);
+export const adjustmentsFromNewEntry = (entries: Entry[]) => {
+  let lastValue: Entry =
+    entries.length > 0 ? entries[entries.length - 1] : [0, "0"];
+  entries.push([lastValue[0] + 1, (parseInt(lastValue[1]) + 1).toString()]);
   return generateAdjustments(entries);
 };
 
-export const LevelList = (name, dispatch, action, id, adjustments) => {
+export const LevelList = (
+  name: string,
+  dispatch: Dispatch<any>,
+  action: ActionCreatorWithPayload<any, string>,
+  id: number,
+  adjustments: Adjustment
+) => {
   const baseEntries = generateEntries(adjustments);
   let [entries, setEntries] = useState(baseEntries);
   let be = JSON.stringify(baseEntries);

@@ -7,11 +7,12 @@ import {
 } from "./routineSlice";
 import { levelOptions } from "../Model/options";
 import { ActivityPath } from "./ActivityPath";
+import { RootState } from "../store";
 
-function SelectedRoutine({ routineId }) {
+function SelectedRoutine({ routineId }: { routineId: number }) {
   // const selectedRoutine = useSelector(selectSelectedRoutine);
   const { name, startLevel, endLevel, description, apIds } = useSelector(
-    (state) => selectRoutineById(state, routineId)
+    (state: RootState) => selectRoutineById(state, routineId)!
   );
   const dispatch = useDispatch();
 
@@ -82,7 +83,7 @@ function SelectedRoutine({ routineId }) {
   );
 }
 
-const NameInput = ({ id, name: baseName }) => {
+const NameInput = ({ id, name: baseName }: { id: number; name: string }) => {
   const dispatch = useDispatch();
   let [name, setName] = useState(baseName);
   useEffect(() => setName(baseName), [baseName]);
@@ -102,7 +103,13 @@ const NameInput = ({ id, name: baseName }) => {
     </React.Fragment>
   );
 };
-const DescriptionInput = ({ id, description: baseDescription }) => {
+const DescriptionInput = ({
+  id,
+  description: baseDescription,
+}: {
+  id: number;
+  description: string;
+}) => {
   const dispatch = useDispatch();
   const [description, setDescription] = useState(baseDescription);
   useEffect(() => setDescription(baseDescription), [baseDescription]);
