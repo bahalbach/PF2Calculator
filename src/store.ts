@@ -1,33 +1,23 @@
 import { configureStore } from "@reduxjs/toolkit";
 import routineReducer, {
-  activityPathAdded,
   damageAdded,
   effectAdded,
-  importRoutine,
   routineAdded,
   setRoutine,
 } from "./Routines/routineSlice";
 import targetReducer, { targetAdded } from "./Target/targetSlice";
 import weaknessReducer from "./Target/weaknessSlice";
 import {
-  activityTypes,
   ACTrends,
   conditions,
   damageTrends,
   damageTypes,
   dCond,
-  defenses,
   dieTrends,
   effectTypes,
-  itemTrends,
-  MAPs,
   materials,
-  profTrends,
-  rollTypes,
   SaveTrends,
-  statTrends,
 } from "./Model/types";
-import { exampleRoutines } from "./Model/exampleRoutines";
 
 const empty: { [key: number]: number } = {};
 const pickCritSpec: { [key: number]: number } = {};
@@ -150,6 +140,7 @@ store.dispatch(
     name: "AC: High, Saves: Moderate",
 
     levelDiff: 0,
+    persistentMultiplier: 2,
 
     ACTrend: ACTrends.HIGH,
     FortTrend: SaveTrends.MODERATE,
@@ -158,6 +149,7 @@ store.dispatch(
     PerTrend: SaveTrends.MODERATE,
 
     flatfooted: false,
+    percentSelectedRoutine: false,
     weaknesses: [],
   })
 );
@@ -176,382 +168,385 @@ store.dispatch(
   })
 );
 
-store.dispatch(
-  routineAdded({
-    id: 1,
-    name: "Greatsword Fighter 2 strikes",
-    display: true,
-    apIds: [0],
-    levelDiff: 0,
-    description:
-      "A simple Fighter making 2 strikes with a greatsword. 1d6 damage runes at 8 and 15. Crit specialization at 5.",
-    startLevel: 1,
-    endLevel: 20,
-  })
-);
-store.dispatch(
-  activityPathAdded({
-    id: 0,
-    condition: conditions.ALWAYS,
+// store.dispatch(
+//   routineAdded({
+//     id: 1,
+//     name: "Greatsword Fighter 2 strikes",
+//     display: true,
+//     apIds: [0],
+//     levelDiff: 0,
+//     description:
+//       "A simple Fighter making 2 strikes with a greatsword. 1d6 damage runes at 8 and 15. Crit specialization at 5.",
+//     startLevel: 1,
+//     endLevel: 20,
+//   })
+// );
+// store.dispatch(
+//   activityPathAdded({
+//     id: 0,
+//     routineId: 1,
+//     condition: conditions.ALWAYS,
 
-    rollType: rollTypes.NORMAL,
-    type: activityTypes.STRIKE,
-    profTrend: profTrends.FIGHTERWEAPON,
-    statTrend: statTrends.AS18a,
-    itemTrend: itemTrends.WEAPON,
-    bonusAdjustments: { ...empty },
-    MAP: MAPs.N1,
+//     rollType: rollTypes.NORMAL,
+//     type: activityTypes.STRIKE,
+//     profTrend: profTrends.FIGHTERWEAPON,
+//     statTrend: statTrends.AS18a,
+//     itemTrend: itemTrends.WEAPON,
+//     bonusAdjustments: { ...empty },
+//     MAP: MAPs.N1,
 
-    targetType: defenses.AC,
-    targetInfoId: 0,
+//     targetType: defenses.AC,
+//     targetInfoId: 0,
 
-    damages: [3, 4],
-    effects: [1],
-    apIds: [1],
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 3,
-    damageCondition: dCond.STRIKE,
+//     damages: [3, 4],
+//     effects: [1],
+//     apIds: [1],
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 3,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.WEAPON,
-    dieAdjustments: { ...empty },
-    diceSize: 12,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.WEAPON,
+//     dieAdjustments: { ...empty },
+//     diceSize: 12,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.S,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 4,
-    damageCondition: dCond.STRIKE,
+//     damageType: damageTypes.S,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 4,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.RUNE,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.RUNE,
+//     dieAdjustments: { ...empty },
+//     diceSize: 6,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.FIRE,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  effectAdded({
-    id: 1,
-    effectCondition: conditions.CRIT,
-    effectType: effectTypes.FLATFOOT,
-    startLevel: 5,
-    endLevel: 20,
-  })
-);
-store.dispatch(
-  activityPathAdded({
-    id: 1,
-    condition: conditions.ALWAYS,
+//     damageType: damageTypes.FIRE,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   effectAdded({
+//     id: 1,
+//     effectCondition: conditions.CRIT,
+//     effectType: effectTypes.FLATFOOT,
+//     startLevel: 5,
+//     endLevel: 20,
+//   })
+// );
+// store.dispatch(
+//   activityPathAdded({
+//     id: 1,
+//     parentId: 0,
+//     condition: conditions.ALWAYS,
 
-    rollType: rollTypes.NORMAL,
-    type: activityTypes.STRIKE,
-    profTrend: profTrends.FIGHTERWEAPON,
-    statTrend: statTrends.AS18a,
-    itemTrend: itemTrends.WEAPON,
-    bonusAdjustments: { ...empty },
-    MAP: MAPs.N2,
+//     rollType: rollTypes.NORMAL,
+//     type: activityTypes.STRIKE,
+//     profTrend: profTrends.FIGHTERWEAPON,
+//     statTrend: statTrends.AS18a,
+//     itemTrend: itemTrends.WEAPON,
+//     bonusAdjustments: { ...empty },
+//     MAP: MAPs.N2,
 
-    targetType: defenses.AC,
-    targetInfoId: 0,
+//     targetType: defenses.AC,
+//     targetInfoId: 0,
 
-    damages: [5, 6],
-    effects: [2],
-    apIds: [],
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 5,
-    damageCondition: dCond.STRIKE,
+//     damages: [5, 6],
+//     effects: [2],
+//     apIds: [],
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 5,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.WEAPON,
-    dieAdjustments: { ...empty },
-    diceSize: 12,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.WEAPON,
+//     dieAdjustments: { ...empty },
+//     diceSize: 12,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.S,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 6,
-    damageCondition: dCond.STRIKE,
+//     damageType: damageTypes.S,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 6,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.RUNE,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.RUNE,
+//     dieAdjustments: { ...empty },
+//     diceSize: 6,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.FIRE,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  effectAdded({
-    id: 2,
-    effectCondition: conditions.CRIT,
-    effectType: effectTypes.FLATFOOT,
-    startLevel: 5,
-    endLevel: 20,
-  })
-);
+//     damageType: damageTypes.FIRE,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   effectAdded({
+//     id: 2,
+//     effectCondition: conditions.CRIT,
+//     effectType: effectTypes.FLATFOOT,
+//     startLevel: 5,
+//     endLevel: 20,
+//   })
+// );
 
-store.dispatch(
-  routineAdded({
-    id: 2,
-    name: "Fireball",
-    display: true,
-    apIds: [2],
-    levelDiff: 0,
-    description: "A 2d6 / spell level basic reflex save.",
-    startLevel: 1,
-    endLevel: 20,
-  })
-);
-store.dispatch(
-  activityPathAdded({
-    id: 2,
-    condition: conditions.ALWAYS,
+// store.dispatch(
+//   routineAdded({
+//     id: 2,
+//     name: "Fireball",
+//     display: true,
+//     apIds: [2],
+//     levelDiff: 0,
+//     description: "A 2d6 / spell level basic reflex save.",
+//     startLevel: 1,
+//     endLevel: 20,
+//   })
+// );
+// store.dispatch(
+//   activityPathAdded({
+//     id: 2,
+//     routineId: 2,
+//     condition: conditions.ALWAYS,
 
-    rollType: rollTypes.NORMAL,
-    type: activityTypes.SAVE,
-    profTrend: profTrends.CASTERSPELL,
-    statTrend: statTrends.AS18a,
-    itemTrend: itemTrends.NONE,
-    bonusAdjustments: { ...empty },
-    MAP: MAPs.N1,
+//     rollType: rollTypes.NORMAL,
+//     type: activityTypes.SAVE,
+//     profTrend: profTrends.CASTERSPELL,
+//     statTrend: statTrends.AS18a,
+//     itemTrend: itemTrends.NONE,
+//     bonusAdjustments: { ...empty },
+//     MAP: MAPs.N1,
 
-    targetType: defenses.REF,
-    targetInfoId: 0,
+//     targetType: defenses.REF,
+//     targetInfoId: 0,
 
-    damages: [7],
-    effects: [],
-    apIds: [],
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 7,
-    damageCondition: dCond.BASIC,
+//     damages: [7],
+//     effects: [],
+//     apIds: [],
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 7,
+//     damageCondition: dCond.BASIC,
 
-    dieTrend: dieTrends.SPELLLEVEL2,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.SPELLLEVEL2,
+//     dieAdjustments: { ...empty },
+//     diceSize: 6,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.FIRE,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
+//     damageType: damageTypes.FIRE,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
 
-store.dispatch(
-  routineAdded({
-    id: 3,
-    name: "Pick Fighter Double Slice",
-    display: false,
-    apIds: [3, 4],
-    levelDiff: 0,
-    description:
-      "A Fighter using Double Slice with a pick and a light pick. 1d6 damage runes at 8 and 15. Crit specialization at 5.",
-    startLevel: 1,
-    endLevel: 20,
-  })
-);
-store.dispatch(
-  activityPathAdded({
-    id: 3,
-    condition: conditions.ALWAYS,
+// store.dispatch(
+//   routineAdded({
+//     id: 3,
+//     name: "Pick Fighter Double Slice",
+//     display: false,
+//     apIds: [3, 4],
+//     levelDiff: 0,
+//     description:
+//       "A Fighter using Double Slice with a pick and a light pick. 1d6 damage runes at 8 and 15. Crit specialization at 5.",
+//     startLevel: 1,
+//     endLevel: 20,
+//   })
+// );
+// store.dispatch(
+//   activityPathAdded({
+//     id: 3,
+//     routineId: 3,
+//     condition: conditions.ALWAYS,
 
-    rollType: rollTypes.NORMAL,
-    type: activityTypes.STRIKE,
-    profTrend: profTrends.FIGHTERWEAPON,
-    statTrend: statTrends.AS18a,
-    itemTrend: itemTrends.WEAPON,
-    bonusAdjustments: { ...empty },
-    MAP: MAPs.N1,
+//     rollType: rollTypes.NORMAL,
+//     type: activityTypes.STRIKE,
+//     profTrend: profTrends.FIGHTERWEAPON,
+//     statTrend: statTrends.AS18a,
+//     itemTrend: itemTrends.WEAPON,
+//     bonusAdjustments: { ...empty },
+//     MAP: MAPs.N1,
 
-    targetType: defenses.AC,
-    targetInfoId: 0,
+//     targetType: defenses.AC,
+//     targetInfoId: 0,
 
-    damages: [8, 9, 10],
-    effects: [],
-    apIds: [],
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 8,
-    damageCondition: dCond.STRIKE,
+//     damages: [8, 9, 10],
+//     effects: [],
+//     apIds: [],
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 8,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.WEAPON,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: true,
-    fatalDie: 10,
-    damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.WEAPON,
+//     dieAdjustments: { ...empty },
+//     diceSize: 6,
+//     fatal: true,
+//     fatalDie: 10,
+//     damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.P,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 9,
-    damageCondition: dCond.CRIT,
+//     damageType: damageTypes.P,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 9,
+//     damageCondition: dCond.CRIT,
 
-    dieTrend: dieTrends.NONE,
-    dieAdjustments: { ...one },
-    diceSize: 10,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...pickCritSpec },
+//     dieTrend: dieTrends.NONE,
+//     dieAdjustments: { ...one },
+//     diceSize: 10,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [],
+//     damageAdjustments: { ...pickCritSpec },
 
-    damageType: damageTypes.P,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 10,
-    damageCondition: dCond.STRIKE,
+//     damageType: damageTypes.P,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 10,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.RUNE,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.RUNE,
+//     dieAdjustments: { ...empty },
+//     diceSize: 6,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.FIRE,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  activityPathAdded({
-    id: 4,
-    condition: conditions.ALWAYS,
+//     damageType: damageTypes.FIRE,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   activityPathAdded({
+//     id: 4,
+//     routineId: 3,
+//     condition: conditions.ALWAYS,
 
-    rollType: rollTypes.NORMAL,
-    type: activityTypes.STRIKE,
-    profTrend: profTrends.FIGHTERWEAPON,
-    statTrend: statTrends.AS18a,
-    itemTrend: itemTrends.WEAPON,
-    bonusAdjustments: { ...empty },
-    MAP: MAPs.A1,
+//     rollType: rollTypes.NORMAL,
+//     type: activityTypes.STRIKE,
+//     profTrend: profTrends.FIGHTERWEAPON,
+//     statTrend: statTrends.AS18a,
+//     itemTrend: itemTrends.WEAPON,
+//     bonusAdjustments: { ...empty },
+//     MAP: MAPs.A1,
 
-    targetType: defenses.AC,
-    targetInfoId: 0,
+//     targetType: defenses.AC,
+//     targetInfoId: 0,
 
-    damages: [11, 12, 13],
-    effects: [],
-    apIds: [],
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 11,
-    damageCondition: dCond.STRIKE,
+//     damages: [11, 12, 13],
+//     effects: [],
+//     apIds: [],
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 11,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.WEAPON,
-    dieAdjustments: { ...empty },
-    diceSize: 4,
-    fatal: true,
-    fatalDie: 8,
-    damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.WEAPON,
+//     dieAdjustments: { ...empty },
+//     diceSize: 4,
+//     fatal: true,
+//     fatalDie: 8,
+//     damageTrend: [damageTrends.AS18a, damageTrends.FIGHTERWEAPONSPEC],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.P,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 12,
-    damageCondition: dCond.CRIT,
+//     damageType: damageTypes.P,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 12,
+//     damageCondition: dCond.CRIT,
 
-    dieTrend: dieTrends.NONE,
-    dieAdjustments: { ...one },
-    diceSize: 8,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...pickCritSpec },
+//     dieTrend: dieTrends.NONE,
+//     dieAdjustments: { ...one },
+//     diceSize: 8,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [],
+//     damageAdjustments: { ...pickCritSpec },
 
-    damageType: damageTypes.P,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 13,
-    damageCondition: dCond.STRIKE,
+//     damageType: damageTypes.P,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+// store.dispatch(
+//   damageAdded({
+//     id: 13,
+//     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.RUNE,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...empty },
+//     dieTrend: dieTrends.RUNE,
+//     dieAdjustments: { ...empty },
+//     diceSize: 6,
+//     fatal: false,
+//     fatalDie: 10,
+//     damageTrend: [],
+//     damageAdjustments: { ...empty },
 
-    damageType: damageTypes.FIRE,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-  })
-);
-for (let r of exampleRoutines) {
-  store.dispatch(importRoutine(r));
-}
-store.dispatch(setRoutine(1));
+//     damageType: damageTypes.FIRE,
+//     material: materials.NONE,
+//     persistent: false,
+//     multiplier: 1,
+//   })
+// );
+
+store.dispatch(setRoutine(0));
 // store.dispatch(weaknessAdded({ id: 0, type: damageTypes.FIRE, value: 10 }));
 // store.dispatch(
 //   damageAdded({

@@ -4,7 +4,13 @@ export const graphTypes = {
   PMRES: "+/- Resistance/Weakness",
 } as const;
 export type GraphType = typeof graphTypes[keyof typeof graphTypes];
-export type TargetState = { flatfooted: boolean; frightened: number };
+export type TargetState = {
+  flatfooted: boolean;
+  prone: boolean;
+  grappled: boolean;
+  frightened: number;
+  clumsy: number;
+};
 export const ACTrends = {
   LOW: "Low",
   MODERATE: "Moderate",
@@ -196,14 +202,25 @@ export const materials = {
 } as const;
 export type Material = typeof materials[keyof typeof materials];
 
-export const effectTypes = {
+export const effectStateTypes = {
   FLATFOOT: "Flatfooted",
-  FRIGHTENED1: "Frightened 1",
-  FRIGHTENED2: "Frightened 2",
-  FRIGHTENED3: "Frightened 3",
-  FRIGHTENED4: "Frightened 4",
+  PRONE: "Prone",
+  GRAPPLED: "Grappled",
+  RESTRAINED: "Restrained",
 } as const;
-export type EffectType = typeof effectTypes[keyof typeof effectTypes];
+export type EffectStateType =
+  typeof effectStateTypes[keyof typeof effectStateTypes];
+export const effectValueTypes = {
+  FRIGHTENED: "Frightened",
+  CLUMSY: "Clumsy",
+} as const;
+export type EffectValueType =
+  typeof effectValueTypes[keyof typeof effectValueTypes];
+export const effectTypes = {
+  ...effectValueTypes,
+  ...effectStateTypes,
+} as const;
+export type EffectType = EffectStateType | EffectValueType;
 
 export const diceNums = {
   0: 0,

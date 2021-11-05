@@ -1,364 +1,249 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selecttargetById, Target, targetUpdated } from "./targetSlice";
-import { damageTypes } from "../Model/types";
-import {
-  selectweaknessById,
-  Weakness,
-  weaknessCreated,
-  weaknessRemoved,
-  weaknessUpdated,
-} from "./weaknessSlice";
-import { EntityId } from "@reduxjs/toolkit";
+// import { damageTypes } from "../Model/types";
+// import {
+//   selectweaknessById,
+//   Weakness,
+//   weaknessCreated,
+//   weaknessRemoved,
+//   weaknessUpdated,
+// } from "./weaknessSlice";
+// import { EntityId } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { ACOptions, SaveOptions, weaknessOptions } from "../Model/options";
-
-function TargetInput({ id }: { id: EntityId }) {
+import { ACOptions, SaveOptions } from "../Model/options";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  Grid,
+  Paper,
+  TextField,
+  FormControlLabel,
+  Switch,
+  Slider,
+  Typography,
+} from "@mui/material";
+// { id }: { id: EntityId }
+function TargetInput() {
+  const id = 0;
   const {
     name,
-
-    // level,
-    // matchRoutines,
     levelDiff,
-
-    // [defenses.AC]: AC,
-    // defaultAC,
-    // useDefaultAC,
-    // [defenses.FORT]: Fort,
-    // defaultFort,
-    // useDefaultFort,
-    // [defenses.REF]: Ref,
-    // defaultRef,
-    // useDefaultRef,
-    // [defenses.WILL]: Will,
-    // defaultWill,
-    // useDefaultWill,
-    // [defenses.PER]: Perception,
-    // defaultPer,
-    // useDefaultPer,
-
+    persistentMultiplier,
     ACTrend,
     FortTrend,
     RefTrend,
     WillTrend,
     PerTrend,
-
     flatfooted,
-    weaknesses,
-  } = useSelector((state: RootState) => selecttargetById(state, 0)) as Target;
+    percentSelectedRoutine,
+    // weaknesses,
+  } = useSelector((state: RootState) => selecttargetById(state, id)) as Target;
+  const [tempName, setTempName] = useState(name);
+  const [perMul, setPerMul] = useState(persistentMultiplier.toString());
+  // const [tempLevelDiff, setTempLevelDiff] = useState(levelDiff.toString());
   const dispatch = useDispatch();
 
-  // name, level, ac, fort, ref, will, perception, resistances/weaknesses
   return (
-    <div className="box flexbox">
-      <span className="input">
-        <label htmlFor="targetName">{"Target Name: "}</label>
-        <input
-          id="targetName"
-          type="text"
-          placeholder="Enter Target name"
-          value={name}
-          onChange={(e) =>
-            dispatch(targetUpdated({ id, changes: { name: e.target.value } }))
-          }
-        />
-      </span>
-
-      {/* <span className="input">
-        <label htmlFor="Level">{" Level: "}</label>
-        <input
-          id="Level"
-          type="number"
-          value={level}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  level: parseInt(e.target.value),
-                },
-                match: matchRoutines,
-                level: parseInt(e.target.value) - levelDiff,
-              })
-            )
-          }
-        />
-      </span> */}
-
-      {/* <span className="input">
-        <label htmlFor="match">{" Match routine levels: "}</label>
-        <input
-          type="checkbox"
-          checked={matchRoutines}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { matchRoutines: e.target.checked },
-                match: e.target.checked,
-                level: level - levelDiff,
-              })
-            )
-          }
-        />
-        <input
-          type="number"
-          value={levelDiff}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  levelDiff: parseInt(e.target.value),
-                },
-                match: matchRoutines,
-                level: level - parseInt(e.target.value),
-              })
-            )
-          }
-        />
-      </span> */}
-
-      <span className="input">
-        <label htmlFor="levelDiff">{" Level Difference: "}</label>
-        <input
-          type="number"
-          id="levelDiff"
-          value={levelDiff}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  levelDiff: parseInt(e.target.value),
-                },
-              })
-            )
-          }
-        />
-      </span>
-      <span className="input">
-        <label htmlFor="AC">{" AC: "}</label>
-        {/* <input
-          type="checkbox"
-          checked={useDefaultAC}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({ id, changes: { useDefaultAC: e.target.checked } })
-            )
-          }
-        /> */}
-        <select
-          id="AC"
-          value={ACTrend}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({ id, changes: { ACTrend: e.target.value } })
-            )
-          }
-        >
-          {ACOptions}
-        </select>
-        {/* <input
-          id="AC"
-          type="number"
-          value={AC}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  useDefaultAC: false,
-                  [defenses.AC]: parseInt(e.target.value),
-                },
-              })
-            )
-          }
-        /> */}
-      </span>
-
-      <span className="input">
-        <label htmlFor="Fort">{" Fort: "}</label>
-        {/* <input
-          type="checkbox"
-          checked={useDefaultFort}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { useDefaultFort: e.target.checked },
-              })
-            )
-          }
-        /> */}
-        <select
-          id="Fort"
-          value={FortTrend}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({ id, changes: { FortTrend: e.target.value } })
-            )
-          }
-        >
-          {SaveOptions}
-        </select>
-        {/* <input
-          id="Fort"
-          type="number"
-          value={Fort}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { [defenses.FORT]: parseInt(e.target.value) },
-              })
-            )
-          }
-        /> */}
-      </span>
-
-      <span className="input">
-        <label htmlFor="Ref">{" Ref: "}</label>
-        {/* <input
-          type="checkbox"
-          checked={useDefaultRef}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { useDefaultRef: e.target.checked },
-              })
-            )
-          }
-        /> */}
-        <select
-          id="Red"
-          value={RefTrend}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({ id, changes: { RefTrend: e.target.value } })
-            )
-          }
-        >
-          {SaveOptions}
-        </select>
-        {/* <input
-          id="Ref"
-          type="number"
-          value={Ref}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { [defenses.REF]: parseInt(e.target.value) },
-              })
-            )
-          }
-        /> */}
-      </span>
-
-      <span className="input">
-        <label htmlFor="Will">{" Will: "}</label>
-        {/* <input
-          type="checkbox"
-          checked={useDefaultWill}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { useDefaultWill: e.target.checked },
-              })
-            )
-          }
-        /> */}
-        <select
-          id="Will"
-          value={WillTrend}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({ id, changes: { WillTrend: e.target.value } })
-            )
-          }
-        >
-          {SaveOptions}
-        </select>
-        {/* <input
-          id="Will"
-          type="number"
-          value={Will}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { [defenses.WILL]: parseInt(e.target.value) },
-              })
-            )
-          }
-        /> */}
-      </span>
-
-      <span className="input">
-        <label htmlFor="Perception">{" Perception: "}</label>
-        {/* <input
-          type="checkbox"
-          checked={useDefaultPer}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { useDefaultPer: e.target.checked },
-              })
-            )
-          }
-        /> */}
-        <select
-          id="Perception"
-          value={PerTrend}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({ id, changes: { PerTrend: e.target.value } })
-            )
-          }
-        >
-          {SaveOptions}
-        </select>
-        {/* <input
-          id="Perception"
-          type="number"
-          value={Perception}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({
-                id,
-                changes: { [defenses.PER]: parseInt(e.target.value) },
-              })
-            )
-          }
-        /> */}
-      </span>
-
-      <span className="input">
-        <label htmlFor="Flatfooted">{" Flatfooted: "}</label>
-        <input
-          id="Flatfooted"
-          type="checkbox"
-          checked={flatfooted}
-          onChange={(e) =>
-            dispatch(
-              targetUpdated({ id, changes: { flatfooted: e.target.checked } })
-            )
-          }
-        />
-      </span>
-
-      <div className="box flexbox">
-        {" Resistance/Weakness: "}
-        {weaknesses.map((weaknessId) => (
-          <WeaknessInput parentId={id} id={weaknessId} key={weaknessId} />
-        ))}
-        <AddWeakness parentId={id} />
-      </div>
-    </div>
+    <Paper sx={{ my: 1, p: 1 }}>
+      <Grid container spacing={{ xs: 1, sm: 2 }}>
+        <Grid item xs={8} sm={4} md={8} lg={4}>
+          <TextField
+            fullWidth
+            label="Graph Name"
+            placeholder="Enter the name that will display on the graph"
+            value={tempName}
+            onChange={(e) => {
+              setTempName(e.target.value);
+            }}
+            onBlur={() =>
+              dispatch(targetUpdated({ id, changes: { name: tempName } }))
+            }
+          />
+        </Grid>
+        <Grid item xs={4} sm={2} md={4} lg={2}>
+          <Typography>Level Diff: {levelDiff}</Typography>
+          <Slider
+            // aria-label="Always visible"
+            value={levelDiff}
+            // getAriaValueText={(v) => `${v}`}
+            // valueLabelDisplay="on"
+            step={1}
+            min={-5}
+            max={5}
+            marks
+            onChange={(e, nv) => {
+              dispatch(
+                targetUpdated({
+                  id,
+                  changes: {
+                    levelDiff: nv,
+                  },
+                })
+              );
+            }}
+          />
+        </Grid>
+        <Grid item xs={6} sm={3} md={6} lg={3}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={flatfooted}
+                onChange={(e) =>
+                  dispatch(
+                    targetUpdated({
+                      id,
+                      changes: { flatfooted: e.target.checked },
+                    })
+                  )
+                }
+              />
+            }
+            label="Flatfooted"
+          />
+        </Grid>
+        <Grid item xs={6} sm={3} md={6} lg={3}>
+          <FormControl fullWidth>
+            <InputLabel id="AC-input">AC</InputLabel>
+            <Select
+              labelId="AC-input"
+              id="AC"
+              value={ACTrend}
+              label="AC"
+              onChange={(e) =>
+                dispatch(
+                  targetUpdated({ id, changes: { ACTrend: e.target.value } })
+                )
+              }
+            >
+              {ACOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={3} sm={3} md={3} lg={3}>
+          <FormControl fullWidth>
+            <InputLabel id="Fort-input">Fort</InputLabel>
+            <Select
+              labelId="Fort-input"
+              id="Fort"
+              value={FortTrend}
+              label="Fort"
+              onChange={(e) =>
+                dispatch(
+                  targetUpdated({ id, changes: { FortTrend: e.target.value } })
+                )
+              }
+            >
+              {SaveOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={3} sm={3} md={3} lg={3}>
+          <FormControl fullWidth>
+            <InputLabel id="Ref-input">Reflex</InputLabel>
+            <Select
+              labelId="Ref-input"
+              id="Ref"
+              value={RefTrend}
+              label="Reflex"
+              onChange={(e) =>
+                dispatch(
+                  targetUpdated({ id, changes: { RefTrend: e.target.value } })
+                )
+              }
+            >
+              {SaveOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={3} sm={3} md={3} lg={3}>
+          <FormControl fullWidth>
+            <InputLabel id="Will-input">Will</InputLabel>
+            <Select
+              labelId="Will-input"
+              id="Will"
+              value={WillTrend}
+              label="Will"
+              onChange={(e) =>
+                dispatch(
+                  targetUpdated({ id, changes: { WillTrend: e.target.value } })
+                )
+              }
+            >
+              {SaveOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={3} sm={3} md={3} lg={3}>
+          <FormControl fullWidth>
+            <InputLabel id="Per-input">Perception</InputLabel>
+            <Select
+              labelId="Per-input"
+              id="Per"
+              value={PerTrend}
+              label="Perception"
+              onChange={(e) =>
+                dispatch(
+                  targetUpdated({ id, changes: { PerTrend: e.target.value } })
+                )
+              }
+            >
+              {SaveOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={6}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={percentSelectedRoutine}
+                onChange={(e) =>
+                  dispatch(
+                    targetUpdated({
+                      id,
+                      changes: { percentSelectedRoutine: e.target.checked },
+                    })
+                  )
+                }
+              />
+            }
+            label="% of Selected Routine"
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            label="Persistent Damage Multiplier"
+            value={perMul}
+            onChange={(e) => {
+              setPerMul(e.target.value);
+              e.target.focus();
+            }}
+            onBlur={() => {
+              let newVal = parseFloat(perMul);
+              setPerMul(newVal.toString());
+              dispatch(
+                targetUpdated({
+                  id,
+                  changes: {
+                    persistentMultiplier: newVal,
+                  },
+                })
+              );
+            }}
+          />
+        </Grid>
+        {/* 
+        <div className="box flexbox">
+          {" Resistance/Weakness: "}
+          {weaknesses.map((weaknessId) => (
+            <WeaknessInput parentId={id} id={weaknessId} key={weaknessId} />
+          ))}
+          <AddWeakness parentId={id} />
+        </div> */}
+      </Grid>
+    </Paper>
   );
 }
 
@@ -406,95 +291,95 @@ function TargetInput({ id }: { id: EntityId }) {
 //   );
 // };
 
-const WeaknessInput = ({
-  id,
-  parentId,
-}: {
-  id: EntityId;
-  parentId: EntityId;
-}) => {
-  // needs to have parent id to remove weakness
-  const { type, value } = useSelector((state: RootState) =>
-    selectweaknessById(state, id)
-  ) as Weakness;
-  const dispatch = useDispatch();
+// const WeaknessInput = ({
+//   id,
+//   parentId,
+// }: {
+//   id: EntityId;
+//   parentId: EntityId;
+// }) => {
+//   // needs to have parent id to remove weakness
+//   const { type, value } = useSelector((state: RootState) =>
+//     selectweaknessById(state, id)
+//   ) as Weakness;
+//   const dispatch = useDispatch();
 
-  const updateOrRemoveWeakness = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e?.target?.value === damageTypes.NONE) {
-      // remove this weakness
-      dispatch(weaknessRemoved({ id, parentId }));
-    } else {
-      dispatch(
-        weaknessUpdated({
-          id,
-          changes: { type: e.target.value as Weakness["type"] },
-        })
-      );
-    }
-  };
-  const updateWeaknessValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isNaN(parseInt(e.target.value))) {
-      dispatch(
-        weaknessUpdated({ id, changes: { value: parseInt(e.target.value) } })
-      );
-    }
-  };
-  return (
-    <span className="input">
-      <WeaknessSelect value={type} onChange={updateOrRemoveWeakness} />
-      <input type="number" value={value} onChange={updateWeaknessValue} />
-    </span>
-  );
-};
+//   const updateOrRemoveWeakness = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     if (e?.target?.value === damageTypes.NONE) {
+//       // remove this weakness
+//       dispatch(weaknessRemoved({ id, parentId }));
+//     } else {
+//       dispatch(
+//         weaknessUpdated({
+//           id,
+//           changes: { type: e.target.value as Weakness["type"] },
+//         })
+//       );
+//     }
+//   };
+//   const updateWeaknessValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     if (!isNaN(parseInt(e.target.value))) {
+//       dispatch(
+//         weaknessUpdated({ id, changes: { value: parseInt(e.target.value) } })
+//       );
+//     }
+//   };
+//   return (
+//     <span className="input">
+//       <WeaknessSelect value={type} onChange={updateOrRemoveWeakness} />
+//       <input type="number" value={value} onChange={updateWeaknessValue} />
+//     </span>
+//   );
+// };
 
-let weaknessId = 0;
+// let weaknessId = 0;
 
-const AddWeakness = ({ parentId }: { parentId: EntityId }) => {
-  const dispatch = useDispatch();
-  let [weaknessValue, setWeaknessValue] = useState(0);
+// const AddWeakness = ({ parentId }: { parentId: EntityId }) => {
+//   const dispatch = useDispatch();
+//   let [weaknessValue, setWeaknessValue] = useState(0);
 
-  // add a Weakness to TargetInfo id
-  const addWeakness = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value !== damageTypes.NONE) {
-      // need to create a new weakness
-      weaknessId++;
-      dispatch(
-        weaknessCreated({
-          id: weaknessId,
-          type: e.target.value,
-          value: weaknessValue,
-          parentId: parentId,
-        })
-      );
-    }
-  };
+//   // add a Weakness to TargetInfo id
+//   const addWeakness = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     if (e.target.value !== damageTypes.NONE) {
+//       // need to create a new weakness
+//       weaknessId++;
+//       dispatch(
+//         weaknessCreated({
+//           id: weaknessId,
+//           type: e.target.value,
+//           value: weaknessValue,
+//           parentId: parentId,
+//         })
+//       );
+//     }
+//   };
 
-  return (
-    <span className="input">
-      <WeaknessSelect value={damageTypes.NONE} onChange={addWeakness} />
-      <input
-        type="number"
-        value={weaknessValue}
-        onChange={(e) => setWeaknessValue(parseInt(e.target.value))}
-      />
-    </span>
-  );
-};
+//   return (
+//     <span className="input">
+//       <WeaknessSelect value={damageTypes.NONE} onChange={addWeakness} />
+//       <input
+//         type="number"
+//         value={weaknessValue}
+//         onChange={(e) => setWeaknessValue(parseInt(e.target.value))}
+//       />
+//     </span>
+//   );
+// };
 
-const WeaknessSelect = ({
-  value,
-  onChange,
-}: {
-  value: Weakness["type"];
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}) => {
-  return (
-    <span>
-      <select value={value} onChange={(e) => onChange(e)}>
-        {weaknessOptions}
-      </select>
-    </span>
-  );
-};
+// const WeaknessSelect = ({
+//   value,
+//   onChange,
+// }: {
+//   value: Weakness["type"];
+//   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+// }) => {
+//   return (
+//     <span>
+//       <select value={value} onChange={(e) => onChange(e)}>
+//         {weaknessOptions}
+//       </select>
+//     </span>
+//   );
+// };
 
-export default TargetInput;
+export { TargetInput };

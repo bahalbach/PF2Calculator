@@ -12,12 +12,14 @@ export interface Target {
   id: EntityId;
   name: string;
   levelDiff: number;
+  persistentMultiplier: number;
   ACTrend: typeof ACTrends[keyof typeof ACTrends];
   FortTrend: typeof SaveTrends[keyof typeof SaveTrends];
   RefTrend: typeof SaveTrends[keyof typeof SaveTrends];
   WillTrend: typeof SaveTrends[keyof typeof SaveTrends];
   PerTrend: typeof SaveTrends[keyof typeof SaveTrends];
   flatfooted: boolean;
+  percentSelectedRoutine: boolean;
   weaknesses: number[];
 }
 
