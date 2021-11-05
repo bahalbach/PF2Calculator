@@ -215,6 +215,12 @@ function calculateExpectedDamage(
   }
 
   targetValue = targetValue[level + target.levelDiff];
+  let targetPenalty = targetState.frightened;
+  if (
+    activity.targetType === defenses.AC ||
+    activity.targetType === defenses.REF
+  )
+    targetPenalty = Math.max(targetPenalty, targetState.clumsy);
   switch (activity.type) {
     case activityTypes.STRIKE:
       bonus = profTrendValues[activity.profTrend][level];
@@ -222,7 +228,7 @@ function calculateExpectedDamage(
       bonus += itemTrendValues[activity.itemTrend][level];
       bonus += activity.bonusAdjustments[level];
       bonus += MAPvalues[activity.MAP];
-      DC = targetValue + defenseBonus - targetState.frightened;
+      DC = targetValue + defenseBonus - targetPenalty;
       if (activity.targetType === defenses.AC) {
         if (target.flatfooted || targetState.flatfooted) DC -= 2;
       } else {
@@ -231,7 +237,7 @@ function calculateExpectedDamage(
       break;
 
     case activityTypes.SAVE:
-      bonus = targetValue + defenseBonus - targetState.frightened;
+      bonus = targetValue + defenseBonus - targetPenalty;
       DC = 10 + profTrendValues[activity.profTrend][level];
       DC += statTrendValues[activity.statTrend][level];
       DC += itemTrendValues[activity.itemTrend][level];
@@ -656,6 +662,17 @@ function calculateExpectedDamage(
       finalTree[damageQuality].staticDamage = totalStaticDamage;
       finalTree[damageQuality].damageDist = totalDamageDist;
     }
+    // Add persistent damage to normal damage with a multiplier
+    let { staticDamage, damageDist } = multiplyDist(
+      finalTree["persistent"].staticDamage,
+      finalTree["persistent"].damageDist,
+      target.persistentMultiplier
+    );
+    finalTree["normal"].staticDamage += staticDamage;
+    finalTree["normal"].damageDist = convolve(
+      finalTree["normal"].damageDist,
+      damageDist
+    );
   }
   // End going through each damage type and apply weakness/resistance
 

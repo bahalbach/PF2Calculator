@@ -1,5 +1,15 @@
-import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import React, { useEffect, useState } from "react";
+import {
+  FormControl,
+  Select,
+  InputLabel,
+  TextField,
+  Grid,
+  IconButton,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
+
 import { Dispatch } from "redux";
 import { levelOptions } from "../Model/options";
 import { Adjustment } from "./routineSlice";
@@ -80,29 +90,61 @@ export const LevelList = (
 
   for (let i = 0; i < entries.length; i++) {
     levelList.push(
-      <span className="input" key={i}>
-        @
-        <select
-          value={entries[i][0]}
-          onChange={(e) =>
+      <Grid item key={i}>
+        <FormControl size="small">
+          <InputLabel>Level</InputLabel>
+          <Select
+            label="Level"
+            value={entries[i][0]}
+            onChange={(e) =>
+              dispatch(
+                action({
+                  id,
+                  changes: {
+                    [name]: adjustmentsFromLevelChange(
+                      entries,
+                      i,
+                      Number(e.target.value)
+                    ),
+                  },
+                })
+              )
+            }
+          >
+            {levelOptions}
+          </Select>
+        </FormControl>
+        <TextField
+          size="small"
+          label="Bonus"
+          sx={{ width: "7ch" }}
+          value={entries[i][1]}
+          onChange={(e) => {
+            let newEntries = entries.slice();
+            newEntries[i] = [newEntries[i][0], e.target.value];
+            setEntries(newEntries);
+            e.target.focus();
+          }}
+          onBlur={() => {
+            let newEntries = entries.slice();
+            for (let ni = 0; ni < entries.length; ni++) {
+              newEntries[ni] = [
+                newEntries[i][0],
+                parseInt(newEntries[ni][1]).toString(),
+              ];
+            }
+            setEntries(newEntries);
             dispatch(
               action({
                 id,
                 changes: {
-                  [name]: adjustmentsFromLevelChange(
-                    entries,
-                    i,
-                    parseInt(e.target.value)
-                  ),
+                  [name]: generateAdjustments(entries),
                 },
               })
-            )
-          }
-        >
-          {levelOptions}
-        </select>
-        +
-        <input
+            );
+          }}
+        />
+        {/* <input
           type="number"
           value={entries[i][1]}
           onChange={(e) => {
@@ -121,27 +163,29 @@ export const LevelList = (
               })
             )
           }
-        />
-      </span>
+        /> */}
+      </Grid>
     );
   }
   levelList.push(
-    <button
-      key="addButton"
-      className="add"
-      onClick={() =>
-        dispatch(
-          action({
-            id,
-            changes: {
-              [name]: adjustmentsFromNewEntry(entries),
-            },
-          })
-        )
-      }
-    >
-      +
-    </button>
+    <Grid item key="addButton">
+      <IconButton
+        color="primary"
+        aria-label="Add button"
+        onClick={() =>
+          dispatch(
+            action({
+              id,
+              changes: {
+                [name]: adjustmentsFromNewEntry(entries),
+              },
+            })
+          )
+        }
+      >
+        <AddIcon />
+      </IconButton>
+    </Grid>
   );
   return levelList;
 };

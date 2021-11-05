@@ -1,5 +1,5 @@
 import { convolve, consolidateDists } from "./Distribution";
-import { calculateExpectedDamage, DamageContext } from "./Calculation";
+import { calculateExpectedDamage } from "./Calculation";
 import {
   Condition,
   conditions,
@@ -70,26 +70,29 @@ function validateCondition(condition: Condition, degreeOfSuccess: number) {
 
 class ActivityPathEvaluator {
   activityPaths: Dictionary<ActivityPath>;
-  targets: Dictionary<Target>;
+  target: Target;
   damages: Dictionary<Damage>;
   effects: Dictionary<Effect>;
   weaknesses: Dictionary<Weakness>;
+  selectedRoutine?: number;
   constructor(
     activityPaths: Dictionary<ActivityPath>,
     targets: Dictionary<Target>,
     damages: Dictionary<Damage>,
     effects: Dictionary<Effect>,
-    weaknesses: Dictionary<Weakness>
+    weaknesses: Dictionary<Weakness>,
+    selectedRoutine?: number
   ) {
     this.activityPaths = activityPaths;
-    this.targets = targets;
+    this.target = targets[0]!;
     this.damages = damages;
     this.effects = effects;
     this.weaknesses = weaknesses;
+    this.selectedRoutine = selectedRoutine;
   }
 
   canEvaluate(level: number, routine: Routine) {
-    const levelDiff = this.targets[0]!.levelDiff;
+    const levelDiff = this.target.levelDiff;
     // console.log(`level ${level}, levelDiff ${levelDiff}`);
     if (level < routine.startLevel || level > routine.endLevel) return false;
     if (level + levelDiff < -1 || level + levelDiff > 24) return false;
@@ -104,7 +107,10 @@ class ActivityPathEvaluator {
   ) {
     const initialTargetState = {
       flatfooted: false,
+      prone: false,
+      grappled: false,
       frightened: 0,
+      clumsy: 0,
     };
     const dataArray = [];
     const cumulative = [];
@@ -163,7 +169,7 @@ class ActivityPathEvaluator {
     resistanceBonus: number
   ) {
     // evaluate this and all following APs
-    let currentTarget = this.targets[0]!;
+    let currentTarget = this.target;
     let currentDamages = activityPath.damages.map(
       (damageId) => this.damages[damageId]!
     );
@@ -192,41 +198,47 @@ class ActivityPathEvaluator {
     for (let i = 0; i < 4; i++) {
       // go though each effect and update targetStates
       currentEffects.forEach((effect) => {
-        let { effectCondition, effectType, startLevel, endLevel } = effect;
+        let { effectCondition, effectType, effectValue, startLevel, endLevel } =
+          effect;
         if (level < startLevel || level > endLevel) return;
         if (validateCondition(effectCondition, i)) {
           switch (effectType) {
+            case effectTypes.GRAPPLED:
+              if (targetStates[i].grappled !== true)
+                targetStates[i] = {
+                  ...targetStates[i],
+                  flatfooted: true,
+                  grappled: true,
+                };
+              break;
+
+            case effectTypes.PRONE:
+              if (targetStates[i].prone !== true)
+                targetStates[i] = {
+                  ...targetStates[i],
+                  flatfooted: true,
+                  prone: true,
+                };
+              break;
+
             case effectTypes.FLATFOOT:
               if (targetStates[i].flatfooted !== true)
                 targetStates[i] = { ...targetStates[i], flatfooted: true };
               break;
 
-            case effectTypes.FRIGHTENED1:
-              if (targetStates[i].frightened < 1)
+            case effectTypes.FRIGHTENED:
+              if (effectValue && targetStates[i].frightened < effectValue)
                 targetStates[i] = {
                   ...targetStates[i],
-                  frightened: 1,
+                  frightened: effectValue,
                 };
               break;
-            case effectTypes.FRIGHTENED2:
-              if (targetStates[i].frightened < 2)
+
+            case effectTypes.CLUMSY:
+              if (effectValue && targetStates[i].clumsy < effectValue)
                 targetStates[i] = {
                   ...targetStates[i],
-                  frightened: 2,
-                };
-              break;
-            case effectTypes.FRIGHTENED3:
-              if (targetStates[i].frightened < 3)
-                targetStates[i] = {
-                  ...targetStates[i],
-                  frightened: 3,
-                };
-              break;
-            case effectTypes.FRIGHTENED4:
-              if (targetStates[i].frightened < 4)
-                targetStates[i] = {
-                  ...targetStates[i],
-                  frightened: 4,
+                  clumsy: effectValue,
                 };
               break;
 
@@ -258,7 +270,7 @@ class ActivityPathEvaluator {
             );
             evaluations.set(targetStates[i], { pathDist, pathPDist });
           }
-          (damageTrees[i].normal as DamageContext).damageDist = convolve(
+          damageTrees[i].normal.damageDist = convolve(
             damageTrees[i].normal.damageDist,
             evaluations.get(targetStates[i]).pathDist
           );

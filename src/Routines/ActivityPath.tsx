@@ -1,7 +1,11 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LevelList } from "./LevelList";
-import { damageCreated } from "./routineSlice";
+import {
+  activityPathContinued,
+  damageCreated,
+  setNewActivityParent,
+} from "./routineSlice";
 import {
   activityTypeOptions,
   profTrendOptions,
@@ -13,7 +17,6 @@ import {
   itemBTrendOptions,
 } from "../Model/options";
 import {
-  activityPathCreated,
   activityPathRemoved,
   activityPathUpdated,
   selectactivityPathById,
@@ -23,19 +26,24 @@ import { Damage } from "./Damage";
 import { Effect } from "./Effect";
 import { effectCreated } from "./routineSlice";
 import { RootState } from "../store";
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  List,
+  ListSubheader,
+  Paper,
+  Select,
+  Typography,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { ActivityPathStub } from "./ActivityPathStub";
 
-export const ActivityPath = ({
-  id,
-  parentId,
-  routineId,
-  displayCondition = true,
-}: {
-  id: number;
-  parentId?: number;
-  routineId?: number;
-  displayCondition?: boolean;
-}) => {
+export const ActivityPath = ({ id }: { id: number }) => {
   const {
+    parentId,
+    routineId,
     condition,
 
     rollType,
@@ -62,40 +70,56 @@ export const ActivityPath = ({
   );
 
   return (
-    <div className="ImportantBox">
-      {displayCondition ? (
-        <div>
-          {"Condition: "}
-          <select
-            value={condition}
-            onChange={(e) =>
-              dispatch(
-                activityPathUpdated({
-                  id,
-                  changes: { condition: e.target.value },
-                })
-              )
-            }
-          >
-            {conditionOptions}
-          </select>
-        </div>
-      ) : (
-        ""
-      )}
-
-      <div className="">
-        <div className="flexbox">
-          <button
-            className="delete"
+    <Paper sx={{ my: 2, p: 1 }}>
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
+        <Grid item xs="auto">
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<DeleteIcon />}
             onClick={(e) => {
               dispatch(activityPathRemoved({ id, parentId, routineId }));
             }}
           >
-            -
-          </button>
-          <span className="input">
-            <select
+            Delete
+          </Button>
+        </Grid>
+        {parentId !== undefined ? (
+          <Grid item xs>
+            <FormControl size="small" fullWidth>
+              <InputLabel id="condition-input">Condition</InputLabel>
+              <Select
+                labelId="condition-input"
+                id="condition"
+                value={condition}
+                label="Condition"
+                onChange={(e) =>
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { condition: e.target.value },
+                    })
+                  )
+                }
+              >
+                {conditionOptions}
+              </Select>
+            </FormControl>
+          </Grid>
+        ) : (
+          ""
+        )}
+      </Grid>
+      <Typography variant="h6" gutterBottom>
+        Roll
+      </Typography>
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 2 }}>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="roll-type-input">Roll Type</InputLabel>
+            <Select
+              labelId="roll-type-input"
+              label="Roll Type"
               value={rollType}
               onChange={(e) => {
                 dispatch(
@@ -107,86 +131,120 @@ export const ActivityPath = ({
               }}
             >
               {rollOptions}
-            </select>
-          </span>
-          <span className="input">
-            <select
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="activity-type-input">Activity Type</InputLabel>
+            <Select
+              labelId="activity-type-input"
+              label="Activity Type"
               value={type}
-              onChange={(e) =>
+              onChange={(e) => {
                 dispatch(
-                  activityPathUpdated({ id, changes: { type: e.target.value } })
-                )
-              }
+                  activityPathUpdated({
+                    id,
+                    changes: { type: e.target.value },
+                  })
+                );
+              }}
             >
               {activityTypeOptions}
-            </select>
-          </span>{" "}
-          <span className="input">
-            {type === activityTypes.SAVE ? "DC: (10 + " : "Bonus: ("}
-            <select
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="proficiency-input">Proficiency</InputLabel>
+            <Select
+              labelId="proficiency-type-input"
+              label="Proficiency"
               value={profTrend}
-              onChange={(e) =>
+              onChange={(e) => {
                 dispatch(
                   activityPathUpdated({
                     id,
                     changes: { profTrend: e.target.value },
                   })
-                )
-              }
+                );
+              }}
             >
               {profTrendOptions}
-            </select>
-            <select
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="ability-score-input">Ability Score</InputLabel>
+            <Select
+              labelId="ability-score-input"
+              label="Ability Score"
               value={statTrend}
-              onChange={(e) =>
+              onChange={(e) => {
                 dispatch(
                   activityPathUpdated({
                     id,
                     changes: { statTrend: e.target.value },
                   })
-                )
-              }
+                );
+              }}
             >
               {statTrendOptions}
-            </select>
-            <select
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="item-bonus-input">Item Bonus</InputLabel>
+            <Select
+              labelId="item-bonus-input"
+              label="Item Bonus"
               value={itemTrend}
-              onChange={(e) =>
+              onChange={(e) => {
                 dispatch(
                   activityPathUpdated({
                     id,
                     changes: { itemTrend: e.target.value },
                   })
-                )
-              }
+                );
+              }}
             >
               {itemBTrendOptions}
-            </select>
-            +{bonusLevelList})
-          </span>
-          {type === activityTypes.STRIKE ? (
-            <span className="input">
-              {" MAP: "}
-              <select
+            </Select>
+          </FormControl>
+        </Grid>
+        {bonusLevelList}
+        {type !== activityTypes.SAVE ? (
+          <Grid item>
+            <FormControl size="small">
+              <InputLabel id="MAP-input">MAP</InputLabel>
+              <Select
+                labelId="MAP-input"
+                label="MAP"
                 value={MAP}
-                onChange={(e) =>
+                onChange={(e) => {
                   dispatch(
                     activityPathUpdated({
                       id,
                       changes: { MAP: e.target.value },
                     })
-                  )
-                }
+                  );
+                }}
               >
                 {MAPOptions}
-              </select>
-            </span>
-          ) : (
-            ""
-          )}
-          <span className="input">
-            {" VS: "}
-            <select
+              </Select>
+            </FormControl>
+          </Grid>
+        ) : (
+          ""
+        )}
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="defense-input">Target Defense</InputLabel>
+            <Select
+              labelId="defense-input"
+              label="Target Defense"
               value={targetType}
               onChange={(e) => {
                 dispatch(
@@ -198,38 +256,85 @@ export const ActivityPath = ({
               }}
             >
               {defenseOptions}
-            </select>
-          </span>
-        </div>
-        <div className="box">
-          {"Damage: "}
-          {damages.map((damageId) => (
-            <Damage parentId={id} id={damageId} key={damageId} />
-          ))}
-          <button
-            className="add"
-            onClick={() => dispatch(damageCreated({ parentId: id }))}
-          >
-            +
-          </button>
-        </div>
-        <div className="box">
-          {"Effects: "}
-          {effects.map((effectId) => (
-            <Effect parentId={id} id={effectId} key={effectId} />
-          ))}
-          <button
-            className="add"
-            onClick={() => dispatch(effectCreated({ parentId: id }))}
-          >
-            +
-          </button>
-        </div>
-      </div>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
 
-      <div className="box">
+      {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
+      <Typography variant="h6" gutterBottom>
+        Damages
+      </Typography>
+      {damages.map((damageId) => (
+        <Damage parentId={id} id={damageId} key={damageId} />
+      ))}
+      {/* </List> */}
+      <Button
+        sx={{ mb: 3 }}
+        variant="outlined"
+        size="small"
+        onClick={() => dispatch(damageCreated({ parentId: id }))}
+      >
+        Add Damage
+      </Button>
+      <Typography variant="h6" gutterBottom>
+        Effects
+      </Typography>
+      {effects.map((effectId) => (
+        <Effect parentId={id} id={effectId} key={effectId} />
+      ))}
+      <Button
+        sx={{ mb: 3 }}
+        variant="outlined"
+        size="small"
+        onClick={() => dispatch(effectCreated({ parentId: id }))}
+      >
+        Add Effect
+      </Button>
+
+      <List subheader={<ListSubheader>Child Activities</ListSubheader>}>
         {apIds.map((apId) => (
-          <ActivityPath id={apId} parentId={id} key={apId} />
+          <ActivityPathStub
+            key={apId}
+            id={apId}
+            level={0}
+            displayChildren={false}
+          />
+        ))}
+      </List>
+
+      {type === activityTypes.STRIKE ? (
+        <Button
+          variant="outlined"
+          onClick={() => {
+            window.location.href = "#routine-activity-list";
+            dispatch(
+              activityPathContinued({
+                parentId: id,
+                isStrike: true,
+                applyMAP: true,
+              })
+            );
+          }}
+        >
+          + Next Strike
+        </Button>
+      ) : (
+        ""
+      )}
+      <Button
+        variant="outlined"
+        onClick={(event) => {
+          window.location.href = "#routine-activity-list";
+          dispatch(setNewActivityParent({ parentId: id }));
+        }}
+      >
+        New Child Activity
+      </Button>
+
+      {/* <div className="box">
+        {apIds.map((apId) => (
+          <ActivityPath id={apId} key={apId} />
         ))}
         <button
           className="add"
@@ -253,7 +358,7 @@ export const ActivityPath = ({
         >
           + Save
         </button>
-      </div>
-    </div>
+      </div> */}
+    </Paper>
   );
 };

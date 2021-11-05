@@ -13,6 +13,20 @@ import {
 } from "../Model/options";
 import { DamageTrend, damageTrends } from "../Model/types";
 import { RootState } from "../store";
+import {
+  Button,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  InputLabel,
+  Select,
+  Switch,
+} from "@mui/material";
+import Divider from "@mui/material/Divider";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Box } from "@mui/system";
 
 export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
   const {
@@ -50,196 +64,270 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
 
   const damageTrendList = damageTrend.map((dt, index) => {
     return (
-      <select
-        key={index} // no stable id
-        value={dt}
-        onChange={(e) => {
-          let newdt = damageTrend.slice();
-          if (e.target.value === damageTrends.NONE) {
-            newdt.splice(index, 1);
-          } else {
-            newdt[index] = e.target.value as DamageTrend;
-          }
-          dispatch(
-            damageUpdated({
-              id,
-              changes: { damageTrend: newdt },
-            })
-          );
-        }}
-      >
-        {damageTrendOptions}
-      </select>
+      <Grid item key={index}>
+        <Select
+          // no stable id
+          size="small"
+          value={dt}
+          onChange={(e) => {
+            let newdt = damageTrend.slice();
+            if (e.target.value === damageTrends.NONE) {
+              newdt.splice(index, 1);
+            } else {
+              newdt[index] = e.target.value as DamageTrend;
+            }
+            dispatch(
+              damageUpdated({
+                id,
+                changes: { damageTrend: newdt },
+              })
+            );
+          }}
+        >
+          {damageTrendOptions}
+        </Select>
+      </Grid>
     );
   });
 
   return (
-    <div className="box">
-      <button
-        className="delete"
-        onClick={(e) => {
-          dispatch(damageRemoved({ id, parentId }));
-        }}
-      >
-        -
-      </button>
-      <select
-        value={damageCondition}
-        onChange={(e) =>
-          dispatch(
-            damageUpdated({ id, changes: { damageCondition: e.target.value } })
-          )
-        }
-      >
-        {damageConditionOptions}
-      </select>
-      {": "}
-      <div>
-        <span className="input">
-          {"Dice: ("}
-          <select
-            value={dieTrend}
-            onChange={(e) =>
-              dispatch(
-                damageUpdated({
-                  id,
-                  changes: { dieTrend: e.target.value },
-                })
-              )
-            }
+    <Box sx={{ mt: 3, mb: 6 }}>
+      <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}></Divider>
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
+        <Grid item xs="auto">
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={(e) => {
+              dispatch(damageRemoved({ id, parentId }));
+            }}
           >
-            {dieTrendOptions}
-          </select>
-          +{dieLevelList})
-        </span>
-        <span className="input">
-          {" d"}
-          <select
-            value={diceSize}
-            onChange={(e) =>
-              dispatch(
-                damageUpdated({
-                  id,
-                  changes: { diceSize: parseInt(e.target.value) },
-                })
-              )
-            }
-          >
-            {diceSizeOptions}
-          </select>
-        </span>
-        <span className="input">
-          {" Fatal "}
-          <input
-            type="checkbox"
-            checked={fatal}
-            onChange={(e) =>
-              dispatch(
-                damageUpdated({
-                  id,
-                  changes: { fatal: e.target.checked },
-                })
-              )
-            }
-          />
-          {fatal ? (
-            <select
-              value={fatalDie}
+            <DeleteIcon />
+          </IconButton>
+        </Grid>
+
+        <Grid item xs>
+          <FormControl size="small" fullWidth>
+            <InputLabel id="damage-condition-input">Condition</InputLabel>
+            <Select
+              labelId="damage-condition-input"
+              id="damage-condition"
+              value={damageCondition}
+              label="Condition"
               onChange={(e) =>
                 dispatch(
                   damageUpdated({
                     id,
-                    changes: { fatalDie: parseInt(e.target.value) },
+                    changes: { damageCondition: e.target.value },
+                  })
+                )
+              }
+            >
+              {damageConditionOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        {/* </Grid>
+      <Grid container spacing={{ xs: 1, sm: 2 }}> */}
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="damage-multiplier-input">Multiplier</InputLabel>
+            <Select
+              labelId="damage-multiplier-input"
+              id="damage-multiplier"
+              value={multiplier}
+              label="Multiplier"
+              onChange={(e) =>
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: { multiplier: Number(e.target.value) },
+                  })
+                )
+              }
+            >
+              {multiplierOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="damage-type-input">Type</InputLabel>
+            <Select
+              labelId="damage-type-input"
+              id="damage-type"
+              value={damageType}
+              label="Type"
+              onChange={(e) =>
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: { damageType: e.target.value },
+                  })
+                )
+              }
+            >
+              {damageTypeOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="damage-material-input">Material</InputLabel>
+            <Select
+              labelId="damage-material-input"
+              id="damage-material"
+              value={material}
+              label="Material"
+              onChange={(e) =>
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: { material: e.target.value },
+                  })
+                )
+              }
+            >
+              {materialOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={persistent}
+                onChange={(e) =>
+                  dispatch(
+                    damageUpdated({
+                      id,
+                      changes: { persistent: e.target.checked },
+                    })
+                  )
+                }
+              />
+            }
+            label="Persistent"
+          />
+        </Grid>
+      </Grid>
+      <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}>
+        Dice
+      </Divider>
+      <Grid container spacing={{ xs: 1, sm: 2 }}>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="dice-input">Damage Dice</InputLabel>
+            <Select
+              labelId="dice-input"
+              id="dice"
+              value={dieTrend}
+              label="Damage Dice"
+              onChange={(e) =>
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: { dieTrend: e.target.value },
+                  })
+                )
+              }
+            >
+              {dieTrendOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        {dieLevelList}
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="dice-size-input">Die Size</InputLabel>
+            <Select
+              labelId="dice-size-input"
+              id="dice-size"
+              value={diceSize}
+              label="Die Size"
+              onChange={(e) =>
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: { diceSize: e.target.value },
                   })
                 )
               }
             >
               {diceSizeOptions}
-            </select>
-          ) : (
-            ""
-          )}
-        </span>
-        <div>
-          <span className="input">
-            {"Static: ("}
-            {damageTrendList}
-            <button
-              key="addButton"
-              className="add"
-              onClick={() => {
-                let newdt = damageTrend.slice();
-                newdt.push(damageTrends.NONE);
-                dispatch(
-                  damageUpdated({
-                    id,
-                    changes: {
-                      damageTrend: newdt,
-                    },
-                  })
-                );
-              }}
-            >
-              +
-            </button>
-            +{damageLevelList})
-          </span>
-        </div>
-      </div>
-      <span className="input">
-        {" Type: "}
-        <select
-          value={damageType}
-          onChange={(e) => {
-            dispatch(
-              damageUpdated({ id, changes: { damageType: e.target.value } })
-            );
-          }}
-        >
-          {damageTypeOptions}
-        </select>
-        <select
-          value={material}
-          onChange={(e) => {
-            dispatch(
-              damageUpdated({ id, changes: { material: e.target.value } })
-            );
-          }}
-        >
-          {materialOptions}
-        </select>
-      </span>
-      <span className="input">
-        {" Persistent: "}
-        <input
-          type="checkbox"
-          checked={persistent}
-          onChange={(e) =>
-            dispatch(
-              damageUpdated({
-                id,
-                changes: { persistent: e.target.checked },
-              })
-            )
-          }
-        />
-      </span>{" "}
-      <span className="input">
-        {" x "}
-        <select
-          value={multiplier}
-          onChange={(e) => {
-            dispatch(
-              damageUpdated({
-                id,
-                changes: { multiplier: parseFloat(e.target.value) },
-              })
-            );
-          }}
-        >
-          {multiplierOptions}
-        </select>
-      </span>
-    </div>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={fatal}
+                onChange={(e) =>
+                  dispatch(
+                    damageUpdated({
+                      id,
+                      changes: { fatal: e.target.checked },
+                    })
+                  )
+                }
+              />
+            }
+            label="On Crit Die"
+          />
+        </Grid>
+        {fatal ? (
+          <Grid item>
+            <FormControl size="small">
+              <InputLabel id="fatal-size-input">Die Size</InputLabel>
+              <Select
+                labelId="fatal-size-input"
+                id="fatal-size"
+                value={fatalDie}
+                label="Die Size"
+                onChange={(e) =>
+                  dispatch(
+                    damageUpdated({
+                      id,
+                      changes: { fatalDie: e.target.value },
+                    })
+                  )
+                }
+              >
+                {diceSizeOptions}
+              </Select>
+            </FormControl>
+          </Grid>
+        ) : (
+          ""
+        )}
+      </Grid>
+      <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}>
+        Static Damage
+      </Divider>
+      <Grid container spacing={{ xs: 1, sm: 2 }}>
+        {damageTrendList}
+        <Grid item>
+          <Button
+            onClick={() => {
+              let newdt = damageTrend.slice();
+              newdt.push(damageTrends.NONE);
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: {
+                    damageTrend: newdt,
+                  },
+                })
+              );
+            }}
+          >
+            Add damage
+          </Button>
+        </Grid>
+        {damageLevelList}
+      </Grid>
+      <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}></Divider>
+    </Box>
   );
 };

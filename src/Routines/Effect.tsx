@@ -1,80 +1,154 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+
 import {
-  conditionOptions,
-  effectTypeOptions,
-  levelOptions,
-} from "../Model/options";
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  Select,
+  Slider,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Box } from "@mui/system";
+
+import { useDispatch, useSelector } from "react-redux";
+import { conditionOptions, effectTypeOptions } from "../Model/options";
 import { RootState } from "../store";
 import { effectRemoved, effectUpdated, selecteffectById } from "./routineSlice";
+import { effectValueTypes } from "../Model/types";
 
 export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
-  const { effectCondition, effectType, startLevel, endLevel } = useSelector(
-    (state: RootState) => selecteffectById(state, id)!
-  );
+  const { effectCondition, effectType, effectValue, startLevel, endLevel } =
+    useSelector((state: RootState) => selecteffectById(state, id)!);
   const dispatch = useDispatch();
+  let [value, setValue] = useState(effectValue ? effectValue.toString() : "0");
+  let [validLevels, setValidLevels] = useState([startLevel, endLevel]);
+  useEffect(
+    () => setValidLevels([startLevel, endLevel]),
+    [startLevel, endLevel]
+  );
 
   return (
-    <div className="box">
-      <button
-        className="delete"
-        onClick={(e) => {
-          dispatch(effectRemoved({ id, parentId }));
-        }}
-      >
-        -
-      </button>
-      <select
-        value={effectCondition}
-        onChange={(e) =>
-          dispatch(
-            effectUpdated({ id, changes: { effectCondition: e.target.value } })
+    <Box sx={{ mt: 3, mb: 6 }}>
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
+        <Grid item xs="auto">
+          <IconButton
+            aria-label="delete"
+            color="primary"
+            onClick={(e) => {
+              dispatch(effectRemoved({ id, parentId }));
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Grid>
+        <Grid item>
+          <FormControl size="small" fullWidth>
+            <InputLabel id="effect-condition-input">Condition</InputLabel>
+            <Select
+              labelId="effect-condition-input"
+              id="effect-condition"
+              value={effectCondition}
+              label="Condition"
+              onChange={(e) =>
+                dispatch(
+                  effectUpdated({
+                    id,
+                    changes: { effectCondition: e.target.value },
+                  })
+                )
+              }
+            >
+              {conditionOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl size="small" fullWidth>
+            <InputLabel id="effect-type-input">Effect</InputLabel>
+            <Select
+              labelId="effect-type-input"
+              id="effect-type"
+              value={effectType}
+              label="Effect"
+              onChange={(e) =>
+                dispatch(
+                  effectUpdated({
+                    id,
+                    changes: { effectType: e.target.value },
+                  })
+                )
+              }
+            >
+              {effectTypeOptions}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        {
+          // @ts-ignore
+          Object.values(effectValueTypes).includes(effectType) ? (
+            <Grid item>
+              <TextField
+                size="small"
+                label="Value"
+                sx={{ width: "7ch" }}
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  e.target.focus();
+                }}
+                onBlur={() => {
+                  let newVal = parseInt(value);
+                  setValue(newVal.toString());
+                  dispatch(
+                    effectUpdated({
+                      id,
+                      changes: {
+                        effectValue: newVal,
+                      },
+                    })
+                  );
+                }}
+              />
+            </Grid>
+          ) : (
+            ""
           )
         }
-      >
-        {conditionOptions}
-      </select>
-      {": "}
-      <select
-        value={effectType}
-        onChange={(e) =>
-          dispatch(
-            effectUpdated({ id, changes: { effectType: e.target.value } })
-          )
-        }
-      >
-        {effectTypeOptions}
-      </select>
-      <span className="input">
-        @
-        <select
-          value={startLevel}
-          onChange={(e) =>
-            dispatch(
-              effectUpdated({
-                id,
-                changes: { startLevel: parseInt(e.target.value) },
-              })
-            )
-          }
-        >
-          {levelOptions}
-        </select>
-        to
-        <select
-          value={endLevel}
-          onChange={(e) =>
-            dispatch(
-              effectUpdated({
-                id,
-                changes: { endLevel: parseInt(e.target.value) },
-              })
-            )
-          }
-        >
-          {levelOptions}
-        </select>
-      </span>
-    </div>
+
+        <Grid item sx={{ px: 2 }}>
+          <Typography align="center">
+            Valid Levels: {startLevel} to {endLevel}
+          </Typography>
+          <Slider
+            size="small"
+            getAriaLabel={() => "Valid levels"}
+            value={validLevels}
+            min={1}
+            max={20}
+            marks
+            // @ts-ignore
+            onChange={(e, nv: number[]) => setValidLevels(nv)}
+            onBlur={() =>
+              dispatch(
+                effectUpdated({
+                  id,
+                  changes: {
+                    startLevel: validLevels[0],
+                    endLevel: validLevels[1],
+                  },
+                })
+              )
+            }
+            valueLabelDisplay="auto"
+            getAriaValueText={(v) => `${v}`}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 };

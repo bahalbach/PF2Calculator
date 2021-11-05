@@ -1,6 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Routine, selectactivityPathEntities } from "../Routines/routineSlice";
+import {
+  Routine,
+  selectactivityPathEntities,
+  selectSelectedRoutine,
+} from "../Routines/routineSlice";
 import { selectdamageEntities } from "../Routines/routineSlice";
 import { selectRoutineEntities } from "../Routines/routineSlice";
 import { selecttargetEntities } from "../Target/targetSlice";
@@ -23,13 +27,15 @@ const useGenerateGraphs = (graphType: string, displayLevel: number) => {
   const damages = useSelector(selectdamageEntities);
   const effects = useSelector(selecteffectEntities);
   const weaknesses = useSelector(selectweaknessEntities);
+  const selectedRoutine = useSelector(selectSelectedRoutine);
 
   const evaluator = new ActivityPathEvaluator(
     activityPaths,
     targets,
     damages,
     effects,
-    weaknesses
+    weaknesses,
+    selectedRoutine
   );
 
   const currentTarget = targets[0]!;
@@ -195,6 +201,22 @@ const evaluateByLevel = (
   let datasets = [];
   let perDatasets = [];
 
+  // Evaluate the selected routine first so we can display other routines as a % of that
+  const selectedRoutineDamage: { [key: number]: number } = {};
+  const selectedRoutinePDamage: { [key: number]: number } = {};
+  if (
+    evaluator.target.percentSelectedRoutine &&
+    evaluator.selectedRoutine !== undefined
+  ) {
+    let routine = routines[evaluator.selectedRoutine]!;
+    for (let level = 1; level <= 20; level++) {
+      if (!evaluator.canEvaluate(level, routine)) continue;
+      let { expD, expP } = evaluator.evalRoutine(routine, level, 0, 0);
+      selectedRoutineDamage[level] = expD;
+      selectedRoutinePDamage[level] = expP;
+    }
+  }
+
   for (let id in routines) {
     let routine = routines[id]!;
     if (!routine.display) continue;
@@ -204,10 +226,19 @@ const evaluateByLevel = (
     const expPDbyLevel = [];
     for (let level = 1; level <= 20; level++) {
       if (!evaluator.canEvaluate(level, routine)) continue;
-      levelArray.push(level);
+
       let { expD, expP } = evaluator.evalRoutine(routine, level, 0, 0);
-      expDbyLevel.push(expD);
-      expPDbyLevel.push(expP);
+      if (evaluator.target.percentSelectedRoutine) {
+        if (level in selectedRoutineDamage) {
+          levelArray.push(level);
+          expDbyLevel.push(expD / selectedRoutineDamage[level]);
+          expPDbyLevel.push(expP / selectedRoutinePDamage[level]);
+        }
+      } else {
+        levelArray.push(level);
+        expDbyLevel.push(expD);
+        expPDbyLevel.push(expP);
+      }
     }
     datasets.push({
       type: "scatter",

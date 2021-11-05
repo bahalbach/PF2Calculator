@@ -7,6 +7,25 @@ import {
 } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer/dist/internal";
 import {
+  classWeaponMAP,
+  classWeaponProf,
+  classAdjustments,
+  StrikeInfo,
+  activityWeaponDiceAdjustments,
+  classWeaponDamageTrends,
+  hasDeadly,
+  hasFatal,
+  hasPickCritSpec,
+  critSpecDamage,
+  hasKnifeCritSpec,
+  critSpecDice,
+  classDamageAdjustments,
+  hasCritSpecEffect,
+  hasSwordCritSpec,
+  hasHammerCritSpec,
+  hasSpearCritSpec,
+} from "../Model/newActivityInfo";
+import {
   activityTypes,
   conditions,
   profTrends,
@@ -32,6 +51,9 @@ import {
   DamageType,
   Material,
   EffectType,
+  diceSizes,
+  effectStateTypes,
+  effectValueTypes,
 } from "../Model/types";
 import { damageTypes, dCond, dieTrends, materials } from "../Model/types";
 import { RootState } from "../store";
@@ -61,6 +83,8 @@ export interface RoutineObject {
 }
 export interface ActivityPath {
   id: number;
+  parentId?: number;
+  routineId?: number;
   condition: Condition;
 
   rollType: RollType;
@@ -78,6 +102,8 @@ export interface ActivityPath {
 }
 export interface ActivityPathObject {
   id: number;
+  parentId?: number;
+  routineId?: number;
   condition: Condition;
 
   rollType: RollType;
@@ -114,6 +140,7 @@ export interface Effect {
   id: number;
   effectCondition: Condition;
   effectType: EffectType;
+  effectValue: number | undefined;
   startLevel: number;
   endLevel: number;
 }
@@ -123,7 +150,10 @@ export const activityPathAdapter = createEntityAdapter<ActivityPath>();
 export const damageAdapter = createEntityAdapter<Damage>();
 export const effectAdapter = createEntityAdapter<Effect>();
 type State = {
-  selectedRoutine: number;
+  selectedRoutine: number | undefined;
+  selectedActivityPath: number | undefined;
+  parentRoutine: number | undefined;
+  parentActivity: number | undefined;
   routines: EntityState<Routine>;
   activityPaths: EntityState<ActivityPath>;
   damages: EntityState<Damage>;
@@ -136,8 +166,10 @@ let damageId = 1000;
 let effectId = 1000;
 
 const empty: { [key: number]: number } = {};
+const one: { [key: number]: number } = {};
 for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
+  one[i] = 1;
 }
 const defaultStrikeParent = {
   rollType: rollTypes.NORMAL,
@@ -192,6 +224,215 @@ const removeActivityPaths = (state: WritableDraft<State>, ids: number[]) => {
     index += 1;
   }
 };
+const createStrikeActivity = (
+  state: WritableDraft<State>,
+  id: number,
+  parentId: number | undefined,
+  routineId: number | undefined,
+  strikeInfo: StrikeInfo,
+  strikeNumber: number
+) => {
+  // copy parent damages and effects
+  let damages = createStrikeDamages(state, strikeInfo, strikeNumber);
+  let effects = createStrikeEffects(state, strikeInfo, strikeNumber);
+  let MAP = classWeaponMAP(strikeInfo);
+
+  activityPathAdapter.addOne(state.activityPaths, {
+    id,
+    parentId,
+    routineId,
+    condition: conditions.ALWAYS,
+
+    rollType: rollTypes.NORMAL,
+    type: activityTypes.STRIKE,
+    profTrend: classWeaponProf(strikeInfo.cClass),
+    statTrend: strikeInfo.attackScore,
+    itemTrend: itemTrends.WEAPON,
+    bonusAdjustments: classAdjustments(strikeInfo, strikeNumber),
+    MAP:
+      strikeNumber === 0
+        ? MAP
+        : strikeNumber === 1
+        ? nextMAPs[MAP]
+        : nextMAPs[nextMAPs[MAP]],
+
+    targetType: defenses.AC,
+
+    damages: damages,
+    effects: effects,
+    apIds: [],
+  });
+  return;
+};
+const createStrikeDamages = (
+  state: WritableDraft<State>,
+  strikeInfo: StrikeInfo,
+  strikeNumber: number
+) => {
+  const newDamages: number[] = [];
+
+  let id = ++damageId;
+  const weaponDamage: Damage = {
+    id,
+    damageCondition: dCond.STRIKE,
+    dieTrend: dieTrends.WEAPON,
+    dieAdjustments: activityWeaponDiceAdjustments(strikeInfo),
+    diceSize: strikeInfo.dieSize,
+    fatal: hasFatal(strikeInfo),
+    fatalDie: strikeInfo.fatalSize,
+    damageTrend: classWeaponDamageTrends(strikeInfo, strikeNumber),
+    damageAdjustments: classDamageAdjustments(strikeInfo),
+    damageType: damageTypes.B,
+    material: materials.NONE,
+    multiplier: 1,
+    persistent: false,
+  };
+  damageAdapter.addOne(state.damages, weaponDamage);
+  newDamages.push(id);
+
+  id = ++damageId;
+  const runeDamage: Damage = {
+    id,
+    damageCondition: dCond.STRIKE,
+    dieTrend: strikeInfo.runes,
+    dieAdjustments: empty,
+    diceSize: diceSizes[6],
+    fatal: false,
+    fatalDie: strikeInfo.fatalSize,
+    damageTrend: [],
+    damageAdjustments: empty,
+    damageType: damageTypes.FIRE,
+    material: materials.NONE,
+    multiplier: 1,
+    persistent: false,
+  };
+  damageAdapter.addOne(state.damages, runeDamage);
+  newDamages.push(id);
+
+  if (hasDeadly(strikeInfo)) {
+    let damageAdjustments = empty;
+    if (!hasFatal(strikeInfo) && hasPickCritSpec(strikeInfo))
+      damageAdjustments = critSpecDamage(strikeInfo);
+    id = ++damageId;
+    const critDamage: Damage = {
+      id,
+      damageCondition: dCond.CRIT,
+      dieTrend: dieTrends.DEADLY,
+      dieAdjustments: empty,
+      diceSize: strikeInfo.deadlySize,
+      fatal: false,
+      fatalDie: strikeInfo.fatalSize,
+      damageTrend: [],
+      damageAdjustments,
+      damageType: damageTypes.B,
+      material: materials.NONE,
+      multiplier: 1,
+      persistent: false,
+    };
+    damageAdapter.addOne(state.damages, critDamage);
+    newDamages.push(id);
+  }
+  if (hasFatal(strikeInfo)) {
+    let damageAdjustments = empty;
+    if (hasPickCritSpec(strikeInfo))
+      damageAdjustments = critSpecDamage(strikeInfo);
+    id = ++damageId;
+    const critDamage: Damage = {
+      id,
+      damageCondition: dCond.CRIT,
+      dieTrend: dieTrends.NONE,
+      dieAdjustments: one,
+      diceSize: strikeInfo.fatalSize,
+      fatal: false,
+      fatalDie: strikeInfo.fatalSize,
+      damageTrend: [],
+      damageAdjustments,
+      damageType: damageTypes.B,
+      material: materials.NONE,
+      multiplier: 1,
+      persistent: false,
+    };
+    damageAdapter.addOne(state.damages, critDamage);
+    newDamages.push(id);
+  }
+  if (
+    !hasDeadly(strikeInfo) &&
+    !hasFatal(strikeInfo) &&
+    hasPickCritSpec(strikeInfo)
+  ) {
+    let damageAdjustments = critSpecDamage(strikeInfo);
+    id = ++damageId;
+    const critDamage: Damage = {
+      id,
+      damageCondition: dCond.CRIT,
+      dieTrend: dieTrends.NONE,
+      dieAdjustments: empty,
+      diceSize: strikeInfo.fatalSize,
+      fatal: false,
+      fatalDie: strikeInfo.fatalSize,
+      damageTrend: [],
+      damageAdjustments,
+      damageType: damageTypes.B,
+      material: materials.NONE,
+      multiplier: 1,
+      persistent: false,
+    };
+    damageAdapter.addOne(state.damages, critDamage);
+    newDamages.push(id);
+  }
+  if (hasKnifeCritSpec(strikeInfo)) {
+    let damageAdjustments = critSpecDamage(strikeInfo);
+    id = ++damageId;
+    const critDamage: Damage = {
+      id,
+      damageCondition: dCond.CRIT,
+      dieTrend: dieTrends.NONE,
+      dieAdjustments: critSpecDice(strikeInfo),
+      diceSize: diceSizes[6],
+      fatal: false,
+      fatalDie: strikeInfo.fatalSize,
+      damageTrend: [],
+      damageAdjustments,
+      damageType: damageTypes.B,
+      material: materials.NONE,
+      multiplier: 1,
+      persistent: true,
+    };
+    damageAdapter.addOne(state.damages, critDamage);
+    newDamages.push(id);
+  }
+
+  return newDamages;
+};
+const createStrikeEffects = (
+  state: WritableDraft<State>,
+  strikeInfo: StrikeInfo,
+  strikeNumber: number
+) => {
+  const newEffects: number[] = [];
+  let id;
+
+  if (hasCritSpecEffect(strikeInfo)) {
+    let effectType: EffectType = effectStateTypes.FLATFOOT;
+    if (hasSwordCritSpec(strikeInfo)) effectType = effectStateTypes.FLATFOOT;
+    if (hasHammerCritSpec(strikeInfo)) effectType = effectStateTypes.PRONE;
+    if (hasSpearCritSpec(strikeInfo)) effectType = effectValueTypes.CLUMSY;
+
+    id = ++effectId;
+    const critSpecEffect: Effect = {
+      id,
+      effectCondition: conditions.CRIT,
+      effectType,
+      effectValue: 1,
+      startLevel: strikeInfo.critSpecLevel,
+      endLevel: 20,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, critSpecEffect);
+  }
+  return newEffects;
+};
+
 const copyDamages = (state: WritableDraft<State>, damages: number[]) => {
   const newDamages = [];
   for (let did of damages) {
@@ -214,17 +455,25 @@ const copyEffects = (state: WritableDraft<State>, effects: number[]) => {
   }
   return newEffects;
 };
-const copyActivityPaths = (state: WritableDraft<State>, apIds: number[]) => {
+const copyActivityPaths = (
+  state: WritableDraft<State>,
+  apIds: number[],
+  parentId?: number,
+  routineId?: number
+) => {
   let newApIds = [];
   for (let apId of apIds) {
+    const id = ++activityPathId;
     const ap = state.activityPaths.entities[apId]!;
-    const apIds = copyActivityPaths(state, ap.apIds);
+    const apIds = copyActivityPaths(state, ap.apIds, id);
     const damages = copyDamages(state, ap.damages);
     const effects = copyEffects(state, ap.effects);
-    const id = ++activityPathId;
+
     activityPathAdapter.addOne(state.activityPaths, {
       ...ap,
       id,
+      parentId,
+      routineId,
       damages,
       effects,
       apIds,
@@ -233,6 +482,7 @@ const copyActivityPaths = (state: WritableDraft<State>, apIds: number[]) => {
   }
   return newApIds;
 };
+
 const getActivityPaths = (state: WritableDraft<State>, apIds: number[]) => {
   let newAps: ActivityPathObject[] = [];
   for (let apId of apIds) {
@@ -292,25 +542,25 @@ function isActivityPaths(apIds: unknown): apIds is ActivityPathObject[] {
           isEffects(apId.effects)
         )
       ) {
-        // console.log(apId);
-        // console.log(
-        //   Object.values(conditions).includes(apId.condition) &&
-        //     Object.values(rollTypes).includes(apId.rollType) &&
-        //     Object.values(activityTypes).includes(apId.type)
-        // );
-        // console.log(
-        //   Object.values(profTrends).includes(apId.profTrend) &&
-        //     Object.values(statTrends).includes(apId.statTrend) &&
-        //     Object.values(itemTrends).includes(apId.itemTrend)
-        // );
-        // console.log(
-        //   Object.values(MAPs).includes(apId.MAP) &&
-        //     Object.values(defenses).includes(apId.targetType)
-        // );
-        // console.log(validateActivityPaths(apId.apIds));
-        // console.log(validateDamages(apId.damages));
-        // console.log(validateEffects(apId.effects));
-        // console.log(validateAdjustments(apId.bonusAdjustments));
+        console.log(apId);
+        console.log(
+          Object.values(conditions).includes(apId.condition) &&
+            Object.values(rollTypes).includes(apId.rollType) &&
+            Object.values(activityTypes).includes(apId.type)
+        );
+        console.log(
+          Object.values(profTrends).includes(apId.profTrend) &&
+            Object.values(statTrends).includes(apId.statTrend) &&
+            Object.values(itemTrends).includes(apId.itemTrend)
+        );
+        console.log(
+          Object.values(MAPs).includes(apId.MAP) &&
+            Object.values(defenses).includes(apId.targetType)
+        );
+        console.log(isActivityPaths(apId.apIds));
+        console.log(isDamages(apId.damages));
+        console.log(isEffects(apId.effects));
+        console.log(isAdjustment(apId.bonusAdjustments));
         return false;
       }
     }
@@ -404,24 +654,30 @@ function isEffects(effects: unknown): effects is Effect[] {
   return false;
 }
 const insertRoutine = (state: WritableDraft<State>, routine: RoutineObject) => {
-  const apIds = insertActivityPaths(state, routine.apIds);
   const id = ++routineId;
+  const apIds = insertActivityPaths(state, routine.apIds, undefined, id);
+
   routinesAdapter.addOne(state.routines, { ...routine, id, apIds });
   return id;
 };
 const insertActivityPaths = (
   state: WritableDraft<State>,
-  aps: ActivityPathObject[]
+  aps: ActivityPathObject[],
+  parentId?: number,
+  routineId?: number
 ) => {
   let newApIds = [];
   for (let ap of aps) {
-    const apIds = insertActivityPaths(state, ap.apIds);
+    const id = ++activityPathId;
+    const apIds = insertActivityPaths(state, ap.apIds, id);
     const damages = insertDamages(state, ap.damages);
     const effects = insertEffects(state, ap.effects);
-    const id = ++activityPathId;
+
     activityPathAdapter.addOne(state.activityPaths, {
       ...ap,
       id,
+      parentId,
+      routineId,
       damages,
       effects,
       apIds,
@@ -465,20 +721,41 @@ const insertEffects = (state: WritableDraft<State>, effects: Effect[]) => {
 //     });
 
 //   state.selectedRoutine = id;
-// }
+// // }
+// let selectedRoutine: number | undefined;
+// let selectedActivityPath: number | undefined;
+// let parentRoutine: number | undefined;
+// let parentActivity: number | undefined;
+
+const initialState: State = {
+  selectedRoutine: 0,
+  selectedActivityPath: undefined,
+  parentRoutine: 0,
+  parentActivity: undefined,
+  routines: routinesAdapter.getInitialState(),
+  activityPaths: activityPathAdapter.getInitialState(),
+  damages: damageAdapter.getInitialState(),
+  effects: effectAdapter.getInitialState(),
+};
+// initialState.selectedRoutine = 0;
+// initialState.selectedActivityPath = undefined;
+// initialState.parentRoutine = 0;
+// initialState.parentActivity = undefined;
 
 export const routinesSlice = createSlice({
   name: "routines",
-  initialState: {
-    selectedRoutine: 1,
-    routines: routinesAdapter.getInitialState(),
-    activityPaths: activityPathAdapter.getInitialState(),
-    damages: damageAdapter.getInitialState(),
-    effects: effectAdapter.getInitialState(),
-  },
+  initialState,
   reducers: {
     setRoutine: (state, action) => {
-      state.selectedRoutine = action.payload || 0;
+      state.selectedRoutine = action.payload;
+      state.selectedActivityPath = undefined;
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
+    },
+    setActivityPath: (state, action) => {
+      state.selectedActivityPath = action.payload;
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
     },
 
     routineAdded: (state, action) => {
@@ -512,10 +789,10 @@ export const routinesSlice = createSlice({
         action: PayloadAction<{ id: number; copy: boolean }>
       ) => {
         const { id, copy } = action.payload;
-        if (copy) {
+        if (copy && state.selectedRoutine !== undefined) {
           const routine = state.routines.entities[state.selectedRoutine]!;
           const name = "Copy of " + routine.name;
-          const apIds = copyActivityPaths(state, routine.apIds);
+          const apIds = copyActivityPaths(state, routine.apIds, undefined, id);
           routinesAdapter.addOne(state.routines, {
             ...routine,
             id,
@@ -535,6 +812,9 @@ export const routinesSlice = createSlice({
           });
         }
         state.selectedRoutine = id;
+        state.selectedActivityPath = undefined;
+        state.parentActivity = undefined;
+        state.parentRoutine = undefined;
       },
       prepare: ({ copy = false }) => {
         const id = ++routineId;
@@ -550,10 +830,82 @@ export const routinesSlice = createSlice({
       removeActivityPaths(state, childrenIds);
 
       routinesAdapter.removeOne(state.routines, routineId);
-      if (routineId === state.selectedRoutine)
+      if (routineId === state.selectedRoutine) {
         state.selectedRoutine = state.routines.ids[0] as number;
+        state.selectedActivityPath = undefined;
+        state.parentActivity = undefined;
+        state.parentRoutine = undefined;
+      }
+    },
+    setNewActivityParent: (
+      state,
+      action: PayloadAction<{
+        parentId?: number;
+        routineId?: number;
+      }>
+    ) => {
+      state.parentRoutine = action.payload.routineId;
+      state.parentActivity = action.payload.parentId;
+      state.selectedActivityPath = undefined;
     },
     activityPathCreated: {
+      reducer: (
+        state,
+        action: PayloadAction<{
+          ids: number[];
+          strikeInfo: StrikeInfo;
+        }>
+      ) => {
+        const { ids, strikeInfo } = action.payload;
+
+        const { parentActivity: parentId, parentRoutine: routineId } = state;
+        if (routineId !== undefined)
+          state.routines.entities[routineId]!.apIds.push(ids[0]);
+        if (parentId !== undefined) {
+          state.activityPaths.entities[parentId]!.apIds.push(ids[0]);
+        }
+        createStrikeActivity(state, ids[0], parentId, routineId, strikeInfo, 0);
+        for (let i = 1; i < strikeInfo.numStrikes; i++) {
+          let parentId = ids[i - 1];
+          state.activityPaths.entities[parentId]!.apIds.push(ids[i]);
+          createStrikeActivity(
+            state,
+            ids[i],
+            parentId,
+            undefined,
+            strikeInfo,
+            i
+          );
+        }
+        state.selectedActivityPath = ids[0];
+        state.parentActivity = undefined;
+        state.parentRoutine = undefined;
+      },
+      prepare: ({
+        parentId,
+        routineId,
+        strikeInfo,
+      }: {
+        parentId?: number;
+        routineId?: number;
+        strikeInfo: StrikeInfo;
+      }) => {
+        const ids = [];
+        for (let i = 0; i < strikeInfo.numStrikes; i++) {
+          let id = ++activityPathId;
+          ids.push(id);
+        }
+        return {
+          payload: {
+            ids,
+            parentId,
+            routineId,
+            strikeInfo,
+          },
+        };
+      },
+    },
+    activityPathContinued: {
       reducer: (
         state,
         action: PayloadAction<{
@@ -587,6 +939,8 @@ export const routinesSlice = createSlice({
 
         activityPathAdapter.addOne(state.activityPaths, {
           id,
+          parentId,
+          routineId,
           condition: conditions.ALWAYS,
 
           rollType: rollTypes.NORMAL,
@@ -603,6 +957,7 @@ export const routinesSlice = createSlice({
           effects: newEffects,
           apIds: [],
         });
+        state.selectedActivityPath = id;
       },
       prepare: ({ parentId, routineId, isStrike = true, applyMAP = false }) => {
         const id = ++activityPathId;
@@ -635,6 +990,7 @@ export const routinesSlice = createSlice({
           routineId
         ]!.apIds.filter((apId) => apId !== id);
       }
+      state.selectedActivityPath = undefined;
     },
 
     damageCreated: {
@@ -687,6 +1043,7 @@ export const routinesSlice = createSlice({
           id,
           effectCondition: conditions.ALWAYS,
           effectType: effectTypes.FLATFOOT,
+          effectValue: 0,
           startLevel: 1,
           endLevel: 20,
         });
@@ -718,6 +1075,9 @@ export const routinesSlice = createSlice({
         // console.log(validateRoutine(routineObject));
         if (isRoutineObject(routineObject)) {
           state.selectedRoutine = insertRoutine(state, routineObject);
+          state.selectedActivityPath = undefined;
+          state.parentActivity = undefined;
+          state.parentRoutine = undefined;
         }
       } catch (error) {
         console.log(error);
@@ -729,6 +1089,8 @@ export const routinesSlice = createSlice({
 
 export const {
   setRoutine,
+  setActivityPath,
+  setNewActivityParent,
 
   routineAdded,
   routineUpdated,
@@ -738,6 +1100,7 @@ export const {
   activityPathAdded,
   activityPathUpdated,
   activityPathCreated,
+  activityPathContinued,
   activityPathRemoved,
 
   damageAdded,
@@ -791,12 +1154,23 @@ export const {
 
 export const selectSelectedRoutine = (state: RootState) =>
   state.routines.selectedRoutine;
+export const selectSelectedActivityPath = (state: RootState) =>
+  state.routines.selectedActivityPath;
+export const selectParentActivityId = (state: RootState) =>
+  state.routines.parentActivity;
+export const selectCreateNewActivity = (state: RootState) =>
+  state.routines.selectedActivityPath === undefined &&
+  (state.routines.parentRoutine !== undefined ||
+    state.routines.parentActivity !== undefined);
 export const selectSelectedRoutineObject = (state: RootState) => {
-  const routine =
-    state.routines.routines.entities[state.routines.selectedRoutine]!;
-  const routineObject = {
-    ...routine,
-    apIds: getActivityPaths(state.routines, routine.apIds),
-  };
-  return routineObject;
+  if (state.routines.selectedRoutine) {
+    const routine =
+      state.routines.routines.entities[state.routines.selectedRoutine]!;
+    const routineObject = {
+      ...routine,
+      apIds: getActivityPaths(state.routines, routine.apIds),
+    };
+    return routineObject;
+  }
+  return undefined;
 };
