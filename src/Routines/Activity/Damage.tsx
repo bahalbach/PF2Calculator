@@ -27,6 +27,7 @@ import {
   Grid,
   IconButton,
   InputLabel,
+  makeStyles,
   Select,
   Switch,
 } from "@mui/material";
@@ -34,6 +35,14 @@ import Divider from "@mui/material/Divider";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/system";
 
+// const useStyles = makeStyles({
+//   transition: theme.transitions.create(["background", "background-color"], {
+//     duration: theme.transitions.duration.complex,
+//   }),
+//   "&:hover": {
+//     backgroundColor: "#BBB",
+//   },
+// });
 export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
   const {
     damageCondition,
@@ -98,7 +107,12 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
   });
 
   return (
-    <Box sx={{ mt: 3, mb: 6 }}>
+    <Box
+      sx={{
+        mt: 3,
+        mb: 6,
+      }}
+    >
       <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}></Divider>
       <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
         <Grid item xs="auto">

@@ -7,6 +7,7 @@ import {
   effectTypes,
   effectValueTypes,
   TargetState,
+  whenConditions,
 } from "../Model/types";
 import {
   ActivityPath,
@@ -135,7 +136,7 @@ class ActivityPathEvaluator {
       let activityPath = this.activityPaths[routine.apIds[i]]!;
       let [damageDist, PdamageDist] = this.evalPath(
         activityPath,
-        initialTargetState as TargetState,
+        initialTargetState,
         level,
         ACBonus,
         resBonus
@@ -206,13 +207,43 @@ class ActivityPathEvaluator {
     const targetStates = [targetState, targetState, targetState, targetState];
     // go through each degree of success
     for (let i = 0; i < 4; i++) {
-      // go though each effect and update targetStates
+      // go though each valid effect and update targetStates
       currentEffects.forEach((effect) => {
-        let { effectCondition, effectType, effectValue, startLevel, endLevel } =
-          effect;
+        let {
+          effectCondition,
+          effectType,
+          effectValue,
+          startLevel,
+          endLevel,
+          damageWhen,
+        } = effect;
         if (level < startLevel || level > endLevel) return;
+        let shouldAddThisEffect = false;
+        for (let state of damageWhen) {
+          if (state === whenConditions.Always) {
+            shouldAddThisEffect = true;
+            return;
+          }
+          let val = targetStates[i][state];
+          if (val && val > 0) {
+            shouldAddThisEffect = true;
+            return;
+          }
+        }
+        if (!shouldAddThisEffect) return;
+
         if (validateCondition(effectCondition, i)) {
           switch (effectType) {
+            case effectTypes.RESTRAINED:
+              if (targetStates[i].Restrained !== true)
+                targetStates[i] = {
+                  ...targetStates[i],
+                  Flatfooted: true,
+                  Grappled: true,
+                  Restrained: true,
+                };
+              break;
+
             case effectTypes.GRAPPLED:
               if (targetStates[i].Grappled !== true)
                 targetStates[i] = {

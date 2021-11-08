@@ -350,21 +350,26 @@ function calculateExpectedDamage(
     for (let state of damageWhen) {
       if (state === whenConditions.Always) {
         shouldAddThisDamage = true;
-        break;
+        return;
       }
       let val = targetState[state];
-      if (typeof val === "boolean") {
-        if (val) {
-          shouldAddThisDamage = true;
-          break;
-        }
-      } else {
-        if (val > 0) {
-          shouldAddThisDamage = true;
-          break;
-        }
+      if (val && val > 0) {
+        shouldAddThisDamage = true;
+        return;
       }
     }
+    // if (typeof val === "boolean") {
+    //   if (val) {
+    //     shouldAddThisDamage = true;
+    //     break;
+    //   }
+    // } else {
+    //   if (val > 0) {
+    //     shouldAddThisDamage = true;
+    //     break;
+    //   }
+    // }
+
     if (!shouldAddThisDamage) return;
 
     let diceNum = dieTrendValues[damage.dieTrend][level];

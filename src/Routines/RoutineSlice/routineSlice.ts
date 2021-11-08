@@ -46,6 +46,7 @@ import {
   effectValueTypes,
   whenConditions,
   importStates,
+  ActivityType,
 } from "../../Model/types";
 import { RootState } from "../../App/store";
 import {
@@ -246,26 +247,61 @@ export const routinesSlice = createSlice({
         action: PayloadAction<{
           id: number;
           routineId: number;
+          activityType?: ActivityType;
         }>
       ) => {
-        const { id, routineId } = action.payload;
-
-        state.routines.entities[routineId]!.apIds.push(id);
-        activityPathAdapter.addOne(state.activityPaths, {
+        const { id, routineId, activityType } = action.payload;
+        let ap = {
           ...defaultActivity,
           id,
           routineId,
-        });
+        } as ActivityPath;
+        if (activityType !== undefined) {
+          if (activityType === activityTypes.STRIKE) {
+            let damages = copyDamages(state, defaultStrikeParent.damages);
+            let effects = copyEffects(state, defaultStrikeParent.effects);
+            ap = {
+              ...defaultActivity,
+              ...defaultStrikeParent,
+              id,
+              routineId,
+              damages,
+              effects,
+            };
+          }
+          if (activityType === activityTypes.SAVE) {
+            let damages = copyDamages(state, defaultSaveParent.damages);
+            let effects = copyEffects(state, defaultSaveParent.effects);
+            ap = {
+              ...defaultActivity,
+              ...defaultSaveParent,
+              id,
+              routineId,
+              damages,
+              effects,
+            };
+          }
+        }
+
+        state.routines.entities[routineId]!.apIds.push(id);
+        activityPathAdapter.addOne(state.activityPaths, ap);
         state.selectedActivityPath = id;
         state.parentActivity = undefined;
         state.parentRoutine = undefined;
       },
-      prepare: ({ routineId }: { routineId: number }) => {
+      prepare: ({
+        routineId,
+        activityType,
+      }: {
+        routineId: number;
+        activityType?: ActivityType;
+      }) => {
         const id = ++activityPathId;
         return {
           payload: {
             id,
             routineId,
+            activityType,
           },
         };
       },

@@ -17,6 +17,7 @@ import {
   effectTypes,
   materials,
   SaveTrends,
+  whenConditions,
 } from "../Model/types";
 
 const empty: { [key: number]: number } = {};
@@ -84,6 +85,7 @@ store.dispatch(
     material: materials.NONE,
     persistent: false,
     multiplier: 1,
+    damageWhen: [whenConditions.Always],
   })
 );
 store.dispatch(
@@ -103,6 +105,7 @@ store.dispatch(
     material: materials.NONE,
     persistent: false,
     multiplier: 1,
+    damageWhen: [whenConditions.Always],
   })
 );
 store.dispatch(
@@ -122,6 +125,7 @@ store.dispatch(
     material: materials.NONE,
     persistent: false,
     multiplier: 1,
+    damageWhen: [whenConditions.Always],
   })
 );
 store.dispatch(
@@ -131,6 +135,7 @@ store.dispatch(
     effectType: effectTypes.FLATFOOT,
     startLevel: 5,
     endLevel: 20,
+    damageWhen: [whenConditions.Always],
   })
 );
 

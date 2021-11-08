@@ -307,7 +307,7 @@ export const ActivityPath = ({ id }: { id: number }) => {
 
       {type === activityTypes.STRIKE ? (
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={() => {
             window.location.href = "#routine-activity-list";
             dispatch(

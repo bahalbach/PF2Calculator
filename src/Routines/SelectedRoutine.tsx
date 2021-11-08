@@ -19,6 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { activityTypes } from "../Model/types";
 
 function SelectedRoutine({ routineId }: { routineId: number }) {
   // const selectedRoutine = useSelector(selectSelectedRoutine);
@@ -113,19 +114,86 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
         ))}
       </List>
       {/* </Paper> */}
-
-      <Button
-        variant="contained"
-        onClick={() => dispatch(setNewActivityParent({ routineId }))}
-      >
-        Create New Activity
-      </Button>
-      <Button
-        variant="outlined"
-        onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
-      >
-        New Empty Activity
-      </Button>
+      <Grid container spacing={{ xs: 1 }} sx={{ my: 2, p: 1 }}>
+        <Grid
+          item
+          container
+          xs={6}
+          sm={3}
+          md={6}
+          lg={3}
+          justifyContent="center"
+        >
+          <Button
+            variant="contained"
+            onClick={() => dispatch(setNewActivityParent({ routineId }))}
+          >
+            Create New Activity
+          </Button>
+        </Grid>
+        <Grid
+          item
+          container
+          xs={6}
+          sm={3}
+          md={6}
+          lg={3}
+          justifyContent="center"
+        >
+          <Button
+            variant="outlined"
+            onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
+          >
+            New Empty Activity
+          </Button>
+        </Grid>
+        <Grid
+          item
+          container
+          xs={6}
+          sm={3}
+          md={6}
+          lg={3}
+          justifyContent="center"
+        >
+          <Button
+            variant="outlined"
+            onClick={() =>
+              dispatch(
+                emptyActivityPathCreated({
+                  routineId,
+                  activityType: activityTypes.STRIKE,
+                })
+              )
+            }
+          >
+            New Martial Strike
+          </Button>
+        </Grid>
+        <Grid
+          item
+          container
+          xs={6}
+          sm={3}
+          md={6}
+          lg={3}
+          justifyContent="center"
+        >
+          <Button
+            variant="outlined"
+            onClick={() =>
+              dispatch(
+                emptyActivityPathCreated({
+                  routineId,
+                  activityType: activityTypes.SAVE,
+                })
+              )
+            }
+          >
+            New Caster Save
+          </Button>
+        </Grid>
+      </Grid>
       {/* <Button
         variant="outlined"
         onClick={() =>
