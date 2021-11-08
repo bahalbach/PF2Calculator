@@ -151,7 +151,11 @@ function StrikeSelection() {
   const showClassOptions = (): boolean => {
     return classOptions[cClass].length > 0;
   };
-  const showCantripScore = (activity: string): boolean => {
+  const showCantrip = (): boolean => {
+    return false;
+  };
+  const showCantripScore = (): boolean => {
+    if (cClass === "Inventor") return true;
     return false;
   };
 
@@ -222,7 +226,7 @@ function StrikeSelection() {
           </Select>
         </FormControl>
       </Grid>
-      {showCantripScore(activity) ? (
+      {showCantrip() ? (
         <Grid item>
           <FormControl>
             <InputLabel>Cantrip</InputLabel>
@@ -274,10 +278,10 @@ function StrikeSelection() {
           </Select>
         </FormControl>
       </Grid>
-      {showCantripScore(activity) ? (
+      {showCantripScore() ? (
         <Grid item>
           <FormControl>
-            <InputLabel>Cantrip Abilitiy Score</InputLabel>
+            <InputLabel>Mental Abilitiy Score</InputLabel>
             <Select
               value={cantripScore}
               label="Cantrip Abilitiy Score"

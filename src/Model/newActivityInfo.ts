@@ -2,11 +2,14 @@ import { statTrendValues } from "./defaults";
 import {
   DamageTrend,
   damageTrends,
+  damageTypes,
+  diceSizes,
   DieTrend,
   dieTrends,
   MAPs,
   profTrends,
   StatTrend,
+  whenConditions,
 } from "./types";
 
 export type StrikeInfo = {
@@ -102,7 +105,7 @@ export const classes = [
 // }
 const noOptions = [] as const;
 const barbarianOptions = [
-  "normal",
+  "Normal",
   "animal rage",
   "dragon rage",
   "rage",
@@ -110,7 +113,19 @@ const barbarianOptions = [
   "spirit rage",
 ] as const;
 const clericOptions = ["Cloistered", "Warpriest"] as const;
-const rangerOptions = ["Precision Edge", "Flurry Edge"] as const;
+const rangerOptions = ["Flurry Edge"] as const;
+const inventorOptions = [
+  "Normal",
+  "Overdrive Success",
+  "Overdrive Critical",
+] as const;
+const investigatorOptions = ["Normal", "Strategic Strike"] as const;
+const rogueOptions = ["Normal", "Sneak Attack"] as const;
+const swashbucklerOptions = [
+  "Normal",
+  "Precise Strike",
+  "Precise Finisher",
+] as const;
 export const cantrips = ["Telekinetic Projectile"] as const;
 
 export const strikeActivities = ["Strike", "Power Attack"] as const;
@@ -124,16 +139,16 @@ export const classOptions: ClassOptions = {
   Druid: noOptions,
   Fighter: noOptions,
   Gunslinger: noOptions,
-  Inventor: noOptions,
-  Investigator: noOptions,
+  Inventor: inventorOptions,
+  Investigator: investigatorOptions,
   Magus: noOptions,
   Monk: noOptions,
   Oracle: noOptions,
   Ranger: rangerOptions,
-  Rogue: noOptions,
+  Rogue: rogueOptions,
   Sorcerer: noOptions,
   Summoner: noOptions,
-  Swashbuckler: noOptions,
+  Swashbuckler: swashbucklerOptions,
   Witch: noOptions,
   Wizard: noOptions,
 } as const;
@@ -218,6 +233,70 @@ export const activityWeaponDiceAdjustments = (strikeInfo: StrikeInfo) => {
   return adjustments;
 };
 
+export const hasClassDamageDice = (strikeInfo: StrikeInfo) => {
+  if (
+    strikeInfo.cClass === "Rogue" &&
+    strikeInfo.classOption === "Sneak Attack"
+  ) {
+    return true;
+  }
+  if (
+    strikeInfo.cClass === "Investigator" &&
+    strikeInfo.classOption === "Strategic Strike"
+  ) {
+    return true;
+  }
+  if (
+    strikeInfo.cClass === "Swashbuckler" &&
+    strikeInfo.classOption === "Precise Finisher"
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const classDamageDice = (strikeInfo: StrikeInfo) => {
+  if (
+    strikeInfo.cClass === "Rogue" &&
+    strikeInfo.classOption === "Sneak Attack"
+  ) {
+    return {
+      dieTrend: dieTrends.SNEAK,
+      diceSize: diceSizes[6],
+      damageType: damageTypes.PRECISION,
+      damageWhen: [whenConditions.FLATFOOT],
+    };
+  }
+  if (
+    strikeInfo.cClass === "Investigator" &&
+    strikeInfo.classOption === "Strategic Strike"
+  ) {
+    return {
+      dieTrend: dieTrends.STRATEGIC,
+      diceSize: diceSizes[6],
+      damageType: damageTypes.PRECISION,
+      damageWhen: [whenConditions.Always],
+    };
+  }
+  if (
+    strikeInfo.cClass === "Swashbuckler" &&
+    strikeInfo.classOption === "Precise Finisher"
+  ) {
+    return {
+      dieTrend: dieTrends.PRECISE,
+      diceSize: diceSizes[6],
+      damageType: damageTypes.PRECISION,
+      damageWhen: [whenConditions.Always],
+    };
+  }
+  return {
+    dieTrend: dieTrends.NONE,
+    diceSize: diceSizes[6],
+    damageType: damageTypes.PRECISION,
+    damageWhen: [whenConditions.Always],
+  };
+};
+
 export const classWeaponDamageTrends = (
   strikeInfo: StrikeInfo,
   strikeNumber: number
@@ -278,6 +357,17 @@ export const classWeaponDamageTrends = (
       default:
     }
   }
+  // if (strikeInfo.cClass === "Inventor") {
+  //   switch (strikeInfo.classOption) {
+  //     case "Overdrive Success":
+  //       trends.push(damageTrends.OVERDRIVES);
+  //       break;
+  //     case "Overdrive Critical":
+  //       trends.push(damageTrends.OVERDRIVEC);
+  //       break;
+  //     default:
+  //   }
+  // }
 
   return trends;
 };
@@ -287,12 +377,32 @@ export const classDamageAdjustments = (strikeInfo: StrikeInfo) => {
   let currentValue = 0;
   for (let i = 1; i <= 20; i++) {
     currentValue = 0;
+
     if (strikeInfo.traits["propulsive"]) {
       currentValue += Math.floor(
         statTrendValues[strikeInfo.damageScore][i] / 2
       );
     }
+
     if (strikeInfo.cClass === "Gunslinger") currentValue += 1;
+
+    if (strikeInfo.cClass === "Inventor") {
+      let bonus = 0;
+      if (i >= 3) bonus = 1;
+      if (i >= 7) bonus = 2;
+      if (i >= 15) bonus = 3;
+      switch (strikeInfo.classOption) {
+        case "Overdrive Success":
+          currentValue +=
+            Math.floor(statTrendValues[strikeInfo.cantripScore][i] / 2) + bonus;
+          break;
+        case "Overdrive Critical":
+          currentValue += statTrendValues[strikeInfo.cantripScore][i] + bonus;
+          break;
+        default:
+      }
+    }
+
     adjustments[i] = currentValue;
   }
   return adjustments;

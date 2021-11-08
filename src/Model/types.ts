@@ -186,6 +186,8 @@ export const damageTrends = {
   DRAGONRAGE: "Dragon Rage",
   GIANTRAGE: "Giant Rage",
   SPIRITRAGE: "Spirit Rage",
+  OVERDRIVES: "Overdrive Success",
+  OVERDRIVEC: "Overdrive Critical",
   IMPLEMENT: "Implement's Empowerment",
 } as const;
 export type DamageTrend = typeof damageTrends[keyof typeof damageTrends];

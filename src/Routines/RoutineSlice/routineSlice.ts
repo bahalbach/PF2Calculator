@@ -24,6 +24,8 @@ import {
   hasSwordCritSpec,
   hasHammerCritSpec,
   hasSpearCritSpec,
+  hasClassDamageDice,
+  classDamageDice,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -665,6 +667,22 @@ const createStrikeDamages = (
   };
   damageAdapter.addOne(state.damages, runeDamage);
   newDamages.push(id);
+
+  if (hasClassDamageDice(strikeInfo)) {
+    let { dieTrend, diceSize, damageType, damageWhen } =
+      classDamageDice(strikeInfo);
+    id = ++damageId;
+    const classDamage: Damage = {
+      ...defaultDamage,
+      id,
+      dieTrend,
+      diceSize,
+      damageType,
+      damageWhen,
+    };
+    damageAdapter.addOne(state.damages, classDamage);
+    newDamages.push(id);
+  }
 
   if (hasDeadly(strikeInfo)) {
     let damageAdjustments = empty;

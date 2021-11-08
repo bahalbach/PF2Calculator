@@ -62,6 +62,9 @@ const dragonrage: defaultValue = {};
 const giantrage: defaultValue = {};
 const spiritrage: defaultValue = {};
 
+const overdriveSuccess: defaultValue = {};
+const overdriveCritical: defaultValue = {};
+
 const implementEmpower: defaultValue = {};
 
 const fighterAB: defaultValue = {};
@@ -129,6 +132,9 @@ for (let i = 1; i <= 20; i++) {
   giantrage[i] = 6;
   spiritrage[i] = 3;
 
+  overdriveSuccess[i] = 2;
+  overdriveCritical[i] = 4;
+
   implementEmpower[i] = 2;
 
   if (i >= 2) {
@@ -137,6 +143,9 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 3) {
     maxSkill[i] = i + 4;
     skillItem[i] = 1;
+
+    overdriveSuccess[i] = 3;
+    overdriveCritical[i] = 5;
 
     implementEmpower[i] = 4;
   }
@@ -166,6 +175,9 @@ for (let i = 1; i <= 20; i++) {
     dragonrage[i] = 8;
     giantrage[i] = 10;
     spiritrage[i] = 7;
+
+    overdriveSuccess[i] = 4;
+    overdriveCritical[i] = 6;
   }
   if (i >= 8) {
     runes[i] = 1;
@@ -184,6 +196,8 @@ for (let i = 1; i <= 20; i++) {
     score14p[i] = 4;
     score14[i] = 4;
     runes2[i] = 2;
+
+    overdriveCritical[i] = 7;
   }
   if (i >= 11) {
     casterProf[i] = 4;
@@ -219,6 +233,9 @@ for (let i = 1; i <= 20; i++) {
     dragonrage[i] = 16;
     giantrage[i] = 18;
     spiritrage[i] = 13;
+
+    overdriveSuccess[i] = 5;
+    overdriveCritical[i] = 8;
   }
   if (i >= 16) {
     weaponItem[i] = 3;
@@ -235,6 +252,9 @@ for (let i = 1; i <= 20; i++) {
     precise[i] = 6;
 
     preEdge2[i] = 1;
+
+    overdriveSuccess[i] = 6;
+    overdriveCritical[i] = 9;
   }
   if (i >= 18) {
     mcspell[i] = i + 6;
@@ -253,6 +273,8 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 20) {
     maxScore[i] = 7;
+
+    overdriveCritical[i] = 10;
   }
 
   fighterAB[i] = i + martialProf[i] + 2;
@@ -347,6 +369,8 @@ export const damageTrendValues = {
   [damageTrends.DRAGONRAGE]: dragonrage,
   [damageTrends.GIANTRAGE]: giantrage,
   [damageTrends.SPIRITRAGE]: spiritrage,
+  [damageTrends.OVERDRIVES]: overdriveSuccess,
+  [damageTrends.OVERDRIVEC]: overdriveCritical,
   [damageTrends.IMPLEMENT]: implementEmpower,
 };
 
