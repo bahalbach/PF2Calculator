@@ -216,15 +216,13 @@ export const routinesSlice = createSlice({
     },
     routineRemoved: (state, action) => {
       // recursively remove all children
-      // can't remove last routine...
-      if (state.routines.ids.length === 1) return;
       const routineId = action.payload;
       let childrenIds = state.routines.entities[routineId]!.apIds;
       removeActivityPaths(state, childrenIds);
 
       routinesAdapter.removeOne(state.routines, routineId);
       if (routineId === state.selectedRoutine) {
-        state.selectedRoutine = state.routines.ids[0] as number;
+        state.selectedRoutine = undefined;
         state.selectedActivityPath = undefined;
         state.parentActivity = undefined;
         state.parentRoutine = undefined;
