@@ -233,7 +233,7 @@ export const classWeaponDamageTrends = (
   } else if (["Alchemist", "Cleric (Warpriest)"].includes(strikeInfo.cClass)) {
     trends.push(damageTrends.CASTERWEAPONSPEC);
   } else {
-    trends.push(damageTrends.FIGHTERWEAPONSPEC);
+    trends.push(damageTrends.MARTIALWEAPONSPEC);
   }
 
   if (strikeInfo.traits["forceful"]) {

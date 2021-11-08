@@ -313,13 +313,11 @@ export const ActivityPath = ({ id }: { id: number }) => {
             dispatch(
               activityPathContinued({
                 parentId: id,
-                isStrike: true,
-                applyMAP: true,
               })
             );
           }}
         >
-          + Next Strike
+          Continue Attack
         </Button>
       ) : (
         ""

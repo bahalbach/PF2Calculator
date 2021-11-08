@@ -352,7 +352,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
               );
             }}
           >
-            Add damage
+            Add damage scaling
           </Button>
         </Grid>
         {damageLevelList}

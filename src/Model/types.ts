@@ -13,13 +13,6 @@ export const importStates = {
 } as const;
 export type ImportStates = typeof importStates[keyof typeof importStates];
 
-export type TargetState = {
-  flatfooted: boolean;
-  prone: boolean;
-  grappled: boolean;
-  frightened: number;
-  clumsy: number;
-};
 export const ACTrends = {
   LOW: "Low",
   MODERATE: "Moderate",
@@ -229,17 +222,24 @@ export const effectValueTypes = {
 export type EffectValueType =
   typeof effectValueTypes[keyof typeof effectValueTypes];
 export const effectTypes = {
-  ...effectValueTypes,
   ...effectStateTypes,
+  ...effectValueTypes,
 } as const;
 export type EffectType = EffectStateType | EffectValueType;
 
 export const whenConditions = {
   Always: "Always",
-  ...effectValueTypes,
+
   ...effectStateTypes,
+  ...effectValueTypes,
 } as const;
 export type WhenConditions = typeof whenConditions[keyof typeof whenConditions];
+
+export type TargetState = {
+  [key in EffectValueType]: number;
+} & {
+  [key in EffectStateType]: boolean;
+};
 
 export const diceNums = {
   0: 0,

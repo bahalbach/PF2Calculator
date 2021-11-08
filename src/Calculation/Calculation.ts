@@ -18,6 +18,7 @@ import {
   materials,
   rollTypes,
   TargetState,
+  whenConditions,
 } from "../Model/types";
 import { ActivityPath, Damage } from "../Routines/RoutineSlice/RoutineTypes";
 import { Target } from "../Target/targetSlice";
@@ -215,12 +216,12 @@ function calculateExpectedDamage(
   }
 
   targetValue = targetValue[level + target.levelDiff];
-  let targetPenalty = targetState.frightened;
+  let targetPenalty = targetState.Frightened;
   if (
     activity.targetType === defenses.AC ||
     activity.targetType === defenses.REF
   )
-    targetPenalty = Math.max(targetPenalty, targetState.clumsy);
+    targetPenalty = Math.max(targetPenalty, targetState.Clumsy);
   switch (activity.type) {
     case activityTypes.STRIKE:
     case activityTypes.SPELLATTACK:
@@ -232,7 +233,7 @@ function calculateExpectedDamage(
       bonus += MAPvalues[activity.MAP];
       DC = targetValue + defenseBonus - targetPenalty;
       if (activity.targetType === defenses.AC) {
-        if (target.flatfooted || targetState.flatfooted) DC -= 2;
+        if (targetState.Flatfooted) DC -= 2;
       } else {
         if (activity.targetType !== defenses.DC) DC += 10;
       }
@@ -345,6 +346,26 @@ function calculateExpectedDamage(
       multiplier,
       damageWhen,
     } = damage;
+    let shouldAddThisDamage = false;
+    for (let state of damageWhen) {
+      if (state === whenConditions.Always) {
+        shouldAddThisDamage = true;
+        break;
+      }
+      let val = targetState[state];
+      if (typeof val === "boolean") {
+        if (val) {
+          shouldAddThisDamage = true;
+          break;
+        }
+      } else {
+        if (val > 0) {
+          shouldAddThisDamage = true;
+          break;
+        }
+      }
+    }
+    if (!shouldAddThisDamage) return;
 
     let diceNum = dieTrendValues[damage.dieTrend][level];
     diceNum += damage.dieAdjustments[level];

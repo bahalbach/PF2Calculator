@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../App/hooks";
 import {
+  emptyActivityPathCreated,
   routineUpdated,
   selectRoutineById,
   setNewActivityParent,
@@ -114,10 +115,16 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
       {/* </Paper> */}
 
       <Button
-        variant="outlined"
+        variant="contained"
         onClick={() => dispatch(setNewActivityParent({ routineId }))}
       >
-        New Base Activity
+        Create New Activity
+      </Button>
+      <Button
+        variant="outlined"
+        onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
+      >
+        New Empty Activity
       </Button>
       {/* <Button
         variant="outlined"

@@ -3,7 +3,9 @@ import { calculateExpectedDamage } from "./Calculation";
 import {
   Condition,
   conditions,
+  effectStateTypes,
   effectTypes,
+  effectValueTypes,
   TargetState,
 } from "../Model/types";
 import {
@@ -106,12 +108,20 @@ class ActivityPathEvaluator {
     resBonus: number
   ) {
     const initialTargetState = {
-      flatfooted: false,
-      prone: false,
-      grappled: false,
-      frightened: 0,
-      clumsy: 0,
-    };
+      // flatfooted: this.target.flatfooted,
+      // prone: false,
+      // grappled: false,
+      // frightened: 0,
+      // clumsy: 0,
+    } as TargetState;
+    for (let effectState of Object.values(effectStateTypes)) {
+      initialTargetState[effectState] = false;
+    }
+    for (let effectValue of Object.values(effectValueTypes)) {
+      initialTargetState[effectValue] = 0;
+    }
+    initialTargetState.Flatfooted = this.target.flatfooted;
+
     const dataArray = [];
     const cumulative = [];
     const PdataArray = [];
@@ -125,7 +135,7 @@ class ActivityPathEvaluator {
       let activityPath = this.activityPaths[routine.apIds[i]]!;
       let [damageDist, PdamageDist] = this.evalPath(
         activityPath,
-        initialTargetState,
+        initialTargetState as TargetState,
         level,
         ACBonus,
         resBonus
@@ -204,41 +214,41 @@ class ActivityPathEvaluator {
         if (validateCondition(effectCondition, i)) {
           switch (effectType) {
             case effectTypes.GRAPPLED:
-              if (targetStates[i].grappled !== true)
+              if (targetStates[i].Grappled !== true)
                 targetStates[i] = {
                   ...targetStates[i],
-                  flatfooted: true,
-                  grappled: true,
+                  Flatfooted: true,
+                  Grappled: true,
                 };
               break;
 
             case effectTypes.PRONE:
-              if (targetStates[i].prone !== true)
+              if (targetStates[i].Prone !== true)
                 targetStates[i] = {
                   ...targetStates[i],
-                  flatfooted: true,
-                  prone: true,
+                  Flatfooted: true,
+                  Prone: true,
                 };
               break;
 
             case effectTypes.FLATFOOT:
-              if (targetStates[i].flatfooted !== true)
-                targetStates[i] = { ...targetStates[i], flatfooted: true };
+              if (targetStates[i].Flatfooted !== true)
+                targetStates[i] = { ...targetStates[i], Flatfooted: true };
               break;
 
             case effectTypes.FRIGHTENED:
-              if (effectValue && targetStates[i].frightened < effectValue)
+              if (effectValue && targetStates[i].Frightened < effectValue)
                 targetStates[i] = {
                   ...targetStates[i],
-                  frightened: effectValue,
+                  Frightened: effectValue,
                 };
               break;
 
             case effectTypes.CLUMSY:
-              if (effectValue && targetStates[i].clumsy < effectValue)
+              if (effectValue && targetStates[i].Clumsy < effectValue)
                 targetStates[i] = {
                   ...targetStates[i],
-                  clumsy: effectValue,
+                  Clumsy: effectValue,
                 };
               break;
 
