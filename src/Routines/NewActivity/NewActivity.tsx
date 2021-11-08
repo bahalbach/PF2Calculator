@@ -27,12 +27,13 @@ import { activityPathCreated } from "../RoutineSlice/routineSlice";
 import {
   activityTypes,
   cantrips,
-  classActivities,
+  strikeActivities,
   classes,
   critSpecs,
   runeTrends,
   StrikeInfo,
   weaponTraits,
+  classOptions,
 } from "../../Model/newActivityInfo";
 
 /*
@@ -97,9 +98,10 @@ export default function NewActivity({
 
 function StrikeSelection() {
   const [runes, setRunes] = useState<DieTrend>(dieTrends.RUNE);
-  const [cClass, setClass] = useState<string>(classes[7]);
+  const [cClass, setCClass] = useState<typeof classes[number]>(classes[7]);
   const [activity, setActivity] = useState<string>("Strike");
   const [cantrip, setCantrip] = useState<string>(cantrips[0]);
+  const [classOption, setClassOption] = useState<string>("");
   const [attackScore, setAttackScore] = useState<StatTrend>(statTrends.AS18a);
   const [damageScore, setDamageScore] = useState<StatTrend>(statTrends.AS18a);
   const [cantripScore, setCantripScore] = useState<StatTrend>(
@@ -120,6 +122,7 @@ function StrikeSelection() {
   const strikeInfo: StrikeInfo = {
     runes,
     cClass,
+    classOption,
     activity,
     cantrip,
     attackScore,
@@ -137,6 +140,17 @@ function StrikeSelection() {
 
   const dispatch = useAppDispatch();
 
+  const setClass = (className: typeof classes[number]) => {
+    setCClass(className);
+    if (classOptions[className].length > 0) {
+      setClassOption(classOptions[className][0]);
+    } else {
+      setClassOption("");
+    }
+  };
+  const showClassOptions = (): boolean => {
+    return classOptions[cClass].length > 0;
+  };
   const showCantripScore = (activity: string): boolean => {
     return false;
   };
@@ -164,13 +178,32 @@ function StrikeSelection() {
             value={cClass}
             label="Class"
             onChange={(e) => {
-              setClass(e.target.value);
+              setClass(e.target.value as typeof classes[number]);
             }}
           >
             {makeOptions(classes)}
           </Select>
         </FormControl>
       </Grid>
+
+      {showClassOptions() ? (
+        <Grid item>
+          <FormControl>
+            <InputLabel>Class Option</InputLabel>
+            <Select
+              value={classOption}
+              label="Class Option"
+              onChange={(e) => {
+                setClassOption(e.target.value);
+              }}
+            >
+              {makeOptions(classOptions[cClass])}
+            </Select>
+          </FormControl>
+        </Grid>
+      ) : (
+        ""
+      )}
 
       <Grid item>
         <FormControl>
@@ -184,7 +217,7 @@ function StrikeSelection() {
           >
             {
               // @ts-ignore
-              makeOptions(classActivities)
+              makeOptions(strikeActivities)
             }
           </Select>
         </FormControl>

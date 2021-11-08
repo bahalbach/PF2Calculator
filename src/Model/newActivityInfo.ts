@@ -12,6 +12,7 @@ import {
 export type StrikeInfo = {
   runes: DieTrend;
   cClass: string;
+  classOption: string;
   activity: string;
   cantrip: string;
   attackScore: StatTrend;
@@ -72,8 +73,7 @@ export const classes = [
   "Barbarian",
   "Bard",
   "Champion",
-  "Cleric (Cloistered)",
-  "Cleric (Warpriest)",
+  "Cleric",
   "Druid",
   "Fighter",
   "Gunslinger",
@@ -82,8 +82,7 @@ export const classes = [
   "Magus",
   "Monk",
   "Oracle",
-  "Ranger (Flurry)",
-  "Ranger (Precision)",
+  "Ranger",
   "Rogue",
   "Sorcerer",
   "Summoner",
@@ -101,33 +100,43 @@ export const classes = [
 //     </MenuItem>
 //   );
 // }
-// const AlchemistStrikeOptions = ["Strike"] as const;
-// const FighterStrikeOptions = ["Strike", "Power Attack"] as const;
-
+const noOptions = [] as const;
+const barbarianOptions = [
+  "normal",
+  "animal rage",
+  "dragon rage",
+  "rage",
+  "giant rage",
+  "spirit rage",
+] as const;
+const clericOptions = ["Cloistered", "Warpriest"] as const;
+const rangerOptions = ["Precision Edge", "Flurry Edge"] as const;
 export const cantrips = ["Telekinetic Projectile"] as const;
 
-export const classActivities = ["Strike", "Power Attack"] as const;
-// Alchemist: AlchemistStrikeOptions,
-// Barbarian: AlchemistStrikeOptions,
-// Bard: AlchemistStrikeOptions,
-// Champion: AlchemistStrikeOptions,
-// Cleric: AlchemistStrikeOptions,
-// Druid: AlchemistStrikeOptions,
-// Fighter: FighterStrikeOptions,
-// Gunslinger: AlchemistStrikeOptions,
-// Inventor: AlchemistStrikeOptions,
-// Investigator: AlchemistStrikeOptions,
-// Magus: AlchemistStrikeOptions,
-// Monk: AlchemistStrikeOptions,
-// Oracle: AlchemistStrikeOptions,
-// Ranger: AlchemistStrikeOptions,
-// Rogue: AlchemistStrikeOptions,
-// Sorcerer: AlchemistStrikeOptions,
-// Summoner: AlchemistStrikeOptions,
-// Swashbuckler: AlchemistStrikeOptions,
-// Witch: AlchemistStrikeOptions,
-// Wizard: AlchemistStrikeOptions,
-// } as const;
+export const strikeActivities = ["Strike", "Power Attack"] as const;
+type ClassOptions = { [key in typeof classes[number]]: readonly string[] };
+export const classOptions: ClassOptions = {
+  Alchemist: noOptions,
+  Barbarian: barbarianOptions,
+  Bard: noOptions,
+  Champion: noOptions,
+  Cleric: clericOptions,
+  Druid: noOptions,
+  Fighter: noOptions,
+  Gunslinger: noOptions,
+  Inventor: noOptions,
+  Investigator: noOptions,
+  Magus: noOptions,
+  Monk: noOptions,
+  Oracle: noOptions,
+  Ranger: rangerOptions,
+  Rogue: noOptions,
+  Sorcerer: noOptions,
+  Summoner: noOptions,
+  Swashbuckler: noOptions,
+  Witch: noOptions,
+  Wizard: noOptions,
+} as const;
 
 export const weaponTraits = [
   "agile",
@@ -147,13 +156,12 @@ export const critSpecs = [
   "Knife",
 ] as const;
 
-export const classWeaponProf = (className: string) => {
+export const classWeaponProf = (className: string, classOption: string) => {
   if (["Fighter", "Gunslinger"].includes(className))
     return profTrends.FIGHTERWEAPON;
   if (
     [
       "Bard",
-      "Cleric (Cloistered)",
       "Druid",
       "Oracle",
       "Sorcerer",
@@ -163,14 +171,19 @@ export const classWeaponProf = (className: string) => {
     ].includes(className)
   )
     return profTrends.CASTERWEAPON;
-  if (["Alchemist", "Cleric (Warpriest)"].includes(className))
-    return profTrends.ALCHWEAPON;
-
+  if (["Alchemist"].includes(className)) return profTrends.ALCHWEAPON;
+  if (className === "Cleric") {
+    if (classOption === "Warpriest") return profTrends.ALCHWEAPON;
+    return profTrends.CASTERWEAPON;
+  }
   return profTrends.MARTIALWEAPON;
 };
 
 export const classWeaponMAP = (strikeInfo: StrikeInfo) => {
-  if (["Ranger (Flurry)"].includes(strikeInfo.cClass)) {
+  if (
+    strikeInfo.cClass === "Ranger" &&
+    strikeInfo.classOption === "Flurry Edge"
+  ) {
     if (strikeInfo.traits["agile"]) return MAPs.RA1;
     else return MAPs.R1;
   } else {
@@ -220,7 +233,7 @@ export const classWeaponDamageTrends = (
   } else if (
     [
       "Bard",
-      "Cleric (Cloistered)",
+      "Cleric",
       "Druid",
       "Oracle",
       "Sorcerer",
@@ -230,7 +243,7 @@ export const classWeaponDamageTrends = (
     ].includes(strikeInfo.cClass)
   ) {
     trends.push(damageTrends.CASTERWEAPONSPEC);
-  } else if (["Alchemist", "Cleric (Warpriest)"].includes(strikeInfo.cClass)) {
+  } else if (["Alchemist"].includes(strikeInfo.cClass)) {
     trends.push(damageTrends.CASTERWEAPONSPEC);
   } else {
     trends.push(damageTrends.MARTIALWEAPONSPEC);
@@ -242,6 +255,27 @@ export const classWeaponDamageTrends = (
     } else if (strikeNumber >= 2) {
       trends.push(damageTrends.WEAPON);
       trends.push(damageTrends.WEAPON);
+    }
+  }
+
+  if (strikeInfo.cClass === "Barbarian") {
+    switch (strikeInfo.classOption) {
+      case "animal rage":
+        trends.push(damageTrends.ANIMALRAGE);
+        break;
+      case "dragon rage":
+        trends.push(damageTrends.DRAGONRAGE);
+        break;
+      case "rage":
+        trends.push(damageTrends.RAGE);
+        break;
+      case "giant rage":
+        trends.push(damageTrends.GIANTRAGE);
+        break;
+      case "spirit rage":
+        trends.push(damageTrends.SPIRITRAGE);
+        break;
+      default:
     }
   }
 

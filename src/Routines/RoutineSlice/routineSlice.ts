@@ -616,7 +616,7 @@ const createStrikeActivity = (
     parentId,
     routineId,
     type: activityTypes.STRIKE,
-    profTrend: classWeaponProf(strikeInfo.cClass),
+    profTrend: classWeaponProf(strikeInfo.cClass, strikeInfo.classOption),
     statTrend: strikeInfo.attackScore,
     itemTrend: itemTrends.WEAPON,
     bonusAdjustments: classAdjustments(strikeInfo, strikeNumber),

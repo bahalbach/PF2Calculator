@@ -185,6 +185,7 @@ export const damageTrends = {
   ANIMALRAGE: "Animal Rage",
   DRAGONRAGE: "Dragon Rage",
   GIANTRAGE: "Giant Rage",
+  SPIRITRAGE: "Spirit Rage",
   IMPLEMENT: "Implement's Empowerment",
 } as const;
 export type DamageTrend = typeof damageTrends[keyof typeof damageTrends];

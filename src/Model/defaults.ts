@@ -60,6 +60,7 @@ const rage: defaultValue = {};
 const animalrage: defaultValue = {};
 const dragonrage: defaultValue = {};
 const giantrage: defaultValue = {};
+const spiritrage: defaultValue = {};
 
 const implementEmpower: defaultValue = {};
 
@@ -126,6 +127,7 @@ for (let i = 1; i <= 20; i++) {
   animalrage[i] = 2;
   dragonrage[i] = 4;
   giantrage[i] = 6;
+  spiritrage[i] = 3;
 
   implementEmpower[i] = 2;
 
@@ -163,6 +165,7 @@ for (let i = 1; i <= 20; i++) {
     animalrage[i] = 5;
     dragonrage[i] = 8;
     giantrage[i] = 10;
+    spiritrage[i] = 7;
   }
   if (i >= 8) {
     runes[i] = 1;
@@ -215,6 +218,7 @@ for (let i = 1; i <= 20; i++) {
     animalrage[i] = 12;
     dragonrage[i] = 16;
     giantrage[i] = 18;
+    spiritrage[i] = 13;
   }
   if (i >= 16) {
     weaponItem[i] = 3;
@@ -342,6 +346,7 @@ export const damageTrendValues = {
   [damageTrends.ANIMALRAGE]: animalrage,
   [damageTrends.DRAGONRAGE]: dragonrage,
   [damageTrends.GIANTRAGE]: giantrage,
+  [damageTrends.SPIRITRAGE]: spiritrage,
   [damageTrends.IMPLEMENT]: implementEmpower,
 };
 
