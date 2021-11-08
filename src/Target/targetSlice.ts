@@ -1,6 +1,6 @@
 import { createEntityAdapter, createSlice, EntityId } from "@reduxjs/toolkit";
 import { ACTrends, SaveTrends } from "../Model/types";
-import type { RootState } from "../store";
+import type { RootState } from "../App/store";
 // import { defaultACs, defaultSaves } from "../defaults";
 // import { defenses } from "../types";
 import { weaknessCreated, weaknessRemoved } from "./weaknessSlice";

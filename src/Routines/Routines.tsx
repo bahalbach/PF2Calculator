@@ -10,7 +10,9 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useAppDispatch, useAppSelector } from "../App/hooks";
+
 import {
   routineCreated,
   routineRemoved,
@@ -18,12 +20,12 @@ import {
   selectAllRoutines,
   selectSelectedRoutine,
   setRoutine,
-} from "./routineSlice";
+} from "./RoutineSlice/routineSlice";
 
 const Routines = () => {
-  const routines = useSelector(selectAllRoutines);
-  const selectedRoutine = useSelector(selectSelectedRoutine);
-  const dispatch = useDispatch();
+  const routines = useAppSelector(selectAllRoutines);
+  const selectedRoutine = useAppSelector(selectSelectedRoutine);
+  const dispatch = useAppDispatch();
 
   const routineOptions: JSX.Element[] = [];
   const routineDisplays: JSX.Element[] = [];

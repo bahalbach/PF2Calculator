@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useAppDispatch, useAppSelector } from "../App/hooks";
 import {
   routineUpdated,
   selectRoutineById,
   setNewActivityParent,
-} from "./routineSlice";
+} from "./RoutineSlice/routineSlice";
 import { ActivityPathStub } from "./ActivityPathStub";
-import { RootState } from "../store";
+import { RootState } from "../App/store";
 import {
   Button,
   Grid,
@@ -20,10 +21,10 @@ import {
 
 function SelectedRoutine({ routineId }: { routineId: number }) {
   // const selectedRoutine = useSelector(selectSelectedRoutine);
-  const { name, startLevel, endLevel, description, apIds } = useSelector(
+  const { name, startLevel, endLevel, description, apIds } = useAppSelector(
     (state: RootState) => selectRoutineById(state, routineId)!
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   let [tempName, setTempName] = useState(name);
   const [tempDescription, setTempDescription] = useState(description);
   let [validLevels, setValidLevels] = useState([startLevel, endLevel]);

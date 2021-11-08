@@ -1,11 +1,14 @@
 import { Button, Grid, Paper, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+
+import { useAppDispatch, useAppSelector } from "../App/hooks";
 import { exampleRoutines } from "../Model/exampleRoutines";
+import { importStates } from "../Model/types";
 import {
   importRoutine,
+  selectImportState,
   selectSelectedRoutineObject,
-} from "../Routines/routineSlice";
+} from "../Routines/RoutineSlice/routineSlice";
 // import { useSelector } from "react-redux";
 
 /* TODO: 
@@ -14,10 +17,18 @@ import {
   Add load example routines button
 */
 const ImportExport = () => {
-  const routine = useSelector(selectSelectedRoutineObject);
+  const routine = useAppSelector(selectSelectedRoutineObject);
+  const importState = useAppSelector(selectImportState);
   // const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
   const [textValue, setTextValue] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (importState === importStates.Failure) {
+      setTextValue("Import failed");
+    } else if (importState === importStates.Successful) {
+      setTextValue("Import successful");
+    }
+  }, [importState]);
 
   const tryToAddRoutine = () => {
     dispatch(importRoutine(textValue));

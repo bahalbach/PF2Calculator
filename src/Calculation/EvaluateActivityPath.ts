@@ -11,7 +11,7 @@ import {
   Damage,
   Effect,
   Routine,
-} from "../Routines/routineSlice";
+} from "../Routines/RoutineSlice/RoutineTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { Target } from "../Target/targetSlice";
 import { Weakness } from "../Target/weaknessSlice";

@@ -1,18 +1,24 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useAppDispatch, useAppSelector } from "../../App/hooks";
 import { LevelList } from "./LevelList";
-import { damageRemoved, damageUpdated, selectdamageById } from "./routineSlice";
+import {
+  damageRemoved,
+  damageUpdated,
+  selectdamageById,
+} from "../RoutineSlice/routineSlice";
 import {
   damageConditionOptions,
   damageTrendOptions,
   damageTypeOptions,
   diceSizeOptions,
   dieTrendOptions,
+  makeOptions,
   materialOptions,
   multiplierOptions,
-} from "../Model/options";
-import { DamageTrend, damageTrends } from "../Model/types";
-import { RootState } from "../store";
+} from "../../Model/options";
+import { DamageTrend, damageTrends, whenConditions } from "../../Model/types";
+import { RootState } from "../../App/store";
 import {
   Button,
   Checkbox,
@@ -35,6 +41,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
     material,
     persistent,
     multiplier,
+    damageWhen,
 
     dieTrend,
     dieAdjustments,
@@ -43,8 +50,8 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
     fatalDie,
     damageTrend,
     damageAdjustments,
-  } = useSelector((state: RootState) => selectdamageById(state, id)!);
-  const dispatch = useDispatch();
+  } = useAppSelector((state: RootState) => selectdamageById(state, id)!);
+  const dispatch = useAppDispatch();
 
   const dieLevelList = LevelList(
     "dieAdjustments",
@@ -209,6 +216,29 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
             }
             label="Persistent"
           />
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="damage-when-input">When Target</InputLabel>
+            <Select
+              labelId="damage-when-input"
+              id="damage-when"
+              multiple
+              value={damageWhen}
+              label="When Target"
+              renderValue={(selected) => selected.join(" or ")}
+              onChange={(e) =>
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: { damageWhen: e.target.value },
+                  })
+                )
+              }
+            >
+              {makeOptions(whenConditions)}
+            </Select>
+          </FormControl>
         </Grid>
       </Grid>
       <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}>

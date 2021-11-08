@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useAppDispatch, useAppSelector } from "../App/hooks";
 import { selecttargetById, Target, targetUpdated } from "./targetSlice";
 // import { damageTypes } from "../Model/types";
 // import {
@@ -10,7 +11,7 @@ import { selecttargetById, Target, targetUpdated } from "./targetSlice";
 //   weaknessUpdated,
 // } from "./weaknessSlice";
 // import { EntityId } from "@reduxjs/toolkit";
-import { RootState } from "../store";
+import { RootState } from "../App/store";
 import { ACOptions, SaveOptions } from "../Model/options";
 import {
   FormControl,
@@ -39,11 +40,13 @@ function TargetInput() {
     flatfooted,
     percentSelectedRoutine,
     // weaknesses,
-  } = useSelector((state: RootState) => selecttargetById(state, id)) as Target;
+  } = useAppSelector((state: RootState) =>
+    selecttargetById(state, id)
+  ) as Target;
   const [tempName, setTempName] = useState(name);
   const [perMul, setPerMul] = useState(persistentMultiplier.toString());
   // const [tempLevelDiff, setTempLevelDiff] = useState(levelDiff.toString());
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   return (
     <Paper sx={{ my: 1, p: 1 }}>
