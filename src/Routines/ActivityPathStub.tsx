@@ -51,10 +51,7 @@ export const ActivityPathStub = ({
       >
         {/* {displayCondition ? "Conditions" : ""} */}
         <ListItemIcon>{icon}</ListItemIcon>
-        <ListItemText
-          primary={type}
-          secondary={parentId !== undefined ? condition : ""}
-        />
+        <ListItemText primary={type} secondary={level > 0 ? condition : ""} />
       </ListItemButton>
       {displayChildren
         ? apIds.map((apId) => (

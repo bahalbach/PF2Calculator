@@ -125,6 +125,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
           justifyContent="center"
         >
           <Button
+            size="small"
             variant="contained"
             onClick={() => dispatch(setNewActivityParent({ routineId }))}
           >
@@ -141,6 +142,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
           justifyContent="center"
         >
           <Button
+            size="small"
             variant="outlined"
             onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
           >
@@ -157,6 +159,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
           justifyContent="center"
         >
           <Button
+            size="small"
             variant="outlined"
             onClick={() =>
               dispatch(
@@ -180,6 +183,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
           justifyContent="center"
         >
           <Button
+            size="small"
             variant="outlined"
             onClick={() =>
               dispatch(

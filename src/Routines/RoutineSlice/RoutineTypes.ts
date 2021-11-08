@@ -30,6 +30,7 @@ import {
   materials,
   WhenConditions,
   ImportStates,
+  whenConditions,
 } from "../../Model/types";
 
 export type State = {
@@ -165,41 +166,20 @@ function isActivityPaths(apIds: unknown): apIds is ActivityPathObject[] {
           isEffects(apId.effects)
         )
       ) {
-        console.log(apId);
-        console.log(
-          Object.values(conditions).includes(apId.condition) &&
-            Object.values(rollTypes).includes(apId.rollType) &&
-            Object.values(activityTypes).includes(apId.type)
-        );
-        console.log(
-          Object.values(profTrends).includes(apId.profTrend) &&
-            Object.values(statTrends).includes(apId.statTrend) &&
-            Object.values(itemTrends).includes(apId.itemTrend)
-        );
-        console.log(
-          Object.values(MAPs).includes(apId.MAP) &&
-            Object.values(defenses).includes(apId.targetType)
-        );
-        console.log(isActivityPaths(apId.apIds));
-        console.log(isDamages(apId.damages));
-        console.log(isEffects(apId.effects));
-        console.log(isAdjustment(apId.bonusAdjustments));
         return false;
       }
     }
     return true;
   }
-  console.log("6");
+  // console.log("6");
   return false;
 }
 function isAdjustment(adjustments: any): adjustments is Adjustment {
   if (typeof adjustments !== "object") {
-    console.log("1");
     return false;
   }
   for (let i = 1; i <= 20; i++) {
     if (typeof adjustments[i] !== "number") {
-      console.log(2);
       return false;
     }
   }
@@ -211,14 +191,19 @@ function isDamages(damages: unknown): damages is Damage[] {
       if (Array.isArray(damage.damageTrend)) {
         for (let dt of damage.damageTrend) {
           if (!Object.values(damageTrends).includes(dt)) {
-            console.log("3");
             return false;
           }
         }
-      } else {
-        console.log("4");
-        return false;
       }
+
+      if (Array.isArray(damage.damageWhen)) {
+        for (let dw of damage.damageWhen) {
+          if (!Object.values(whenConditions).includes(dw)) {
+            return false;
+          }
+        }
+      }
+
       if (
         !(
           Object.values(dCond).includes(damage.damageCondition) &&
@@ -234,22 +219,6 @@ function isDamages(damages: unknown): damages is Damage[] {
           [0.5, 1, 2].includes(damage.multiplier)
         )
       ) {
-        console.log(damage);
-        console.log(
-          Object.values(dCond).includes(damage.damageCondition) &&
-            Object.values(dieTrends).includes(damage.dieTrend)
-        );
-        console.log(
-          typeof damage.diceSize === "number" &&
-            typeof damage.fatal === "boolean" &&
-            typeof damage.fatalDie === "number"
-        );
-        console.log(
-          Object.values(damageTypes).includes(damage.damageType) &&
-            Object.values(materials).includes(damage.material) &&
-            typeof damage.persistent === "boolean"
-        );
-
         return false;
       }
     }
@@ -260,6 +229,14 @@ function isDamages(damages: unknown): damages is Damage[] {
 function isEffects(effects: unknown): effects is Effect[] {
   if (Array.isArray(effects)) {
     for (let effect of effects) {
+      if (Array.isArray(effect.damageWhen)) {
+        for (let dw of effect.damageWhen) {
+          if (!Object.values(whenConditions).includes(dw)) {
+            return false;
+          }
+        }
+      }
+
       if (
         !(
           Object.values(conditions).includes(effect.effectCondition) &&
@@ -268,7 +245,6 @@ function isEffects(effects: unknown): effects is Effect[] {
           typeof effect.endLevel === "number"
         )
       ) {
-        console.log(effect);
         return false;
       }
     }

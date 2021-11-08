@@ -120,7 +120,7 @@ const defaultSaveParent = {
 };
 const defaultDamage = {
   damageCondition: dCond.STRIKE,
-  damageType: damageTypes.S,
+  damageType: damageTypes.B,
   material: materials.NONE,
   persistent: false,
   multiplier: 1,
@@ -133,6 +133,14 @@ const defaultDamage = {
   fatalDie: 10,
   damageTrend: [],
   damageAdjustments: empty,
+};
+const defaultEffect = {
+  effectCondition: conditions.ALWAYS,
+  effectType: effectTypes.FLATFOOT,
+  effectValue: 0,
+  startLevel: 1,
+  endLevel: 20,
+  damageWhen: [whenConditions.Always],
 };
 
 export const routinesSlice = createSlice({
@@ -304,62 +312,27 @@ export const routinesSlice = createSlice({
         };
       },
     },
-    activityPathCreated: {
-      reducer: (
-        state,
-        action: PayloadAction<{
-          ids: number[];
-          strikeInfo: StrikeInfo;
-        }>
-      ) => {
-        const { ids, strikeInfo } = action.payload;
-
-        const { parentActivity: parentId, parentRoutine: routineId } = state;
-        if (routineId !== undefined)
-          state.routines.entities[routineId]!.apIds.push(ids[0]);
-        if (parentId !== undefined) {
-          state.activityPaths.entities[parentId]!.apIds.push(ids[0]);
-        }
-        createStrikeActivity(state, ids[0], parentId, routineId, strikeInfo, 0);
-        for (let i = 1; i < strikeInfo.numStrikes; i++) {
-          let parentId = ids[i - 1];
-          state.activityPaths.entities[parentId]!.apIds.push(ids[i]);
-          createStrikeActivity(
-            state,
-            ids[i],
-            parentId,
-            undefined,
-            strikeInfo,
-            i
-          );
-        }
-        state.selectedActivityPath = ids[0];
-        state.parentActivity = undefined;
-        state.parentRoutine = undefined;
-      },
-      prepare: ({
-        parentId,
-        routineId,
-        strikeInfo,
-      }: {
-        parentId?: number;
-        routineId?: number;
+    activityPathCreated: (
+      state,
+      action: PayloadAction<{
         strikeInfo: StrikeInfo;
-      }) => {
-        const ids = [];
-        for (let i = 0; i < strikeInfo.numStrikes; i++) {
-          let id = ++activityPathId;
-          ids.push(id);
-        }
-        return {
-          payload: {
-            ids,
-            parentId,
-            routineId,
-            strikeInfo,
-          },
-        };
-      },
+      }>
+    ) => {
+      const { strikeInfo } = action.payload;
+      const { parentActivity: parentId, parentRoutine: routineId } = state;
+
+      let ids = createStrikeActivity(state, parentId, routineId, strikeInfo, 0);
+
+      if (routineId !== undefined) {
+        state.routines.entities[routineId]!.apIds.push(...ids);
+      }
+      if (parentId !== undefined) {
+        state.activityPaths.entities[parentId]!.apIds.push(...ids);
+      }
+
+      state.selectedActivityPath = ids[0];
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
     },
     activityPathContinued: {
       reducer: (
@@ -466,13 +439,8 @@ export const routinesSlice = createSlice({
         const { id, parentId } = action.payload;
         state.activityPaths.entities[parentId]!.effects.push(id);
         effectAdapter.addOne(state.effects, {
+          ...defaultEffect,
           id,
-          effectCondition: conditions.ALWAYS,
-          effectType: effectTypes.FLATFOOT,
-          effectValue: 0,
-          startLevel: 1,
-          endLevel: 20,
-          damageWhen: [whenConditions.Always],
         });
       },
       prepare: ({ parentId }) => {
@@ -622,13 +590,22 @@ const removeActivityPaths = (state: WritableDraft<State>, ids: number[]) => {
 
 const createStrikeActivity = (
   state: WritableDraft<State>,
-  id: number,
   parentId: number | undefined,
   routineId: number | undefined,
   strikeInfo: StrikeInfo,
   strikeNumber: number
 ) => {
-  // copy parent damages and effects
+  const id = ++activityPathId;
+  let apIds: number[] = [];
+  if (strikeNumber < strikeInfo.numStrikes - 1) {
+    apIds = createStrikeActivity(
+      state,
+      id,
+      undefined,
+      strikeInfo,
+      strikeNumber + 1
+    );
+  }
   let damages = createStrikeDamages(state, strikeInfo, strikeNumber);
   let effects = createStrikeEffects(state, strikeInfo, strikeNumber);
   let MAP = classWeaponMAP(strikeInfo);
@@ -650,10 +627,11 @@ const createStrikeActivity = (
         ? nextMAPs[MAP]
         : nextMAPs[nextMAPs[MAP]],
 
-    damages: damages,
-    effects: effects,
+    damages,
+    effects,
+    apIds,
   });
-  return;
+  return [id];
 };
 const createStrikeDamages = (
   state: WritableDraft<State>,
@@ -771,13 +749,12 @@ const createStrikeEffects = (
 
     id = ++effectId;
     const critSpecEffect: Effect = {
+      ...defaultEffect,
       id,
       effectCondition: conditions.CRIT,
       effectType,
       effectValue: 1,
       startLevel: strikeInfo.critSpecLevel,
-      endLevel: 20,
-      damageWhen: [whenConditions.Always],
     };
     newEffects.push(id);
     effectAdapter.addOne(state.effects, critSpecEffect);
@@ -857,8 +834,8 @@ const getDamages = (state: WritableDraft<State>, damages: number[]) => {
 const getEffects = (state: WritableDraft<State>, effects: number[]) => {
   let newEffects = [];
   for (let eid of effects) {
-    const damage = state.effects.entities[eid]!;
-    newEffects.push({ ...damage });
+    const effect = state.effects.entities[eid]!;
+    newEffects.push({ ...effect });
   }
   return newEffects;
 };
@@ -911,7 +888,7 @@ const insertEffects = (state: WritableDraft<State>, effects: Effect[]) => {
   for (let effect of effects) {
     // create a new effect entity and add it's id to newEffects
     const id = ++effectId;
-    effectAdapter.addOne(state.effects, { ...effect, id });
+    effectAdapter.addOne(state.effects, { ...defaultEffect, ...effect, id });
     newEffects.push(id);
   }
   return newEffects;

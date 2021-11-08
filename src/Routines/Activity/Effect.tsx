@@ -16,18 +16,28 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/system";
 
-import { conditionOptions, effectTypeOptions } from "../../Model/options";
+import {
+  conditionOptions,
+  effectTypeOptions,
+  makeOptions,
+} from "../../Model/options";
 import { RootState } from "../../App/store";
 import {
   effectRemoved,
   effectUpdated,
   selecteffectById,
 } from "../RoutineSlice/routineSlice";
-import { effectValueTypes } from "../../Model/types";
+import { effectValueTypes, whenConditions } from "../../Model/types";
 
 export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
-  const { effectCondition, effectType, effectValue, startLevel, endLevel } =
-    useAppSelector((state: RootState) => selecteffectById(state, id)!);
+  const {
+    effectCondition,
+    effectType,
+    effectValue,
+    startLevel,
+    endLevel,
+    damageWhen,
+  } = useAppSelector((state: RootState) => selecteffectById(state, id)!);
   const dispatch = useAppDispatch();
   let [value, setValue] = useState(effectValue ? effectValue.toString() : "0");
   let [validLevels, setValidLevels] = useState([startLevel, endLevel]);
@@ -152,6 +162,29 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
             valueLabelDisplay="auto"
             getAriaValueText={(v) => `${v}`}
           />
+        </Grid>
+        <Grid item>
+          <FormControl size="small">
+            <InputLabel id="damage-when-input">When Target</InputLabel>
+            <Select
+              labelId="damage-when-input"
+              id="damage-when"
+              multiple
+              value={damageWhen}
+              label="When Target"
+              renderValue={(selected) => selected.join(" or ")}
+              onChange={(e) =>
+                dispatch(
+                  effectUpdated({
+                    id,
+                    changes: { damageWhen: e.target.value },
+                  })
+                )
+              }
+            >
+              {makeOptions(whenConditions)}
+            </Select>
+          </FormControl>
         </Grid>
       </Grid>
     </Box>
