@@ -350,12 +350,12 @@ function calculateExpectedDamage(
     for (let state of damageWhen) {
       if (state === whenConditions.Always) {
         shouldAddThisDamage = true;
-        return;
+        break;
       }
       let val = targetState[state];
       if (val && val > 0) {
         shouldAddThisDamage = true;
-        return;
+        break;
       }
     }
     // if (typeof val === "boolean") {

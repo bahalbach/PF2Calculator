@@ -222,12 +222,12 @@ class ActivityPathEvaluator {
         for (let state of damageWhen) {
           if (state === whenConditions.Always) {
             shouldAddThisEffect = true;
-            return;
+            break;
           }
           let val = targetStates[i][state];
           if (val && val > 0) {
             shouldAddThisEffect = true;
-            return;
+            break;
           }
         }
         if (!shouldAddThisEffect) return;
