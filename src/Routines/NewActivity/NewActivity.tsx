@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import { useAppDispatch } from "../../App/hooks";
 import {
   Paper,
   Grid,
@@ -14,16 +15,15 @@ import {
   Slider,
   Button,
 } from "@mui/material";
-import { diceSizeOptions, makeOptions } from "../Model/options";
+import { diceSizeOptions, makeOptions } from "../../Model/options";
 import {
   diceSizes,
   DieTrend,
   dieTrends,
   StatTrend,
   statTrends,
-} from "../Model/types";
-import { activityPathCreated } from "./routineSlice";
-import { useDispatch } from "react-redux";
+} from "../../Model/types";
+import { activityPathCreated } from "../RoutineSlice/routineSlice";
 import {
   activityTypes,
   cantrips,
@@ -33,7 +33,7 @@ import {
   runeTrends,
   StrikeInfo,
   weaponTraits,
-} from "../Model/newActivityInfo";
+} from "../../Model/newActivityInfo";
 
 /*
   get activity type: strike, skill, cantrip, spell
@@ -135,7 +135,7 @@ function StrikeSelection() {
     critSpecType,
   };
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const showCantripScore = (activity: string): boolean => {
     return false;

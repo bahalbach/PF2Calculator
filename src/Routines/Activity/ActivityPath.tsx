@@ -1,11 +1,13 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useAppDispatch, useAppSelector } from "../../App/hooks";
+
 import { LevelList } from "./LevelList";
 import {
   activityPathContinued,
   damageCreated,
   setNewActivityParent,
-} from "./routineSlice";
+} from "../RoutineSlice/routineSlice";
 import {
   activityTypeOptions,
   profTrendOptions,
@@ -15,17 +17,17 @@ import {
   rollOptions,
   statTrendOptions,
   itemBTrendOptions,
-} from "../Model/options";
+} from "../../Model/options";
 import {
   activityPathRemoved,
   activityPathUpdated,
   selectactivityPathById,
-} from "./routineSlice";
-import { activityTypes } from "../Model/types";
+} from "../RoutineSlice/routineSlice";
+import { activityTypes } from "../../Model/types";
 import { Damage } from "./Damage";
 import { Effect } from "./Effect";
-import { effectCreated } from "./routineSlice";
-import { RootState } from "../store";
+import { effectCreated } from "../RoutineSlice/routineSlice";
+import { RootState } from "../../App/store";
 import {
   Button,
   FormControl,
@@ -38,7 +40,7 @@ import {
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ActivityPathStub } from "./ActivityPathStub";
+import { ActivityPathStub } from "../ActivityPathStub";
 
 export const ActivityPath = ({ id }: { id: number }) => {
   const {
@@ -58,8 +60,8 @@ export const ActivityPath = ({ id }: { id: number }) => {
     damages,
     effects,
     apIds,
-  } = useSelector((state: RootState) => selectactivityPathById(state, id)!);
-  const dispatch = useDispatch();
+  } = useAppSelector((state: RootState) => selectactivityPathById(state, id)!);
+  const dispatch = useAppDispatch();
 
   const bonusLevelList = LevelList(
     "bonusAdjustments",

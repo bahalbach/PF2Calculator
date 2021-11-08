@@ -1,18 +1,19 @@
 import React from "react";
 
+import { useAppDispatch, useAppSelector } from "../App/hooks";
+
 // import SendIcon from "@mui/icons-material/Send";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import GavelIcon from "@mui/icons-material/Gavel";
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store";
+import { RootState } from "../App/store";
 import {
   selectactivityPathById,
   setActivityPath,
   selectSelectedActivityPath,
   selectParentActivityId,
-} from "./routineSlice";
+} from "./RoutineSlice/routineSlice";
 import { activityTypes } from "../Model/types";
 
 export const ActivityPathStub = ({
@@ -24,13 +25,13 @@ export const ActivityPathStub = ({
   level: number;
   displayChildren?: boolean;
 }) => {
-  const { parentId, condition, type, apIds } = useSelector(
+  const { parentId, condition, type, apIds } = useAppSelector(
     (state: RootState) => selectactivityPathById(state, id)!
   );
-  const selectedActivityPath = useSelector(selectSelectedActivityPath);
-  const parentActivityId = useSelector(selectParentActivityId);
+  const selectedActivityPath = useAppSelector(selectSelectedActivityPath);
+  const parentActivityId = useAppSelector(selectParentActivityId);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   let icon = <GavelIcon />;
   switch (type) {

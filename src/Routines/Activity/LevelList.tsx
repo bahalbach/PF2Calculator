@@ -11,8 +11,9 @@ import AddIcon from "@mui/icons-material/Add";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
 import { Dispatch } from "redux";
-import { levelOptions } from "../Model/options";
-import { Adjustment } from "./routineSlice";
+import { levelOptions } from "../../Model/options";
+import { Adjustment } from "../RoutineSlice/RoutineTypes";
+import { ArrowRight } from "@mui/icons-material";
 
 type Adjustments = {
   [level: number]: number;
@@ -24,8 +25,8 @@ export const generateEntries = (adjustments: Adjustments) => {
   const entries: Entry[] = [];
   for (let level = 1; level <= 20; level++) {
     if (currentValue !== adjustments[level]) {
+      entries.push([level, (adjustments[level] - currentValue).toString()]);
       currentValue = adjustments[level];
-      entries.push([level, currentValue.toString()]);
     }
   }
   return entries;
@@ -34,6 +35,7 @@ export const generateEntries = (adjustments: Adjustments) => {
 const generateAdjustments = (entries: Entry[]) => {
   const adjustments: Adjustments = {};
   let currentValue = 0;
+  let total = 0;
   let currentIndex = 0;
   // console.log(entries);
   for (let level = 1; level <= 20; level++) {
@@ -42,8 +44,9 @@ const generateAdjustments = (entries: Entry[]) => {
       currentValue = parseInt(entries[currentIndex][1]);
       if (!currentValue) currentValue = 0;
       currentIndex++;
+      total += currentValue;
     }
-    adjustments[level] = currentValue;
+    adjustments[level] = total;
   }
   return adjustments;
 };
@@ -70,7 +73,7 @@ export const adjustmentsFromValueChange = (
 export const adjustmentsFromNewEntry = (entries: Entry[]) => {
   let lastValue: Entry =
     entries.length > 0 ? entries[entries.length - 1] : [0, "0"];
-  entries.push([lastValue[0] + 1, (parseInt(lastValue[1]) + 1).toString()]);
+  entries.push([lastValue[0] + 1, (0).toString()]);
   return generateAdjustments(entries);
 };
 
@@ -129,7 +132,7 @@ export const LevelList = (
             let newEntries = entries.slice();
             for (let ni = 0; ni < entries.length; ni++) {
               newEntries[ni] = [
-                newEntries[i][0],
+                newEntries[ni][0],
                 parseInt(newEntries[ni][1]).toString(),
               ];
             }

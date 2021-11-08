@@ -4,9 +4,9 @@ import routineReducer, {
   effectAdded,
   routineAdded,
   setRoutine,
-} from "./Routines/routineSlice";
-import targetReducer, { targetAdded } from "./Target/targetSlice";
-import weaknessReducer from "./Target/weaknessSlice";
+} from "../Routines/RoutineSlice/routineSlice";
+import targetReducer, { targetAdded } from "../Target/targetSlice";
+import weaknessReducer from "../Target/weaknessSlice";
 import {
   ACTrends,
   conditions,
@@ -17,7 +17,7 @@ import {
   effectTypes,
   materials,
   SaveTrends,
-} from "./Model/types";
+} from "../Model/types";
 
 const empty: { [key: number]: number } = {};
 const pickCritSpec: { [key: number]: number } = {};

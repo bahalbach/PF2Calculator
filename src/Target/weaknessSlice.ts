@@ -5,7 +5,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { damageTypes, materials } from "../Model/types";
-import { RootState } from "../store";
+import { RootState } from "../App/store";
 
 export interface Weakness {
   id: number;

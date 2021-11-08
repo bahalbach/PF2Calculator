@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import { useAppDispatch, useAppSelector } from "../../App/hooks";
+
 import {
   FormControl,
   Grid,
@@ -14,16 +16,19 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/system";
 
-import { useDispatch, useSelector } from "react-redux";
-import { conditionOptions, effectTypeOptions } from "../Model/options";
-import { RootState } from "../store";
-import { effectRemoved, effectUpdated, selecteffectById } from "./routineSlice";
-import { effectValueTypes } from "../Model/types";
+import { conditionOptions, effectTypeOptions } from "../../Model/options";
+import { RootState } from "../../App/store";
+import {
+  effectRemoved,
+  effectUpdated,
+  selecteffectById,
+} from "../RoutineSlice/routineSlice";
+import { effectValueTypes } from "../../Model/types";
 
 export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
   const { effectCondition, effectType, effectValue, startLevel, endLevel } =
-    useSelector((state: RootState) => selecteffectById(state, id)!);
-  const dispatch = useDispatch();
+    useAppSelector((state: RootState) => selecteffectById(state, id)!);
+  const dispatch = useAppDispatch();
   let [value, setValue] = useState(effectValue ? effectValue.toString() : "0");
   let [validLevels, setValidLevels] = useState([startLevel, endLevel]);
   useEffect(

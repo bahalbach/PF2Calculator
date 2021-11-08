@@ -4,6 +4,15 @@ export const graphTypes = {
   PMRES: "+/- Resistance/Weakness",
 } as const;
 export type GraphType = typeof graphTypes[keyof typeof graphTypes];
+
+export const importStates = {
+  Importing: "Importing",
+  Successful: "Successful",
+  Failure: "Failure",
+  MessageSeen: "Message Seen",
+} as const;
+export type ImportStates = typeof importStates[keyof typeof importStates];
+
 export type TargetState = {
   flatfooted: boolean;
   prone: boolean;
@@ -51,6 +60,8 @@ export type RollType = typeof rollTypes[keyof typeof rollTypes];
 export const activityTypes = {
   STRIKE: "Strike",
   SAVE: "Save",
+  SKILL: "Skill Check",
+  SPELLATTACK: "Spell Attack",
 } as const;
 export type ActivityType = typeof activityTypes[keyof typeof activityTypes];
 
@@ -191,6 +202,7 @@ export const damageTypes = {
   P: "piercing",
   S: "slashing",
   FIRE: "fire",
+  PRECISION: "precision",
 } as const;
 export type DamageType = typeof damageTypes[keyof typeof damageTypes];
 
@@ -221,6 +233,13 @@ export const effectTypes = {
   ...effectStateTypes,
 } as const;
 export type EffectType = EffectStateType | EffectValueType;
+
+export const whenConditions = {
+  Always: "Always",
+  ...effectValueTypes,
+  ...effectStateTypes,
+} as const;
+export type WhenConditions = typeof whenConditions[keyof typeof whenConditions];
 
 export const diceNums = {
   0: 0,

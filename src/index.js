@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import PF2App from "./App/PF2App";
-import store from "./store";
+import store from "./App/store";
 import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
 import { CssBaseline } from "@mui/material";

@@ -19,7 +19,7 @@ import {
   rollTypes,
   TargetState,
 } from "../Model/types";
-import { ActivityPath, Damage } from "../Routines/routineSlice";
+import { ActivityPath, Damage } from "../Routines/RoutineSlice/RoutineTypes";
 import { Target } from "../Target/targetSlice";
 import { Weakness } from "../Target/weaknessSlice";
 import { applyMin, convolve, multiplyDist } from "./Distribution";
@@ -223,6 +223,8 @@ function calculateExpectedDamage(
     targetPenalty = Math.max(targetPenalty, targetState.clumsy);
   switch (activity.type) {
     case activityTypes.STRIKE:
+    case activityTypes.SPELLATTACK:
+    case activityTypes.SKILL:
       bonus = profTrendValues[activity.profTrend][level];
       bonus += statTrendValues[activity.statTrend][level];
       bonus += itemTrendValues[activity.itemTrend][level];
@@ -341,6 +343,7 @@ function calculateExpectedDamage(
       material,
       persistent,
       multiplier,
+      damageWhen,
     } = damage;
 
     let diceNum = dieTrendValues[damage.dieTrend][level];

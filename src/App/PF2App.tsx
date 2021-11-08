@@ -9,25 +9,26 @@ import Routines from "../Routines/Routines";
 import Export from "../Sharing/Export";
 
 import "./PF2App.css";
-import { useSelector } from "react-redux";
+
 import {
   selectSelectedRoutine,
   selectSelectedActivityPath,
   selectCreateNewActivity,
-} from "../Routines/routineSlice";
+} from "../Routines/RoutineSlice/routineSlice";
 import { Container, Grid, Box } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 // import Header from "./Header";
-import { ActivityPath } from "../Routines/ActivityPath";
-import NewActivity from "../Routines/NewActivity";
+import { ActivityPath } from "../Routines/Activity/ActivityPath";
+import NewActivity from "../Routines/NewActivity/NewActivity";
+import { useAppSelector } from "./hooks";
 
 // Initialize google analytics
 ReactGA.initialize("G-JR2YK097BG");
 
 function PF2App() {
-  const selectedRoutine = useSelector(selectSelectedRoutine);
-  const selectedActivityPath = useSelector(selectSelectedActivityPath);
-  const createNewActivity = useSelector(selectCreateNewActivity);
+  const selectedRoutine = useAppSelector(selectSelectedRoutine);
+  const selectedActivityPath = useAppSelector(selectSelectedActivityPath);
+  const createNewActivity = useAppSelector(selectCreateNewActivity);
 
   const isBigEnough = useMediaQuery((theme: any) => {
     console.log(`Theme is ${theme}`);

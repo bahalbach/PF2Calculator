@@ -1,16 +1,16 @@
 import React from "react";
-import { useSelector } from "react-redux";
+
 import {
-  Routine,
   selectactivityPathEntities,
   selectSelectedRoutine,
-} from "../Routines/routineSlice";
-import { selectdamageEntities } from "../Routines/routineSlice";
-import { selectRoutineEntities } from "../Routines/routineSlice";
+} from "../Routines/RoutineSlice/routineSlice";
+import { Routine } from "../Routines/RoutineSlice/RoutineTypes";
+import { selectdamageEntities } from "../Routines/RoutineSlice/routineSlice";
+import { selectRoutineEntities } from "../Routines/RoutineSlice/routineSlice";
 import { selecttargetEntities } from "../Target/targetSlice";
 import { selectweaknessEntities } from "../Target/weaknessSlice";
 import { graphTypes } from "../Model/types";
-import { selecteffectEntities } from "../Routines/routineSlice";
+import { selecteffectEntities } from "../Routines/RoutineSlice/routineSlice";
 
 import { ActivityPathEvaluator } from "../Calculation/EvaluateActivityPath";
 
@@ -18,16 +18,17 @@ import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
 import { defaultACs, defaultSaves } from "../Model/defaults";
 import { Dictionary } from "@reduxjs/toolkit";
+import { useAppSelector } from "../App/hooks";
 const Plot = createPlotlyComponent(Plotly);
 
 const useGenerateGraphs = (graphType: string, displayLevel: number) => {
-  const routines = useSelector(selectRoutineEntities);
-  const activityPaths = useSelector(selectactivityPathEntities);
-  const targets = useSelector(selecttargetEntities);
-  const damages = useSelector(selectdamageEntities);
-  const effects = useSelector(selecteffectEntities);
-  const weaknesses = useSelector(selectweaknessEntities);
-  const selectedRoutine = useSelector(selectSelectedRoutine);
+  const routines = useAppSelector(selectRoutineEntities);
+  const activityPaths = useAppSelector(selectactivityPathEntities);
+  const targets = useAppSelector(selecttargetEntities);
+  const damages = useAppSelector(selectdamageEntities);
+  const effects = useAppSelector(selecteffectEntities);
+  const weaknesses = useAppSelector(selectweaknessEntities);
+  const selectedRoutine = useAppSelector(selectSelectedRoutine);
 
   const evaluator = new ActivityPathEvaluator(
     activityPaths,
