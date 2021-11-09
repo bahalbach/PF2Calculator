@@ -369,6 +369,7 @@ export const damageTrendValues = {
   [damageTrends.DRAGONRAGE]: dragonrage,
   [damageTrends.GIANTRAGE]: giantrage,
   [damageTrends.SPIRITRAGE]: spiritrage,
+  [damageTrends.PRECISE]: precise,
   [damageTrends.OVERDRIVES]: overdriveSuccess,
   [damageTrends.OVERDRIVEC]: overdriveCritical,
   [damageTrends.IMPLEMENT]: implementEmpower,

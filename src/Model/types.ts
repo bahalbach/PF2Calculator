@@ -186,6 +186,7 @@ export const damageTrends = {
   DRAGONRAGE: "Dragon Rage",
   GIANTRAGE: "Giant Rage",
   SPIRITRAGE: "Spirit Rage",
+  PRECISE: "Precise Strike (1, 1, 5, 9, 13, 17)",
   OVERDRIVES: "Overdrive Success",
   OVERDRIVEC: "Overdrive Critical",
   IMPLEMENT: "Implement's Empowerment",

@@ -357,6 +357,13 @@ export const classWeaponDamageTrends = (
       default:
     }
   }
+
+  if (
+    strikeInfo.cClass === "Swashbuckler" &&
+    strikeInfo.classOption === "Precise Strike"
+  ) {
+    trends.push(damageTrends.PRECISE);
+  }
   // if (strikeInfo.cClass === "Inventor") {
   //   switch (strikeInfo.classOption) {
   //     case "Overdrive Success":
