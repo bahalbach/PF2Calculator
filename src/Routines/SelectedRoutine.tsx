@@ -20,6 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import { activityTypes } from "../Model/types";
+import { Box } from "@mui/system";
 
 function SelectedRoutine({ routineId }: { routineId: number }) {
   // const selectedRoutine = useSelector(selectSelectedRoutine);
@@ -38,8 +39,8 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
   );
 
   return (
-    <Paper>
-      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 2, p: 1 }}>
+    <Paper sx={{ my: 2, p: 1 }}>
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ p: 1 }}>
         <Grid item xs={12} sm={8} md={12} lg={8}>
           <TextField
             fullWidth
@@ -56,32 +57,34 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
             }
           />
         </Grid>
-        <Grid item xs={12} sm={4} md={12} lg={4} sx={{ px: 2 }}>
+        <Grid item xs={12} sm={4} md={12} lg={4}>
           <Typography align="center">
             Valid Levels: {startLevel} to {endLevel}
           </Typography>
-          <Slider
-            getAriaLabel={() => "Valid levels"}
-            value={validLevels}
-            min={1}
-            max={20}
-            marks
-            // @ts-ignore
-            onChange={(e, nv: number[]) => setValidLevels(nv)}
-            onBlur={() =>
-              dispatch(
-                routineUpdated({
-                  id: routineId,
-                  changes: {
-                    startLevel: validLevels[0],
-                    endLevel: validLevels[1],
-                  },
-                })
-              )
-            }
-            valueLabelDisplay="auto"
-            getAriaValueText={(v) => `${v}`}
-          />
+          <Box sx={{ px: 2 }}>
+            <Slider
+              getAriaLabel={() => "Valid levels"}
+              value={validLevels}
+              min={1}
+              max={20}
+              marks
+              // @ts-ignore
+              onChange={(e, nv: number[]) => setValidLevels(nv)}
+              onBlur={() =>
+                dispatch(
+                  routineUpdated({
+                    id: routineId,
+                    changes: {
+                      startLevel: validLevels[0],
+                      endLevel: validLevels[1],
+                    },
+                  })
+                )
+              }
+              valueLabelDisplay="auto"
+              getAriaValueText={(v) => `${v}`}
+            />
+          </Box>
         </Grid>
         <Grid item xs={12}>
           <TextField
@@ -126,6 +129,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
         >
           <Button
             size="small"
+            fullWidth
             variant="contained"
             onClick={() => dispatch(setNewActivityParent({ routineId }))}
           >
@@ -143,6 +147,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
         >
           <Button
             size="small"
+            fullWidth
             variant="outlined"
             onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
           >
@@ -160,6 +165,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
         >
           <Button
             size="small"
+            fullWidth
             variant="outlined"
             onClick={() =>
               dispatch(
@@ -184,6 +190,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
         >
           <Button
             size="small"
+            fullWidth
             variant="outlined"
             onClick={() =>
               dispatch(

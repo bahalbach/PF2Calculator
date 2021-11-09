@@ -67,13 +67,13 @@ const Routines = () => {
           justifyContent: "center",
           listStyle: "none",
           p: 0.5,
-          my: 3,
+          my: 2,
         }}
         component="ul"
       >
         {routineDisplays}
       </Paper>
-      <Paper variant="outlined" sx={{ my: 3, p: 1 }}>
+      <Paper sx={{ my: 2, p: 1 }}>
         <Grid container spacing={1}>
           <Grid item xs={12} sm={6} md={12} lg={6}>
             <FormControl fullWidth>

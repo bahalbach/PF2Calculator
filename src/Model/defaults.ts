@@ -566,7 +566,7 @@ export const defaultSaves = {
   [SaveTrends.LOW]: lowSaves,
   [SaveTrends.TERRIBLE]: terribleSaves,
 };
-export const standardDC = {
+export const standardDC: defaultValue = {
   "-1": 12,
   0: 14,
   1: 15,
@@ -594,4 +594,4 @@ export const standardDC = {
   23: 46,
   24: 48,
   25: 50,
-};
+} as const;

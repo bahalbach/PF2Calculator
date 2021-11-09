@@ -16,8 +16,8 @@ import {
   Routine,
 } from "../Routines/RoutineSlice/RoutineTypes";
 import { Dictionary } from "@reduxjs/toolkit";
-import { Target } from "../Target/targetSlice";
-import { Weakness } from "../Target/weaknessSlice";
+import { Target } from "../Display/targetSlice";
+import { Weakness } from "../Display/weaknessSlice";
 
 /**
  * Checks given degreeOfSuccess is in the condition
@@ -101,12 +101,18 @@ class ActivityPathEvaluator {
     if (level + levelDiff < -1 || level + levelDiff > 24) return false;
     return true;
   }
+  canEvaluateSingleLevel(routine: Routine) {
+    const level = this.target.routineLevel;
+    // console.log(`level ${level}, levelDiff ${levelDiff}`);
+    if (level < routine.startLevel || level > routine.endLevel) return false;
+    return true;
+  }
 
   evalRoutine(
     routine: Routine,
-    level: number,
     ACBonus: number,
-    resBonus: number
+    resBonus: number,
+    level?: number
   ) {
     const initialTargetState = {
       // flatfooted: this.target.flatfooted,
@@ -137,9 +143,9 @@ class ActivityPathEvaluator {
       let [damageDist, PdamageDist] = this.evalPath(
         activityPath,
         initialTargetState,
-        level,
         ACBonus,
-        resBonus
+        resBonus,
+        level
       );
       routineDDist = convolve(routineDDist, damageDist);
       routinePDDist = convolve(routinePDDist, PdamageDist);
@@ -175,9 +181,9 @@ class ActivityPathEvaluator {
   evalPath(
     activityPath: ActivityPath,
     targetState: TargetState,
-    level: number,
     defenseBonus: number,
-    resistanceBonus: number
+    resistanceBonus: number,
+    level?: number
   ) {
     // evaluate this and all following APs
     let currentTarget = this.target;
@@ -194,14 +200,14 @@ class ActivityPathEvaluator {
 
     // calculate the expected damage for this activity
     let { damageTrees, chances } = calculateExpectedDamage(
-      level,
       activityPath,
       currentDamages,
       currentTarget,
       targetState,
       currentWeaknesses,
       defenseBonus,
-      resistanceBonus
+      resistanceBonus,
+      level
     );
 
     const targetStates = [targetState, targetState, targetState, targetState];
@@ -217,7 +223,15 @@ class ActivityPathEvaluator {
           endLevel,
           damageWhen,
         } = effect;
-        if (level < startLevel || level > endLevel) return;
+        if (level !== undefined) {
+          if (level < startLevel || level > endLevel) return;
+        } else {
+          if (
+            this.target.routineLevel < startLevel ||
+            this.target.routineLevel > endLevel
+          )
+            return;
+        }
         let shouldAddThisEffect = false;
         for (let state of damageWhen) {
           if (state === whenConditions.Always) {
@@ -305,9 +319,9 @@ class ActivityPathEvaluator {
             let [pathDist, pathPDist] = this.evalPath(
               ap,
               targetStates[i],
-              level,
               defenseBonus,
-              resistanceBonus
+              resistanceBonus,
+              level
             );
             evaluations.set(targetStates[i], { pathDist, pathPDist });
           }

@@ -21,8 +21,8 @@ import {
   whenConditions,
 } from "../Model/types";
 import { ActivityPath, Damage } from "../Routines/RoutineSlice/RoutineTypes";
-import { Target } from "../Target/targetSlice";
-import { Weakness } from "../Target/weaknessSlice";
+import { Target } from "../Display/targetSlice";
+import { Weakness } from "../Display/weaknessSlice";
 import { applyMin, convolve, multiplyDist } from "./Distribution";
 
 function getCritSuccessPercent(bonus: number, DC: number, keen = false) {
@@ -172,14 +172,14 @@ const addDamage = (
  * @returns [damageTrees, chances];
  */
 function calculateExpectedDamage(
-  level: number,
   activity: ActivityPath,
   damages: Damage[],
   target: Target,
   targetState: TargetState,
   weaknesses: Weakness[],
   defenseBonus: number,
-  resistanceBonus: number
+  resistanceBonus: number,
+  level?: number
 ) {
   /**
    * Get the check bonus and DC
@@ -191,31 +191,55 @@ function calculateExpectedDamage(
   let bonus = 0;
   let DC = 10;
   let targetValue;
-  switch (activity.targetType) {
-    case defenses.AC:
-      targetValue = defaultACs[target.ACTrend];
-      break;
-    case defenses.FORT:
-      targetValue = defaultSaves[target.FortTrend];
-      break;
-    case defenses.REF:
-      targetValue = defaultSaves[target.RefTrend];
-      break;
-    case defenses.WILL:
-      targetValue = defaultSaves[target.WillTrend];
-      break;
-    case defenses.PER:
-      targetValue = defaultSaves[target.PerTrend];
-      break;
-    case defenses.DC:
-      targetValue = standardDC;
-      break;
-    default:
-      targetValue = defaultACs[target.ACTrend];
-      break;
+  if (level === undefined) {
+    level = target.routineLevel;
+    switch (activity.targetType) {
+      case defenses.AC:
+        targetValue = target.overrideAC;
+        break;
+      case defenses.FORT:
+        targetValue = target.overrideFort;
+        break;
+      case defenses.REF:
+        targetValue = target.overrideRef;
+        break;
+      case defenses.WILL:
+        targetValue = target.overrideWill;
+        break;
+      case defenses.PER:
+        targetValue = target.overridePer;
+        break;
+
+      default:
+        targetValue = target.overrideAC;
+        break;
+    }
+  } else {
+    switch (activity.targetType) {
+      case defenses.AC:
+        targetValue = defaultACs[target.ACTrend];
+        break;
+      case defenses.FORT:
+        targetValue = defaultSaves[target.FortTrend];
+        break;
+      case defenses.REF:
+        targetValue = defaultSaves[target.RefTrend];
+        break;
+      case defenses.WILL:
+        targetValue = defaultSaves[target.WillTrend];
+        break;
+      case defenses.PER:
+        targetValue = defaultSaves[target.PerTrend];
+        break;
+
+      default:
+        targetValue = defaultACs[target.ACTrend];
+        break;
+    }
+
+    targetValue = targetValue[level + target.levelDiff];
   }
 
-  targetValue = targetValue[level + target.levelDiff];
   let targetPenalty = targetState.Frightened;
   if (
     activity.targetType === defenses.AC ||
@@ -235,7 +259,11 @@ function calculateExpectedDamage(
       if (activity.targetType === defenses.AC) {
         if (targetState.Flatfooted) DC -= 2;
       } else {
-        if (activity.targetType !== defenses.DC) DC += 10;
+        if (activity.targetType === defenses.DC) {
+          DC = standardDC[level];
+        } else {
+          DC += 10;
+        }
       }
       break;
 
@@ -245,11 +273,10 @@ function calculateExpectedDamage(
       DC += statTrendValues[activity.statTrend][level];
       DC += itemTrendValues[activity.itemTrend][level];
       DC += activity.bonusAdjustments[level];
-      if (
-        activity.targetType === defenses.AC ||
-        activity.targetType === defenses.DC
-      ) {
+      if (activity.targetType === defenses.AC) {
         bonus -= 10;
+      } else if (activity.targetType === defenses.DC) {
+        bonus = standardDC[level] - 10;
       }
       break;
 
@@ -372,14 +399,14 @@ function calculateExpectedDamage(
 
     if (!shouldAddThisDamage) return;
 
-    let diceNum = dieTrendValues[damage.dieTrend][level];
-    diceNum += damage.dieAdjustments[level];
+    let diceNum = dieTrendValues[damage.dieTrend][level as number];
+    diceNum += damage.dieAdjustments[level as number];
     if (diceNum < 0) diceNum = 0;
     let staticDamage = 0;
     for (let i = 0; i < damageTrend.length; i++) {
-      staticDamage += damageTrendValues[damageTrend[i]][level];
+      staticDamage += damageTrendValues[damageTrend[i]][level as number];
     }
-    staticDamage += damage.damageAdjustments[level];
+    staticDamage += damage.damageAdjustments[level as number];
     let damageDist = [1];
     let fatalDist = [1];
     let diceArray = [];

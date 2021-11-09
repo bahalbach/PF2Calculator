@@ -7,8 +7,8 @@ import {
 import { Routine } from "../Routines/RoutineSlice/RoutineTypes";
 import { selectdamageEntities } from "../Routines/RoutineSlice/routineSlice";
 import { selectRoutineEntities } from "../Routines/RoutineSlice/routineSlice";
-import { selecttargetEntities } from "../Target/targetSlice";
-import { selectweaknessEntities } from "../Target/weaknessSlice";
+import { selecttargetEntities } from "./targetSlice";
+import { selectweaknessEntities } from "./weaknessSlice";
 import { graphTypes } from "../Model/types";
 import { selecteffectEntities } from "../Routines/RoutineSlice/routineSlice";
 
@@ -21,7 +21,7 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { useAppSelector } from "../App/hooks";
 const Plot = createPlotlyComponent(Plotly);
 
-const useGenerateGraphs = (graphType: string, displayLevel: number) => {
+const useGenerateGraphs = (graphType: string) => {
   const routines = useAppSelector(selectRoutineEntities);
   const activityPaths = useAppSelector(selectactivityPathEntities);
   const targets = useAppSelector(selecttargetEntities);
@@ -40,15 +40,15 @@ const useGenerateGraphs = (graphType: string, displayLevel: number) => {
   );
 
   const currentTarget = targets[0]!;
-  let title = "@" + displayLevel;
+  let title = "@" + currentTarget.routineLevel;
   let byLevelTile = currentTarget.name;
 
   title += " Vs ";
-  title += " AC: " + defaultACs[currentTarget.ACTrend][displayLevel];
-  title += " Fort: " + defaultSaves[currentTarget.FortTrend][displayLevel];
-  title += " Ref: " + defaultSaves[currentTarget.RefTrend][displayLevel];
-  title += " Will: " + defaultSaves[currentTarget.WillTrend][displayLevel];
-  title += " Per: " + defaultSaves[currentTarget.PerTrend][displayLevel];
+  title += " AC: "; //+ defaultACs[currentTarget.ACTrend][displayLevel];
+  title += " Fort: "; //+ defaultSaves[currentTarget.FortTrend][displayLevel];
+  title += " Ref: "; //+ defaultSaves[currentTarget.RefTrend][displayLevel];
+  title += " Will: "; //+ defaultSaves[currentTarget.WillTrend][displayLevel];
+  title += " Per: "; //+ defaultSaves[currentTarget.PerTrend][displayLevel];
 
   // byLevelTile += " Vs ";
   // byLevelTile += " AC: " + currentTarget.ACTrend;
@@ -64,15 +64,15 @@ const useGenerateGraphs = (graphType: string, displayLevel: number) => {
   switch (graphType) {
     case graphTypes.DISTRIBUTION:
       ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
-        evaluateDistribution(routines, evaluator, displayLevel));
+        evaluateDistribution(routines, evaluator));
       break;
     case graphTypes.PMDEFENSE:
       ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
-        evaluatePM(routines, evaluator, displayLevel, true));
+        evaluatePM(routines, evaluator, true));
       break;
     case graphTypes.PMRES:
       ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
-        evaluatePM(routines, evaluator, displayLevel, false));
+        evaluatePM(routines, evaluator, false));
       break;
     default:
       break;
@@ -212,7 +212,7 @@ const evaluateByLevel = (
     let routine = routines[evaluator.selectedRoutine]!;
     for (let level = 1; level <= 20; level++) {
       if (!evaluator.canEvaluate(level, routine)) continue;
-      let { expD, expP } = evaluator.evalRoutine(routine, level, 0, 0);
+      let { expD, expP } = evaluator.evalRoutine(routine, 0, 0, level);
       selectedRoutineDamage[level] = expD;
       selectedRoutinePDamage[level] = expP;
     }
@@ -228,7 +228,7 @@ const evaluateByLevel = (
     for (let level = 1; level <= 20; level++) {
       if (!evaluator.canEvaluate(level, routine)) continue;
 
-      let { expD, expP } = evaluator.evalRoutine(routine, level, 0, 0);
+      let { expD, expP } = evaluator.evalRoutine(routine, 0, 0, level);
       if (evaluator.target.percentSelectedRoutine) {
         if (level in selectedRoutineDamage) {
           levelArray.push(level);
@@ -263,7 +263,6 @@ const evaluateByLevel = (
 const evaluatePM = (
   routines: Dictionary<Routine>,
   evaluator: ActivityPathEvaluator,
-  displayLevel: number,
   defense = true
 ) => {
   let datasets = [];
@@ -281,7 +280,7 @@ const evaluatePM = (
   for (let id in routines) {
     let routine = routines[id]!;
     if (!routine.display) continue;
-    if (!evaluator.canEvaluate(displayLevel, routine)) continue;
+    if (!evaluator.canEvaluateSingleLevel(routine)) continue;
 
     const bonusArray = [];
     const expDbyBonus = [];
@@ -291,7 +290,6 @@ const evaluatePM = (
       bonusArray.push(bonus);
       let { expD, expP } = evaluator.evalRoutine(
         routine,
-        displayLevel,
         defense ? bonus : 0,
         defense ? 0 : bonus
       );
@@ -337,8 +335,7 @@ const evaluatePM = (
 
 const evaluateDistribution = (
   routines: Dictionary<Routine>,
-  evaluator: ActivityPathEvaluator,
-  displayLevel: number
+  evaluator: ActivityPathEvaluator
 ) => {
   let datasets = [];
   let perDatasets = [];
@@ -356,7 +353,7 @@ const evaluateDistribution = (
   for (let id in routines) {
     let routine = routines[id]!;
     if (!routine.display) continue;
-    if (!evaluator.canEvaluate(displayLevel, routine)) continue;
+    if (!evaluator.canEvaluateSingleLevel(routine)) continue;
     let {
       expD,
       expP,
@@ -366,7 +363,7 @@ const evaluateDistribution = (
       PdataArray,
       routinePDDist,
       Pcumulative,
-    } = evaluator.evalRoutine(routine, displayLevel, 0, 0);
+    } = evaluator.evalRoutine(routine, 0, 0);
     expectedDamages.push(
       <div key={routine.id}>
         {routine.name}

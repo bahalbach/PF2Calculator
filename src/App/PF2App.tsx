@@ -44,7 +44,7 @@ function PF2App() {
         {isBigEnough ? (
           <Grid
             container
-            columnSpacing={{ xs: 2, md: 6, lg: 6, xl: 8 }}
+            columnSpacing={{ xs: 2, md: 2, lg: 3, xl: 4 }}
             sx={{ height: "100vh" }} // "calc(100vh - 40px)"
           >
             <Grid
@@ -78,7 +78,7 @@ function PF2App() {
               item
               xs={12}
               md={6}
-              sx={{ mt: 0, height: 1, overflow: "auto" }}
+              sx={{ mt: 0, height: 1, overflow: "hidden auto" }}
             >
               {/* <Box sx={{ height: 1 }}> */}
               <Display />

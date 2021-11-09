@@ -59,7 +59,7 @@ export default function NewActivity({
   );
 
   return (
-    <Paper>
+    <Paper sx={{ my: 2, p: 1 }}>
       <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ m: 2, p: 2 }}>
         <Grid item>
           <Typography>Enter activity information</Typography>

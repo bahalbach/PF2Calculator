@@ -5,8 +5,8 @@ import routineReducer, {
   routineAdded,
   setRoutine,
 } from "../Routines/RoutineSlice/routineSlice";
-import targetReducer, { targetAdded } from "../Target/targetSlice";
-import weaknessReducer from "../Target/weaknessSlice";
+import targetReducer, { targetAdded } from "../Display/targetSlice";
+import weaknessReducer from "../Display/weaknessSlice";
 import {
   ACTrends,
   conditions,
@@ -15,6 +15,7 @@ import {
   dCond,
   dieTrends,
   effectTypes,
+  graphTypes,
   materials,
   SaveTrends,
   whenConditions,
@@ -156,6 +157,15 @@ store.dispatch(
     flatfooted: false,
     percentSelectedRoutine: false,
     weaknesses: [],
+
+    graphType: graphTypes.DISTRIBUTION,
+    routineLevel: 1,
+    targetLevel: 1,
+    overrideAC: 16,
+    overrideFort: 7,
+    overrideRef: 7,
+    overrideWill: 7,
+    overridePer: 7,
   })
 );
 
