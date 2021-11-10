@@ -28,6 +28,7 @@ import {
   selecteffectById,
 } from "../RoutineSlice/routineSlice";
 import { effectValueTypes, whenConditions } from "../../Model/types";
+import { TooltipSelect } from "../../TooltipSelect";
 
 export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
   const {
@@ -61,46 +62,38 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
           </IconButton>
         </Grid>
         <Grid item>
-          <FormControl size="small" fullWidth>
-            <InputLabel id="effect-condition-input">Condition</InputLabel>
-            <Select
-              labelId="effect-condition-input"
-              id="effect-condition"
-              value={effectCondition}
-              label="Condition"
-              onChange={(e) =>
-                dispatch(
-                  effectUpdated({
-                    id,
-                    changes: { effectCondition: e.target.value },
-                  })
-                )
-              }
-            >
-              {conditionOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="When this effect applies, depending on the result of this activities roll. For example the spell 'fear' should have 'On Success' 'Frightened' '1', 'On Failure' 'Frightened' '2' etc."
+            value={effectCondition}
+            label="Condition"
+            onChange={(e) =>
+              dispatch(
+                effectUpdated({
+                  id,
+                  changes: { effectCondition: e.target.value },
+                })
+              )
+            }
+          >
+            {conditionOptions}
+          </TooltipSelect>
         </Grid>
         <Grid item>
-          <FormControl size="small" fullWidth>
-            <InputLabel id="effect-type-input">Effect</InputLabel>
-            <Select
-              labelId="effect-type-input"
-              id="effect-type"
-              value={effectType}
-              label="Effect"
-              onChange={(e) =>
-                dispatch(
-                  effectUpdated({
-                    id,
-                    changes: { effectType: e.target.value },
-                  })
-                )
-              }
-            >
-              {effectTypeOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="The effect that is applied to the target when 'Condition' is met."
+            value={effectType}
+            label="Effect"
+            onChange={(e) =>
+              dispatch(
+                effectUpdated({
+                  id,
+                  changes: { effectType: e.target.value },
+                })
+              )
+            }
+          >
+            {effectTypeOptions}
+          </TooltipSelect>
         </Grid>
 
         {

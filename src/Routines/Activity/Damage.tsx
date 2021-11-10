@@ -29,11 +29,13 @@ import {
   InputLabel,
   Select,
   Switch,
+  Tooltip,
 } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/system";
 import { StayPrimaryLandscape } from "@mui/icons-material";
+import { TooltipSelect } from "../../TooltipSelect";
 
 // const useStyles = makeStyles({
 //   transition: theme.transitions.create(["background", "background-color"], {
@@ -81,9 +83,9 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
   const damageTrendList = damageTrend.map((dt, index) => {
     return (
       <Grid item key={index}>
-        <Select
-          // no stable id
-          size="small"
+        <TooltipSelect
+          title="Adds bonus damage that applies the appropriate amount of damage at appropriate levels. For 'Weapon' and 'Precise Strike' the bonus is the number of dice."
+          label="Damage Trend"
           value={dt}
           onChange={(e) => {
             let newdt = damageTrend.slice();
@@ -101,7 +103,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           }}
         >
           {damageTrendOptions}
-        </Select>
+        </TooltipSelect>
       </Grid>
     );
   });
@@ -128,49 +130,41 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           </IconButton>
         </Grid>
 
-        <Grid item xs>
-          <FormControl size="small" fullWidth>
-            <InputLabel id="damage-condition-input">Condition</InputLabel>
-            <Select
-              labelId="damage-condition-input"
-              id="damage-condition"
-              value={damageCondition}
-              label="Condition"
-              onChange={(e) =>
-                dispatch(
-                  damageUpdated({
-                    id,
-                    changes: { damageCondition: e.target.value },
-                  })
-                )
-              }
-            >
-              {damageConditionOptions}
-            </Select>
-          </FormControl>
+        <Grid item xs="auto">
+          <TooltipSelect
+            title="When this damage instance applies. For example: for extra damage on a critical hit, like with deadly or fatal weapons, use 'On Crit'. Don't forget to change when using a save instead of an attack."
+            value={damageCondition}
+            label="Condition"
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { damageCondition: e.target.value },
+                })
+              )
+            }
+          >
+            {damageConditionOptions}
+          </TooltipSelect>
         </Grid>
         {/* </Grid>
       <Grid container spacing={{ xs: 1, sm: 2 }}> */}
         <Grid item>
-          <FormControl size="small">
-            <InputLabel id="damage-multiplier-input">Multiplier</InputLabel>
-            <Select
-              labelId="damage-multiplier-input"
-              id="damage-multiplier"
-              value={multiplier}
-              label="Multiplier"
-              onChange={(e) =>
-                dispatch(
-                  damageUpdated({
-                    id,
-                    changes: { multiplier: Number(e.target.value) },
-                  })
-                )
-              }
-            >
-              {multiplierOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="How much the damage is multiplied by. For example: if you want to average the damage of two different attacks, add both and set the multiplier to .5"
+            value={multiplier}
+            label="Multiplier"
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { multiplier: Number(e.target.value) },
+                })
+              )
+            }
+          >
+            {multiplierOptions}
+          </TooltipSelect>
         </Grid>
         <Grid item>
           <FormControl size="small">
@@ -215,22 +209,24 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           </FormControl>
         </Grid>
         <Grid item>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={persistent}
-                onChange={(e) =>
-                  dispatch(
-                    damageUpdated({
-                      id,
-                      changes: { persistent: e.target.checked },
-                    })
-                  )
-                }
-              />
-            }
-            label="Persistent"
-          />
+          <Tooltip title="If this damage is persistent. Persistent damage is multiplied by the 'Persistent Damage Multiplier' above the By Level graph.">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={persistent}
+                  onChange={(e) =>
+                    dispatch(
+                      damageUpdated({
+                        id,
+                        changes: { persistent: e.target.checked },
+                      })
+                    )
+                  }
+                />
+              }
+              label="Persistent"
+            />
+          </Tooltip>
         </Grid>
         <Grid item>
           <FormControl size="small">
@@ -261,25 +257,21 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
       </Divider>
       <Grid container spacing={{ xs: 1, sm: 2 }}>
         <Grid item>
-          <FormControl size="small">
-            <InputLabel id="dice-input">Damage Dice</InputLabel>
-            <Select
-              labelId="dice-input"
-              id="dice"
-              value={dieTrend}
-              label="Damage Dice"
-              onChange={(e) =>
-                dispatch(
-                  damageUpdated({
-                    id,
-                    changes: { dieTrend: e.target.value },
-                  })
-                )
-              }
-            >
-              {dieTrendOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="When dice are added to the damage. At each level in (), 1 die of the selected size is added to the damage"
+            value={dieTrend}
+            label="Damage Dice"
+            onChange={(e) =>
+              dispatch(
+                damageUpdated({
+                  id,
+                  changes: { dieTrend: e.target.value },
+                })
+              )
+            }
+          >
+            {dieTrendOptions}
+          </TooltipSelect>
         </Grid>
         {dieLevelList}
         <Grid item>
@@ -304,22 +296,24 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           </FormControl>
         </Grid>
         <Grid item>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={fatal}
-                onChange={(e) =>
-                  dispatch(
-                    damageUpdated({
-                      id,
-                      changes: { fatal: e.target.checked },
-                    })
-                  )
-                }
-              />
-            }
-            label="On Crit Die"
-          />
+          <Tooltip title="For Fatal. If this damage uses a different die size on a crit. For Fatal you still need to add another die with the 'On Crit' Condition.">
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={fatal}
+                  onChange={(e) =>
+                    dispatch(
+                      damageUpdated({
+                        id,
+                        changes: { fatal: e.target.checked },
+                      })
+                    )
+                  }
+                />
+              }
+              label="On Crit Die"
+            />
+          </Tooltip>
         </Grid>
         {fatal ? (
           <Grid item>
@@ -353,22 +347,24 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
       <Grid container spacing={{ xs: 1, sm: 2 }}>
         {damageTrendList}
         <Grid item>
-          <Button
-            onClick={() => {
-              let newdt = damageTrend.slice();
-              newdt.push(damageTrends.NONE);
-              dispatch(
-                damageUpdated({
-                  id,
-                  changes: {
-                    damageTrend: newdt,
-                  },
-                })
-              );
-            }}
-          >
-            Add damage scaling
-          </Button>
+          <Tooltip title="Adds bonus damage that applies the appropriate amount of damage at appropriate levels. For 'Weapon' and 'Precise Strike' the bonus is the number of dice.">
+            <Button
+              onClick={() => {
+                let newdt = damageTrend.slice();
+                newdt.push(damageTrends.NONE);
+                dispatch(
+                  damageUpdated({
+                    id,
+                    changes: {
+                      damageTrend: newdt,
+                    },
+                  })
+                );
+              }}
+            >
+              Add damage scaling
+            </Button>
+          </Tooltip>
         </Grid>
         {damageLevelList}
       </Grid>
