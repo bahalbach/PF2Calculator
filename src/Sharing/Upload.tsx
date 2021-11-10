@@ -33,31 +33,31 @@ export const Upload = () => {
   };
 
   const uploadImage = () => {
-    console.log(description);
-    console.log(routineDescriptions);
+    // console.log(description);
+    // console.log(routineDescriptions);
 
-    // const tab = window.open("about:blank");
-    // fetch(url, requestOptions)
-    //   .then((response) => {
-    //     // console.log(response);
-    //     // if (response.ok) {
-    //     //   alert("Image uploaded to album");
-    //     // }
-    //     return response.json();
-    //   })
-    //   .then((json) => {
-    //     dispatch(saveImgLink(json.data.link));
-    //     if (tab !== null) {
-    //       tab.location = json.data.link;
-    //       tab.focus();
-    //     }
-    //     // window.open(url, "_blank").focus();
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     alert("Upload failed: " + error);
-    //     tab?.close();
-    //   });
+    const tab = window.open("about:blank");
+    fetch(url, requestOptions)
+      .then((response) => {
+        // console.log(response);
+        // if (response.ok) {
+        //   alert("Image uploaded to album");
+        // }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(saveImgLink(json.data.link));
+        if (tab !== null) {
+          tab.location = json.data.link;
+          tab.focus();
+        }
+        // window.open(url, "_blank").focus();
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Upload failed: " + error);
+        tab?.close();
+      });
   };
   return (
     <Button
