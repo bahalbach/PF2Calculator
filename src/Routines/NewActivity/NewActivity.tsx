@@ -20,6 +20,10 @@ import {
   diceSizes,
   DieTrend,
   dieTrends,
+  ItemTrend,
+  itemTrends,
+  ProfTrend,
+  profTrends,
   StatTrend,
   statTrends,
 } from "../../Model/types";
@@ -34,7 +38,11 @@ import {
   StrikeInfo,
   weaponTraits,
   classOptions,
+  skillProfTrends,
+  skillActivities,
+  SkillInfo,
 } from "../../Model/newActivityInfo";
+import { TooltipSelect } from "../../TooltipSelect";
 
 /*
   get activity type: strike, skill, cantrip, spell
@@ -109,6 +117,7 @@ function StrikeSelection() {
   );
   const [dieSize, setDieSize] = useState<number>(diceSizes[8]);
   const [numStrikes, setNumStrikes] = useState<number>(1);
+  const [numPrevStrikes, setNumPrevStrikes] = useState<number>(0);
   const [traits, setTraits] = useState(
     // Array.from(weaponTraits, () => false)
     Object.fromEntries(weaponTraits.map((trait) => [trait, false]))
@@ -129,6 +138,7 @@ function StrikeSelection() {
     damageScore,
     cantripScore,
     dieSize,
+    numPrevStrikes,
     numStrikes,
     traits,
     deadlySize,
@@ -428,19 +438,29 @@ function StrikeSelection() {
         ""
       )}
 
+      <Grid item>
+        <TooltipSelect
+          title="Select the number of previous attacks."
+          value={numPrevStrikes}
+          label="Previous Attacks"
+          onChange={(e) => {
+            setNumPrevStrikes(Number(e.target.value));
+          }}
+        >
+          {makeOptions([0, 1, 2])}
+        </TooltipSelect>
+      </Grid>
       <Grid item xs={6} sm={3} md={4} lg={2}>
-        <FormControl fullWidth>
-          <InputLabel>Number of Strikes</InputLabel>
-          <Select
-            value={numStrikes}
-            label="Number of Strikes"
-            onChange={(e) => {
-              setNumStrikes(Number(e.target.value));
-            }}
-          >
-            {makeOptions([0, 1, 2, 3, 4, 5, 6])}
-          </Select>
-        </FormControl>
+        <TooltipSelect
+          title="Select the number of attacks to make with the selected options."
+          value={numStrikes}
+          label="Number of Strikes"
+          onChange={(e) => {
+            setNumStrikes(Number(e.target.value));
+          }}
+        >
+          {makeOptions([1, 2, 3, 4, 5, 6])}
+        </TooltipSelect>
       </Grid>
 
       {/* Add Strike button */}
@@ -449,7 +469,7 @@ function StrikeSelection() {
           variant="contained"
           onClick={() => dispatch(activityPathCreated({ strikeInfo }))}
         >
-          Creat New Activity
+          Create New Activity
         </Button>
       </Grid>
     </Grid>
@@ -457,7 +477,84 @@ function StrikeSelection() {
 }
 
 function SkillSelection() {
-  return <React.Fragment>select prof</React.Fragment>;
+  const [proficiency, setProficiency] = useState<ProfTrend>(
+    profTrends.MAXSKILL
+  );
+  const [abilityScore, setAbilityScore] = useState<StatTrend>(statTrends.AS18a);
+  const [itemBonus, setItemBonus] = useState<ItemTrend>(itemTrends.SKILL);
+  const [skillActivity, setSkillActivity] = useState<
+    typeof skillActivities[number]
+  >(skillActivities[0]);
+
+  const skillInfo: SkillInfo = {
+    proficiency,
+    abilityScore,
+    itemBonus,
+    skillActivity,
+  };
+
+  const dispatch = useAppDispatch();
+
+  return (
+    <Grid container spacing={{ xs: 1, sm: 2 }}>
+      <Grid item>
+        <TooltipSelect
+          title="Select which proficiency progression to apply."
+          label="Proficiency"
+          value={proficiency}
+          onChange={(e) => {
+            setProficiency(e.target.value as ProfTrend);
+          }}
+        >
+          {makeOptions(skillProfTrends)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <TooltipSelect
+          title="Select which ability score progression to apply."
+          label="Ability Score"
+          value={abilityScore}
+          onChange={(e) => {
+            setAbilityScore(e.target.value as StatTrend);
+          }}
+        >
+          {makeOptions(statTrends)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <TooltipSelect
+          title="Select which item bonus progression to apply."
+          label="Item Bonus"
+          value={itemBonus}
+          onChange={(e) => {
+            setItemBonus(e.target.value as ItemTrend);
+          }}
+        >
+          {makeOptions(itemTrends)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <TooltipSelect
+          title="Select which skill activity to use."
+          label="Activity"
+          value={skillActivity}
+          onChange={(e) => {
+            setSkillActivity(e.target.value as typeof skillActivities[number]);
+          }}
+        >
+          {makeOptions(skillActivities)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <Button
+          variant="contained"
+          onClick={() => dispatch(activityPathCreated({ skillInfo }))}
+        >
+          Create New Activity
+        </Button>
+      </Grid>
+    </Grid>
+  );
 }
 
 function CantripSelection() {

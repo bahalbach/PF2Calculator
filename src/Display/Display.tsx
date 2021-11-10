@@ -6,6 +6,7 @@ import { ByLevelInput } from "./ByLevelInput";
 import {
   Collapse,
   FormControlLabel,
+  Grid,
   Paper,
   Select,
   Switch,
@@ -17,6 +18,7 @@ import { makeOptions } from "../Model/options";
 import { Box } from "@mui/system";
 import { SingleLevelInput } from "./SingleLevelInput";
 import { JointInput } from "./JointInput";
+import { Upload } from "../Sharing/Upload";
 
 const Display = () => {
   // evaluates routines and displays appropriate graphs
@@ -38,16 +40,23 @@ const Display = () => {
   return (
     <React.Fragment>
       <Paper sx={{ p: 1, my: 2 }}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={showByLevel}
-              onChange={() => setShowByLevel(!showByLevel)}
+        <Grid container>
+          <Grid item xs>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showByLevel}
+                  onChange={() => setShowByLevel(!showByLevel)}
+                />
+              }
+              label="Display By Level Graph"
+              // sx={{ background: "lightgrey", width: 1 }}
             />
-          }
-          label="Display By Level Graph"
-          // sx={{ background: "lightgrey", width: 1 }}
-        />
+          </Grid>
+          <Grid item>
+            <Upload />
+          </Grid>
+        </Grid>
         <Collapse in={showByLevel}>
           <ByLevelInput />
           <JointInput />

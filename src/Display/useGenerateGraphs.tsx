@@ -18,7 +18,8 @@ import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
 import { defaultACs, defaultSaves } from "../Model/defaults";
 import { Dictionary } from "@reduxjs/toolkit";
-import { useAppSelector } from "../App/hooks";
+import { useAppDispatch, useAppSelector } from "../App/hooks";
+import { graphSaved } from "./sharingSlice";
 const Plot = createPlotlyComponent(Plotly);
 
 const useGenerateGraphs = (graphType: string) => {
@@ -29,6 +30,18 @@ const useGenerateGraphs = (graphType: string) => {
   const effects = useAppSelector(selecteffectEntities);
   const weaknesses = useAppSelector(selectweaknessEntities);
   const selectedRoutine = useAppSelector(selectSelectedRoutine);
+
+  const dispatch = useAppDispatch();
+
+  const saveGraph = (_figure: any, graphDiv: Plotly.Root) => {
+    Plotly.toImage(graphDiv, {
+      format: "png",
+      height: 1000,
+      width: 1000,
+    }).then((url) => {
+      dispatch(graphSaved(url));
+    });
+  };
 
   const evaluator = new ActivityPathEvaluator(
     activityPaths,
@@ -116,6 +129,7 @@ const useGenerateGraphs = (graphType: string) => {
       style={{ width: "100%", height: "100%" }}
     />
   );
+
   let persistentDamageChart = (
     <Plot
       className="plot"
@@ -160,6 +174,8 @@ const useGenerateGraphs = (graphType: string) => {
       }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
+      onInitialized={saveGraph}
+      onUpdate={saveGraph}
     />
   );
   let byLevelPerDamageChart = (

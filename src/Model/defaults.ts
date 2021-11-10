@@ -49,6 +49,8 @@ const sneak: defaultValue = {};
 const strategic: defaultValue = {};
 const precise: defaultValue = {};
 
+const kiStrike: defaultValue = {};
+
 const preEdge1: defaultValue = {};
 const preEdge2: defaultValue = {};
 const preEdge3: defaultValue = {};
@@ -61,6 +63,8 @@ const animalrage: defaultValue = {};
 const dragonrage: defaultValue = {};
 const giantrage: defaultValue = {};
 const spiritrage: defaultValue = {};
+
+const arcaneCascade: defaultValue = {};
 
 const overdriveSuccess: defaultValue = {};
 const overdriveCritical: defaultValue = {};
@@ -119,6 +123,8 @@ for (let i = 1; i <= 20; i++) {
   strategic[i] = 1;
   precise[i] = 2;
 
+  kiStrike[i] = 1;
+
   preEdge1[i] = 1;
   preEdge2[i] = 0;
   preEdge3[i] = 0;
@@ -131,6 +137,8 @@ for (let i = 1; i <= 20; i++) {
   dragonrage[i] = 4;
   giantrage[i] = 6;
   spiritrage[i] = 3;
+
+  arcaneCascade[i] = 1;
 
   overdriveSuccess[i] = 2;
   overdriveCritical[i] = 4;
@@ -176,6 +184,8 @@ for (let i = 1; i <= 20; i++) {
     giantrage[i] = 10;
     spiritrage[i] = 7;
 
+    arcaneCascade[i] = 2;
+
     overdriveSuccess[i] = 4;
     overdriveCritical[i] = 6;
   }
@@ -189,6 +199,8 @@ for (let i = 1; i <= 20; i++) {
 
     strategic[i] = 3;
     precise[i] = 4;
+
+    kiStrike[i] = 2;
   }
   if (i >= 10) {
     weaponItem[i] = 2;
@@ -234,6 +246,8 @@ for (let i = 1; i <= 20; i++) {
     giantrage[i] = 18;
     spiritrage[i] = 13;
 
+    arcaneCascade[i] = 1;
+
     overdriveSuccess[i] = 5;
     overdriveCritical[i] = 8;
   }
@@ -250,6 +264,8 @@ for (let i = 1; i <= 20; i++) {
     sneak[i] = 4;
     strategic[i] = 5;
     precise[i] = 6;
+
+    kiStrike[i] = 3;
 
     preEdge2[i] = 1;
 
@@ -352,6 +368,7 @@ export const dieTrendValues = {
   [dieTrends.PRECISIONEDGE]: preEdge1,
   [dieTrends.PRECISIONEDGE2]: preEdge2,
   [dieTrends.PRECISIONEDGE3]: preEdge3,
+  [dieTrends.KISTRIKE]: kiStrike,
 };
 
 export const damageTrendValues = {
@@ -370,6 +387,7 @@ export const damageTrendValues = {
   [damageTrends.GIANTRAGE]: giantrage,
   [damageTrends.SPIRITRAGE]: spiritrage,
   [damageTrends.PRECISE]: precise,
+  [damageTrends.ARCANECASCADE]: arcaneCascade,
   [damageTrends.OVERDRIVES]: overdriveSuccess,
   [damageTrends.OVERDRIVEC]: overdriveCritical,
   [damageTrends.IMPLEMENT]: implementEmpower,

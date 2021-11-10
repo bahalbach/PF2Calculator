@@ -169,6 +169,7 @@ export const dieTrends = {
   PRECISIONEDGE: "Precision Edge 1(1, 11, 19)",
   PRECISIONEDGE2: "Precision Edge 2(17, 19)",
   PRECISIONEDGE3: "Precision Edge 3(19)",
+  KISTRIKE: "Ki Strike (1, 9, 17)",
 } as const;
 export type DieTrend = typeof dieTrends[keyof typeof dieTrends];
 
@@ -188,6 +189,7 @@ export const damageTrends = {
   GIANTRAGE: "Giant Rage",
   SPIRITRAGE: "Spirit Rage",
   PRECISE: "Precise Strike (1, 1, 5, 9, 13, 17)",
+  ARCANECASCADE: "Arcane Cascade",
   OVERDRIVES: "Overdrive Success",
   OVERDRIVEC: "Overdrive Critical",
   IMPLEMENT: "Implement's Empowerment",
@@ -200,6 +202,7 @@ export const damageTypes = {
   P: "piercing",
   S: "slashing",
   FIRE: "fire",
+  FORCE: "force",
   PRECISION: "precision",
 } as const;
 export type DamageType = typeof damageTypes[keyof typeof damageTypes];

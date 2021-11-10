@@ -6,6 +6,7 @@ import routineReducer, {
   setRoutine,
 } from "../Routines/RoutineSlice/routineSlice";
 import targetReducer, { targetAdded } from "../Display/targetSlice";
+import sharingReducer from "../Display/sharingSlice";
 import weaknessReducer from "../Display/weaknessSlice";
 import {
   ACTrends,
@@ -61,6 +62,7 @@ export const store = configureStore({
     routines: routineReducer,
     weaknesses: weaknessReducer,
     targets: targetReducer,
+    sharing: sharingReducer,
   },
 });
 

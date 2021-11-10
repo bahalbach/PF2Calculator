@@ -1,12 +1,18 @@
 import { statTrendValues } from "./defaults";
 import {
+  conditions,
   DamageTrend,
   damageTrends,
   damageTypes,
+  dCond,
+  defenses,
   diceSizes,
   DieTrend,
   dieTrends,
+  effectTypes,
+  ItemTrend,
   MAPs,
+  ProfTrend,
   profTrends,
   StatTrend,
   whenConditions,
@@ -22,6 +28,7 @@ export type StrikeInfo = {
   damageScore: StatTrend;
   cantripScore: StatTrend;
   dieSize: number;
+  numPrevStrikes: number;
   numStrikes: number;
   traits: {
     [k: string]: boolean;
@@ -32,6 +39,12 @@ export type StrikeInfo = {
   critSpecLevel: number;
   critSpecType: string;
 };
+export type SkillInfo = {
+  proficiency: ProfTrend;
+  abilityScore: StatTrend;
+  itemBonus: ItemTrend;
+  skillActivity: typeof skillActivities[number];
+};
 
 export const activityTypes = {
   Strike: "Strike",
@@ -39,38 +52,9 @@ export const activityTypes = {
   Cantrip: "Cantrip",
   Spell: "Spell",
 } as const;
-// const activityOptions: JSX.Element[] = [];
-// let actType: keyof typeof activityTypes;
-// for (actType in activityTypes) {
-//   activityOptions.push(
-//     <MenuItem key={actType} value={activityTypes[actType]}>
-//       {activityTypes[actType]}
-//     </MenuItem>
-//   );
-// }
-// export const classes = {
-//   Alchemist: "Alchemist",
-//   Barbarian: "Barbarian",
-//   Bard: "Bard",
-//   Champion: "Champion",
-//   Cleric: "Cleric",
-//   Druid: "Druid",
-//   Fighter: "Fighter",
-//   Gunslinger: "Gunslinger",
-//   Inventor: "Inventor",
-//   Investigator: "Investigator",
-//   Magus: "Magus",
-//   Monk: "Monk",
-//   Oracle: "Oracle",
-//   Ranger: "Ranger",
-//   Rogue: "Rogue",
-//   Sorcerer: "Sorcerer",
-//   Summoner: "Summoner",
-//   Swashbuckler: "Swashbuckler",
-//   Witch: "Witch",
-//   Wizard: "Wizard",
-// } as const;
+
 export const runeTrends = [dieTrends.NONE, dieTrends.RUNE, dieTrends.RUNE2];
+
 export const classes = [
   "Alchemist",
   "Barbarian",
@@ -113,7 +97,7 @@ const barbarianOptions = [
   "spirit rage",
 ] as const;
 const clericOptions = ["Cloistered", "Warpriest"] as const;
-const rangerOptions = ["Flurry Edge"] as const;
+const rangerOptions = ["Normal", "Flurry Edge"] as const;
 const inventorOptions = [
   "Normal",
   "Overdrive Success",
@@ -126,9 +110,14 @@ const swashbucklerOptions = [
   "Precise Strike",
   "Precise Finisher",
 ] as const;
+const magusOptions = ["Normal", "Arcane Cascade"] as const;
 export const cantrips = ["Telekinetic Projectile"] as const;
 
-export const strikeActivities = ["Strike", "Power Attack"] as const;
+export const strikeActivities = [
+  "Strike",
+  "Power Attack",
+  "Ki Strike",
+] as const;
 type ClassOptions = { [key in typeof classes[number]]: readonly string[] };
 export const classOptions: ClassOptions = {
   Alchemist: noOptions,
@@ -141,7 +130,7 @@ export const classOptions: ClassOptions = {
   Gunslinger: noOptions,
   Inventor: inventorOptions,
   Investigator: investigatorOptions,
-  Magus: noOptions,
+  Magus: magusOptions,
   Monk: noOptions,
   Oracle: noOptions,
   Ranger: rangerOptions,
@@ -170,6 +159,9 @@ export const critSpecs = [
   "Pick",
   "Knife",
 ] as const;
+
+export const skillProfTrends = [profTrends.TRAINED, profTrends.MAXSKILL];
+export const skillActivities = ["Trip", "Grapple", "Demoralize"] as const;
 
 export const classWeaponProf = (className: string, classOption: string) => {
   if (["Fighter", "Gunslinger"].includes(className))
@@ -214,8 +206,13 @@ export const classAdjustments = (
   const adjustments: { [key: number]: number } = {};
   let currentValue = 0;
   for (let i = 1; i <= 20; i++) {
-    if (strikeInfo.cClass === "Ranger (Flurry)" && i === 17)
-      currentValue = Math.min(strikeNumber, 2);
+    currentValue = 0;
+
+    if (strikeInfo.cClass === "Ranger (Flurry)" && i >= 17)
+      currentValue += Math.min(strikeNumber, 2);
+
+    if (strikeInfo.activity === "Ki Strike") currentValue += 1;
+
     adjustments[i] = currentValue;
   }
   return adjustments;
@@ -228,6 +225,7 @@ export const activityWeaponDiceAdjustments = (strikeInfo: StrikeInfo) => {
     if (strikeInfo.activity === "Power Attack" && i === 1) currentValue = 1;
     if (strikeInfo.activity === "Power Attack" && i === 10) currentValue = 2;
     if (strikeInfo.activity === "Power Attack" && i === 18) currentValue = 3;
+
     adjustments[i] = currentValue;
   }
   return adjustments;
@@ -297,6 +295,28 @@ export const classDamageDice = (strikeInfo: StrikeInfo) => {
   };
 };
 
+export const hasActivityDamageDice = (strikeInfo: StrikeInfo) => {
+  if (strikeInfo.activity === "Ki Strike") {
+    return true;
+  }
+  return false;
+};
+
+export const activityDamageDice = (strikeInfo: StrikeInfo) => {
+  if (strikeInfo.activity === "Ki Strike") {
+    return {
+      dieTrend: dieTrends.KISTRIKE,
+      diceSize: diceSizes[6],
+      damageType: damageTypes.FORCE,
+    };
+  }
+  return {
+    dieTrend: dieTrends.NONE,
+    diceSize: diceSizes[6],
+    damageType: damageTypes.NONE,
+  };
+};
+
 export const classWeaponDamageTrends = (
   strikeInfo: StrikeInfo,
   strikeNumber: number
@@ -353,6 +373,14 @@ export const classWeaponDamageTrends = (
         break;
       case "spirit rage":
         trends.push(damageTrends.SPIRITRAGE);
+        break;
+      default:
+    }
+  }
+  if (strikeInfo.cClass === "Magus") {
+    switch (strikeInfo.classOption) {
+      case "Arcane Cascade":
+        trends.push(damageTrends.ARCANECASCADE);
         break;
       default:
     }
@@ -476,4 +504,64 @@ export const critSpecDamage = (strikeInfo: StrikeInfo) => {
     adjustments[i] = currentValue;
   }
   return adjustments;
+};
+
+export const getSkillTarget = (skillInfo: SkillInfo) => {
+  switch (skillInfo.skillActivity) {
+    case "Trip":
+      return defenses.REF;
+    case "Grapple":
+      return defenses.FORT;
+    case "Demoralize":
+      return defenses.WILL;
+    default:
+      return defenses.selfDC;
+  }
+};
+
+export const getSkillEffects = (skillInfo: SkillInfo) => {
+  switch (skillInfo.skillActivity) {
+    case "Trip":
+      return [
+        {
+          effectCondition: conditions.AT_LEAST_SUCC,
+          effectType: effectTypes.PRONE,
+          effectValue: 0,
+        },
+      ];
+    case "Grapple":
+      return [
+        {
+          effectCondition: conditions.SUCC,
+          effectType: effectTypes.GRAPPLED,
+          effectValue: 0,
+        },
+        {
+          effectCondition: conditions.CRIT,
+          effectType: effectTypes.RESTRAINED,
+          effectValue: 0,
+        },
+      ];
+    case "Demoralize":
+      return [
+        {
+          effectCondition: conditions.SUCC,
+          effectType: effectTypes.FRIGHTENED,
+          effectValue: 1,
+        },
+        {
+          effectCondition: conditions.CRIT,
+          effectType: effectTypes.FRIGHTENED,
+          effectValue: 2,
+        },
+      ];
+    default:
+      return [];
+  }
+};
+export const hasSkillDamage = (skillInfo: SkillInfo) => {
+  if (skillInfo.skillActivity === "Trip") {
+    return true;
+  }
+  return false;
 };

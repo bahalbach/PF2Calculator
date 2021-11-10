@@ -26,6 +26,12 @@ import {
   hasSpearCritSpec,
   hasClassDamageDice,
   classDamageDice,
+  hasActivityDamageDice,
+  activityDamageDice,
+  SkillInfo,
+  getSkillEffects,
+  hasSkillDamage,
+  getSkillTarget,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -317,13 +323,27 @@ export const routinesSlice = createSlice({
     activityPathCreated: (
       state,
       action: PayloadAction<{
-        strikeInfo: StrikeInfo;
+        strikeInfo?: StrikeInfo;
+        skillInfo?: SkillInfo;
       }>
     ) => {
-      const { strikeInfo } = action.payload;
       const { parentActivity: parentId, parentRoutine: routineId } = state;
 
-      let ids = createStrikeActivity(state, parentId, routineId, strikeInfo, 0);
+      const { strikeInfo, skillInfo } = action.payload;
+      let ids: number[] = [];
+
+      if (strikeInfo !== undefined) {
+        ids = createStrikeActivity(
+          state,
+          parentId,
+          routineId,
+          strikeInfo,
+          strikeInfo.numPrevStrikes
+        );
+      }
+      if (skillInfo !== undefined) {
+        ids = createSkillActivity(state, parentId, routineId, skillInfo);
+      }
 
       if (routineId !== undefined) {
         state.routines.entities[routineId]!.apIds.push(...ids);
@@ -573,6 +593,11 @@ export const selectSelectedRoutineObject = (state: RootState) => {
   }
   return undefined;
 };
+export const selectRoutineDescriptions = (state: RootState) => {
+  return Object.values(state.routines.routines.entities)
+    .filter((routine) => routine?.display)
+    .map((routine) => routine?.name + " " + routine?.description);
+};
 
 export const selectImportState = (state: RootState) => {
   return state.routines.importRoutine;
@@ -684,6 +709,20 @@ const createStrikeDamages = (
     newDamages.push(id);
   }
 
+  if (hasActivityDamageDice(strikeInfo)) {
+    let { dieTrend, diceSize, damageType } = activityDamageDice(strikeInfo);
+    id = ++damageId;
+    const activityDamage: Damage = {
+      ...defaultDamage,
+      id,
+      dieTrend,
+      diceSize,
+      damageType,
+    };
+    damageAdapter.addOne(state.damages, activityDamage);
+    newDamages.push(id);
+  }
+
   if (hasDeadly(strikeInfo)) {
     let damageAdjustments = empty;
     if (!hasFatal(strikeInfo) && hasPickCritSpec(strikeInfo))
@@ -777,6 +816,79 @@ const createStrikeEffects = (
     newEffects.push(id);
     effectAdapter.addOne(state.effects, critSpecEffect);
   }
+  return newEffects;
+};
+
+const createSkillActivity = (
+  state: WritableDraft<State>,
+  parentId: number | undefined,
+  routineId: number | undefined,
+  skillInfo: SkillInfo
+) => {
+  const id = ++activityPathId;
+
+  let damages = createSkillDamages(state, skillInfo);
+  let effects = createSkillEffects(state, skillInfo);
+
+  activityPathAdapter.addOne(state.activityPaths, {
+    ...defaultActivity,
+    id,
+    parentId,
+    routineId,
+    type: activityTypes.SKILL,
+    profTrend: skillInfo.proficiency,
+    statTrend: skillInfo.abilityScore,
+    itemTrend: skillInfo.itemBonus,
+    targetType: getSkillTarget(skillInfo),
+
+    damages,
+    effects,
+  });
+  return [id];
+};
+
+const createSkillDamages = (
+  state: WritableDraft<State>,
+  skillInfo: SkillInfo
+) => {
+  const newDamages: number[] = [];
+
+  if (hasSkillDamage(skillInfo)) {
+    let id = ++damageId;
+    const skillDamage: Damage = {
+      ...defaultDamage,
+      id,
+      damageCondition: dCond.CRIT,
+      dieAdjustments: one,
+      diceSize: diceSizes[6],
+    };
+    newDamages.push(id);
+    damageAdapter.addOne(state.damages, skillDamage);
+  }
+
+  return newDamages;
+};
+const createSkillEffects = (
+  state: WritableDraft<State>,
+  skillInfo: SkillInfo
+) => {
+  const newEffects: number[] = [];
+
+  for (let { effectCondition, effectType, effectValue } of getSkillEffects(
+    skillInfo
+  )) {
+    let id = ++effectId;
+    const skillEffect: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition,
+      effectType,
+      effectValue,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, skillEffect);
+  }
+
   return newEffects;
 };
 
