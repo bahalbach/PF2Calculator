@@ -191,8 +191,10 @@ function calculateExpectedDamage(
   let bonus = 0;
   let DC = 10;
   let targetValue;
+  let targetLevel;
   if (level === undefined) {
     level = target.routineLevel;
+    targetLevel = target.targetLevel;
     switch (activity.targetType) {
       case defenses.AC:
         targetValue = target.overrideAC;
@@ -215,6 +217,7 @@ function calculateExpectedDamage(
         break;
     }
   } else {
+    targetLevel = level + target.levelDiff;
     switch (activity.targetType) {
       case defenses.AC:
         targetValue = defaultACs[target.ACTrend];
@@ -237,7 +240,7 @@ function calculateExpectedDamage(
         break;
     }
 
-    targetValue = targetValue[level + target.levelDiff];
+    targetValue = targetValue[targetLevel];
   }
 
   let targetPenalty = targetState.Frightened;
@@ -259,8 +262,10 @@ function calculateExpectedDamage(
       if (activity.targetType === defenses.AC) {
         if (targetState.Flatfooted) DC -= 2;
       } else {
-        if (activity.targetType === defenses.DC) {
+        if (activity.targetType === defenses.selfDC) {
           DC = standardDC[level];
+        } else if (activity.targetType === defenses.targetDC) {
+          DC = standardDC[targetLevel];
         } else {
           DC += 10;
         }
@@ -275,8 +280,10 @@ function calculateExpectedDamage(
       DC += activity.bonusAdjustments[level];
       if (activity.targetType === defenses.AC) {
         bonus -= 10;
-      } else if (activity.targetType === defenses.DC) {
+      } else if (activity.targetType === defenses.selfDC) {
         bonus = standardDC[level] - 10;
+      } else if (activity.targetType === defenses.targetDC) {
+        bonus = standardDC[targetLevel] - 10;
       }
       break;
 

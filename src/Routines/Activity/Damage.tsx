@@ -33,6 +33,7 @@ import {
 import Divider from "@mui/material/Divider";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/system";
+import { StayPrimaryLandscape } from "@mui/icons-material";
 
 // const useStyles = makeStyles({
 //   transition: theme.transitions.create(["background", "background-color"], {
@@ -110,6 +111,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
       sx={{
         mt: 3,
         mb: 6,
+        "&:hover": { bgcolor: "rgb(50,50,50,.2)" },
       }}
     >
       <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}></Divider>

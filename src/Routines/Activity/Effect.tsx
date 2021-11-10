@@ -47,7 +47,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
   );
 
   return (
-    <Box sx={{ mt: 3, mb: 6 }}>
+    <Box sx={{ mt: 3, mb: 6, "&:hover": { bgcolor: "rgb(50,50,50,.2)" } }}>
       <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
         <Grid item xs="auto">
           <IconButton

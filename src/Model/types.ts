@@ -133,7 +133,8 @@ export const defenses = {
   REF: "Ref",
   WILL: "Will",
   PER: "Perception",
-  DC: "Standard DC",
+  selfDC: "Self Standard DC",
+  targetDC: "Target Standard DC",
 } as const;
 export type Defense = typeof defenses[keyof typeof defenses];
 

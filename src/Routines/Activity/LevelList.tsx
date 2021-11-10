@@ -6,6 +6,7 @@ import {
   TextField,
   Grid,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
@@ -14,6 +15,7 @@ import { Dispatch } from "redux";
 import { levelOptions } from "../../Model/options";
 import { Adjustment } from "../RoutineSlice/RoutineTypes";
 import { ArrowRight } from "@mui/icons-material";
+import { TooltipSelect } from "../../TooltipSelect";
 
 type Adjustments = {
   [level: number]: number;
@@ -94,29 +96,28 @@ export const LevelList = (
   for (let i = 0; i < entries.length; i++) {
     levelList.push(
       <Grid item key={i}>
-        <FormControl size="small">
-          <InputLabel>Level</InputLabel>
-          <Select
-            label="Level"
-            value={entries[i][0]}
-            onChange={(e) =>
-              dispatch(
-                action({
-                  id,
-                  changes: {
-                    [name]: adjustmentsFromLevelChange(
-                      entries,
-                      i,
-                      Number(e.target.value)
-                    ),
-                  },
-                })
-              )
-            }
-          >
-            {levelOptions}
-          </Select>
-        </FormControl>
+        <TooltipSelect
+          title="The level where this bonus is added, all later levels will have this bonus added. Please only add 1 bonus per level. Bonuses of 0 are removed."
+          label="Level"
+          value={entries[i][0]}
+          onChange={(e) =>
+            dispatch(
+              action({
+                id,
+                changes: {
+                  [name]: adjustmentsFromLevelChange(
+                    entries,
+                    i,
+                    Number(e.target.value)
+                  ),
+                },
+              })
+            )
+          }
+        >
+          {levelOptions}
+        </TooltipSelect>
+
         <TextField
           size="small"
           label="Bonus"
@@ -172,22 +173,24 @@ export const LevelList = (
   }
   levelList.push(
     <Grid item key="addButton">
-      <IconButton
-        color="primary"
-        aria-label="Add button"
-        onClick={() =>
-          dispatch(
-            action({
-              id,
-              changes: {
-                [name]: adjustmentsFromNewEntry(entries),
-              },
-            })
-          )
-        }
-      >
-        <AddIcon />
-      </IconButton>
+      <Tooltip title="Add a bonus at a specified level.">
+        <IconButton
+          color="primary"
+          aria-label="Add button"
+          onClick={() =>
+            dispatch(
+              action({
+                id,
+                changes: {
+                  [name]: adjustmentsFromNewEntry(entries),
+                },
+              })
+            )
+          }
+        >
+          <AddIcon />
+        </IconButton>
+      </Tooltip>
     </Grid>
   );
   return levelList;

@@ -37,10 +37,12 @@ import {
   ListSubheader,
   Paper,
   Select,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ActivityPathStub } from "../ActivityPathStub";
+import { TooltipSelect } from "../../TooltipSelect";
 
 export const ActivityPath = ({ id }: { id: number }) => {
   const {
@@ -88,25 +90,21 @@ export const ActivityPath = ({ id }: { id: number }) => {
         </Grid>
         {parentId !== undefined ? (
           <Grid item xs>
-            <FormControl size="small" fullWidth>
-              <InputLabel id="condition-input">Condition</InputLabel>
-              <Select
-                labelId="condition-input"
-                id="condition"
-                value={condition}
-                label="Condition"
-                onChange={(e) =>
-                  dispatch(
-                    activityPathUpdated({
-                      id,
-                      changes: { condition: e.target.value },
-                    })
-                  )
-                }
-              >
-                {conditionOptions}
-              </Select>
-            </FormControl>
+            <TooltipSelect
+              title='Depending on the roll of the parent activity, should this activity happen. For example: to add another strike only when you hit with the previous one, have the second strike be a child of the first with the condition "Success or Better"'
+              value={condition}
+              label="Condition"
+              onChange={(e) =>
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { condition: e.target.value },
+                  })
+                )
+              }
+            >
+              {conditionOptions}
+            </TooltipSelect>
           </Grid>
         ) : (
           ""
@@ -115,26 +113,27 @@ export const ActivityPath = ({ id }: { id: number }) => {
       <Typography variant="h6" gutterBottom>
         Roll
       </Typography>
-      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 2 }}>
+      <Grid
+        container
+        spacing={{ xs: 1, sm: 2 }}
+        sx={{ my: 2, "&:hover": { bgcolor: "rgb(50,50,50,.2)" } }}
+      >
         <Grid item>
-          <FormControl size="small">
-            <InputLabel id="roll-type-input">Roll Type</InputLabel>
-            <Select
-              labelId="roll-type-input"
-              label="Roll Type"
-              value={rollType}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { rollType: e.target.value },
-                  })
-                );
-              }}
-            >
-              {rollOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="Advantage is rolling twice and taking the higher roll, disadvantage is taking the lower"
+            label="Roll Type"
+            value={rollType}
+            onChange={(e) => {
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { rollType: e.target.value },
+                })
+              );
+            }}
+          >
+            {rollOptions}
+          </TooltipSelect>
         </Grid>
         <Grid item>
           <FormControl size="small">
@@ -157,109 +156,94 @@ export const ActivityPath = ({ id }: { id: number }) => {
           </FormControl>
         </Grid>
         <Grid item>
-          <FormControl size="small">
-            <InputLabel id="proficiency-input">Proficiency</InputLabel>
-            <Select
-              labelId="proficiency-type-input"
-              label="Proficiency"
-              value={profTrend}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { profTrend: e.target.value },
-                  })
-                );
-              }}
-            >
-              {profTrendOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="An increase in proficiency (+2) is applied at each level in ()"
+            label="Proficiency"
+            value={profTrend}
+            onChange={(e) => {
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { profTrend: e.target.value },
+                })
+              );
+            }}
+          >
+            {profTrendOptions}
+          </TooltipSelect>
         </Grid>
         <Grid item>
-          <FormControl size="small">
-            <InputLabel id="ability-score-input">Ability Score</InputLabel>
-            <Select
-              labelId="ability-score-input"
-              label="Ability Score"
-              value={statTrend}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { statTrend: e.target.value },
-                  })
-                );
-              }}
-            >
-              {statTrendOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="Bonuses from the listed ability score are applied at the appropriate levels. An ability score starts at the first value and is increased at levels 5, 10, 15, and 20 or until it reaches the second value listed. 'apex' means a bonus from an apex item is added to that score at the level in ()"
+            label="Ability Score"
+            value={statTrend}
+            onChange={(e) => {
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { statTrend: e.target.value },
+                })
+              );
+            }}
+          >
+            {statTrendOptions}
+          </TooltipSelect>
         </Grid>
         <Grid item>
-          <FormControl size="small">
-            <InputLabel id="item-bonus-input">Item Bonus</InputLabel>
-            <Select
-              labelId="item-bonus-input"
-              label="Item Bonus"
-              value={itemTrend}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { itemTrend: e.target.value },
-                  })
-                );
-              }}
-            >
-              {itemBTrendOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="Item bonuses are applied at the levels in ()."
+            label="Item Bonus"
+            value={itemTrend}
+            onChange={(e) => {
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { itemTrend: e.target.value },
+                })
+              );
+            }}
+          >
+            {itemBTrendOptions}
+          </TooltipSelect>
         </Grid>
         {bonusLevelList}
         {type !== activityTypes.SAVE ? (
           <Grid item>
-            <FormControl size="small">
-              <InputLabel id="MAP-input">MAP</InputLabel>
-              <Select
-                labelId="MAP-input"
-                label="MAP"
-                value={MAP}
-                onChange={(e) => {
-                  dispatch(
-                    activityPathUpdated({
-                      id,
-                      changes: { MAP: e.target.value },
-                    })
-                  );
-                }}
-              >
-                {MAPOptions}
-              </Select>
-            </FormControl>
+            <TooltipSelect
+              title="The multiple attack penalty that is applied to this attack."
+              label="MAP"
+              value={MAP}
+              onChange={(e) => {
+                dispatch(
+                  activityPathUpdated({
+                    id,
+                    changes: { MAP: e.target.value },
+                  })
+                );
+              }}
+            >
+              {MAPOptions}
+            </TooltipSelect>
           </Grid>
         ) : (
           ""
         )}
         <Grid item>
-          <FormControl size="small">
-            <InputLabel id="defense-input">Target Defense</InputLabel>
-            <Select
-              labelId="defense-input"
-              label="Target Defense"
-              value={targetType}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { targetType: e.target.value },
-                  })
-                );
-              }}
-            >
-              {defenseOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="What defense is targeted"
+            label="Target Defense"
+            value={targetType}
+            onChange={(e) => {
+              dispatch(
+                activityPathUpdated({
+                  id,
+                  changes: { targetType: e.target.value },
+                })
+              );
+            }}
+          >
+            {defenseOptions}
+          </TooltipSelect>
         </Grid>
       </Grid>
 
