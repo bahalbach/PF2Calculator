@@ -32,6 +32,11 @@ import {
   getSkillEffects,
   hasSkillDamage,
   getSkillTarget,
+  CantripInfo,
+  SpellInfo,
+  getCantripTarget,
+  getCantripDamage,
+  getSpellTarget,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -67,6 +72,7 @@ import {
   RoutineObject,
   State,
 } from "./RoutineTypes";
+import { damageTrendValues } from "../../Model/defaults";
 
 export const routinesAdapter = createEntityAdapter<Routine>();
 export const activityPathAdapter = createEntityAdapter<ActivityPath>();
@@ -200,7 +206,7 @@ export const routinesSlice = createSlice({
         const { id, copy } = action.payload;
         if (copy && state.selectedRoutine !== undefined) {
           const routine = state.routines.entities[state.selectedRoutine]!;
-          const name = "Copy of " + routine.name;
+          const name = routine.name + " Copy";
           const apIds = copyActivityPaths(state, routine.apIds, undefined, id);
           routinesAdapter.addOne(state.routines, {
             ...routine,
@@ -325,11 +331,13 @@ export const routinesSlice = createSlice({
       action: PayloadAction<{
         strikeInfo?: StrikeInfo;
         skillInfo?: SkillInfo;
+        cantripInfo?: CantripInfo;
+        spellInfo?: SpellInfo;
       }>
     ) => {
       const { parentActivity: parentId, parentRoutine: routineId } = state;
 
-      const { strikeInfo, skillInfo } = action.payload;
+      const { strikeInfo, skillInfo, cantripInfo, spellInfo } = action.payload;
       let ids: number[] = [];
 
       if (strikeInfo !== undefined) {
@@ -343,6 +351,12 @@ export const routinesSlice = createSlice({
       }
       if (skillInfo !== undefined) {
         ids = createSkillActivity(state, parentId, routineId, skillInfo);
+      }
+      if (cantripInfo !== undefined) {
+        ids = createCantripActivity(state, parentId, routineId, cantripInfo);
+      }
+      if (spellInfo !== undefined) {
+        ids = createSpellActivity(state, parentId, routineId, spellInfo);
       }
 
       if (routineId !== undefined) {
@@ -890,6 +904,169 @@ const createSkillEffects = (
   }
 
   return newEffects;
+};
+const createCantripActivity = (
+  state: WritableDraft<State>,
+  parentId: number | undefined,
+  routineId: number | undefined,
+  cantripInfo: CantripInfo
+) => {
+  const id = ++activityPathId;
+
+  let damages = createCantripDamages(state, cantripInfo);
+
+  activityPathAdapter.addOne(state.activityPaths, {
+    ...defaultActivity,
+    id,
+    parentId,
+    routineId,
+    profTrend: cantripInfo.proficiency,
+    statTrend: cantripInfo.abilityScore,
+    ...getCantripTarget(cantripInfo),
+
+    damages,
+  });
+  return [id];
+};
+
+const createCantripDamages = (
+  state: WritableDraft<State>,
+  cantripInfo: CantripInfo
+) => {
+  const newDamages: number[] = [];
+
+  let id = ++damageId;
+  const cantripDamage: Damage = {
+    ...defaultDamage,
+    id,
+    dieTrend: dieTrends.SPELLLEVEL1,
+    damageTrend: [cantripInfo.abilityScore],
+    ...getCantripDamage(cantripInfo),
+  };
+  newDamages.push(id);
+  damageAdapter.addOne(state.damages, cantripDamage);
+
+  if (
+    cantripInfo.cantrip === "Produce Flame" ||
+    cantripInfo.cantrip === "Gouging Claw"
+  ) {
+    let id = ++damageId;
+    const persDamage: Damage = {
+      ...defaultDamage,
+      id,
+      damageCondition: dCond.CRIT,
+      dieTrend: dieTrends.SPELLLEVEL1,
+      persistent: true,
+    };
+    newDamages.push(id);
+    damageAdapter.addOne(state.damages, cantripDamage);
+  }
+  return newDamages;
+};
+
+const createSpellActivity = (
+  state: WritableDraft<State>,
+  parentId: number | undefined,
+  routineId: number | undefined,
+  spellInfo: SpellInfo
+) => {
+  const id = ++activityPathId;
+
+  let damages = createSpellDamages(state, spellInfo);
+  let effects = createSpellEffects(state, spellInfo);
+
+  activityPathAdapter.addOne(state.activityPaths, {
+    ...defaultActivity,
+    id,
+    parentId,
+    routineId,
+    type: activityTypes.SAVE,
+    profTrend: spellInfo.proficiency,
+    statTrend: spellInfo.abilityScore,
+    ...getSpellTarget(spellInfo),
+
+    damages,
+    effects,
+  });
+  return [id];
+};
+
+const createSpellDamages = (
+  state: WritableDraft<State>,
+  spellInfo: SpellInfo
+) => {
+  const newDamages: number[] = [];
+
+  if (spellInfo.spell === "Fireball") {
+    let id = ++damageId;
+    const spellDamage: Damage = {
+      ...defaultDamage,
+      id,
+      damageCondition: dCond.BASIC,
+      dieTrend: dieTrends.SPELLLEVEL2,
+    };
+    newDamages.push(id);
+    damageAdapter.addOne(state.damages, spellDamage);
+  }
+  return newDamages;
+};
+
+const createSpellEffects = (
+  state: WritableDraft<State>,
+  spellInfo: SpellInfo
+) => {
+  const newEffects: number[] = [];
+
+  if (spellInfo.spell === "Fear") {
+    let id = ++effectId;
+    const crfa: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition: conditions.CRIF,
+      effectType: effectTypes.FRIGHTENED,
+      effectValue: 3,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, crfa);
+
+    id = ++effectId;
+    const fail: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition: conditions.FAIL,
+      effectType: effectTypes.FRIGHTENED,
+      effectValue: 2,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, fail);
+
+    id = ++effectId;
+    const succ: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition: conditions.SUCC,
+      effectType: effectTypes.FRIGHTENED,
+      effectValue: 1,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, succ);
+  }
+
+  return newEffects;
+  // for (let { effectCondition, effectType, effectValue } of getSkillEffects(
+  //   skillInfo
+  // )) {
+  //   let id = ++effectId;
+  //   const skillEffect: Effect = {
+  //     ...defaultEffect,
+  //     id,
+  //     effectCondition,
+  //     effectType,
+  //     effectValue,
+  //   };
+  //   newEffects.push(id);
+  //   effectAdapter.addOne(state.effects, skillEffect);
+  // }
 };
 
 const copyActivityPaths = (

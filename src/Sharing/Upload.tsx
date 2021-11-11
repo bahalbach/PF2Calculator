@@ -1,13 +1,10 @@
-import { Button, Typography } from "@mui/material";
+import { Button, useMediaQuery } from "@mui/material";
 import React from "react";
 
 import ShareIcon from "@mui/icons-material/Share";
 import { saveImgLink, selectGraphUrl } from "../Display/sharingSlice";
 import { useAppDispatch, useAppSelector } from "../App/hooks";
-import {
-  selectRoutineDescriptions,
-  selectRoutineEntities,
-} from "../Routines/RoutineSlice/routineSlice";
+import { selectRoutineDescriptions } from "../Routines/RoutineSlice/routineSlice";
 
 const url = "https://api.imgur.com/3/image";
 const auth = "Client-ID 9f68ffe6050491a";
@@ -16,6 +13,11 @@ export const Upload = () => {
   const graphUrl = useAppSelector(selectGraphUrl).split(";base64,")[1];
   const routineDescriptions = useAppSelector(selectRoutineDescriptions);
   const dispatch = useAppDispatch();
+
+  const isBigEnough = useMediaQuery((theme: any) => {
+    return theme.breakpoints.up("sm");
+  });
+
   const title = "Graph from https://bahalbach.github.io/PF2Calculator/";
   let description =
     "Graph made with https://bahalbach.github.io/PF2Calculator/ ";
@@ -66,7 +68,7 @@ export const Upload = () => {
       color="secondary"
       endIcon={<ShareIcon />}
     >
-      Share with IMGUR
+      {isBigEnough ? "Share with IMGUR" : "Share"}
     </Button>
   );
 };

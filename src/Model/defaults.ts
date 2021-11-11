@@ -1,3 +1,4 @@
+import { activityDamageDice } from "./newActivityInfo";
 import {
   ACTrends,
   profTrends,
@@ -11,6 +12,20 @@ import {
 interface defaultValue {
   [x: number]: number;
 }
+
+export const valuesFromBonusLevels = (levels: number[], addLevel = false) => {
+  let currentValue = 0;
+  let values: defaultValue = {};
+  for (let i = 1; i <= 20; i++) {
+    for (let level of levels) {
+      if (level === i) {
+        currentValue += 1;
+      }
+    }
+    values[i] = addLevel ? currentValue + i : currentValue;
+  }
+  return values;
+};
 const zero: defaultValue = {};
 const level: defaultValue = {};
 const halfLevel: defaultValue = {};
@@ -24,6 +39,10 @@ const score16p: defaultValue = {};
 const score16: defaultValue = {};
 const score14p: defaultValue = {};
 const score14: defaultValue = {};
+const score12: defaultValue = {};
+const score10: defaultValue = {};
+const DexNimbleAC: defaultValue = {};
+const StrSavageAC: defaultValue = {};
 
 const martialProf: defaultValue = {};
 const alchProf: defaultValue = {};
@@ -33,6 +52,8 @@ const spellProf: defaultValue = {};
 
 const weaponItem: defaultValue = {};
 const skillItem: defaultValue = {};
+const bomb: defaultValue = {};
+const mutagen: defaultValue = {};
 
 const weaponDice: defaultValue = {};
 const spellDice: defaultValue = {};
@@ -55,8 +76,16 @@ const preEdge1: defaultValue = {};
 const preEdge2: defaultValue = {};
 const preEdge3: defaultValue = {};
 
+const acDice: defaultValue = {};
+
 const martialSpec: defaultValue = {};
 const casterSpec: defaultValue = {};
+
+const constructDamage: defaultValue = {};
+const nimbleDamage: defaultValue = {};
+const savageDamage: defaultValue = {};
+
+const bombPlusSplash: defaultValue = {};
 
 const rage: defaultValue = {};
 const animalrage: defaultValue = {};
@@ -82,6 +111,9 @@ const classdc1: defaultValue = {};
 const classdc2: defaultValue = {};
 const mcspell: defaultValue = {};
 
+const ACunarmedPro: defaultValue = {};
+const ACathleticsProf: defaultValue = {};
+
 const fighterStatic: defaultValue = {};
 const fighterRanged: defaultValue = {};
 const martialStatic: defaultValue = {};
@@ -102,6 +134,10 @@ for (let i = 1; i <= 20; i++) {
   score16[i] = 3;
   score14p[i] = 2;
   score14[i] = 2;
+  score12[i] = 1;
+  score10[i] = 0;
+  DexNimbleAC[i] = 3;
+  StrSavageAC[i] = 3;
 
   martialProf[i] = 2;
   alchProf[i] = 2;
@@ -112,8 +148,14 @@ for (let i = 1; i <= 20; i++) {
   classdc2[i] = i + 2;
   mcspell[i] = i + 2;
 
+  ACunarmedPro[i] = i + 2;
+  ACathleticsProf[i] = i + 2;
+
   weaponItem[i] = 0;
   skillItem[i] = 0;
+  bomb[i] = 0;
+  mutagen[i] = 1;
+
   weaponDice[i] = 1;
   runes[i] = 0;
   runes2[i] = 0;
@@ -125,12 +167,20 @@ for (let i = 1; i <= 20; i++) {
 
   kiStrike[i] = 1;
 
+  acDice[i] = 1;
+
   preEdge1[i] = 1;
   preEdge2[i] = 0;
   preEdge3[i] = 0;
 
   martialSpec[i] = 0;
   casterSpec[i] = 0;
+
+  constructDamage[i] = 3;
+  nimbleDamage[i] = 2;
+  savageDamage[i] = 3;
+
+  bombPlusSplash[i] = 1;
 
   rage[i] = 2;
   animalrage[i] = 2;
@@ -151,6 +201,10 @@ for (let i = 1; i <= 20; i++) {
   if (i >= 3) {
     maxSkill[i] = i + 4;
     skillItem[i] = 1;
+    bomb[i] = 1;
+    mutagen[i] = 2;
+
+    bombPlusSplash[i] = 2;
 
     overdriveSuccess[i] = 3;
     overdriveCritical[i] = 5;
@@ -159,6 +213,16 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 4) {
     weaponDice[i] = 2;
+    acDice[i] = 2;
+
+    constructDamage[i] = 4;
+    nimbleDamage[i] = 3;
+    savageDamage[i] = 4;
+
+    bombPlusSplash[i] = 4;
+
+    DexNimbleAC[i] = 4;
+    StrSavageAC[i] = 4;
   }
   if (i >= 5) {
     martialProf[i] = 4;
@@ -167,6 +231,8 @@ for (let i = 1; i <= 20; i++) {
     score16[i] = 4;
     score14p[i] = 3;
     score14[i] = 3;
+    score12[i] = 2;
+    score10[i] = 1;
 
     sneak[i] = 2;
     strategic[i] = 2;
@@ -190,8 +256,17 @@ for (let i = 1; i <= 20; i++) {
     overdriveCritical[i] = 6;
   }
   if (i >= 8) {
+    ACathleticsProf[i] = i + 4;
+
     runes[i] = 1;
     runes2[i] = 1;
+
+    constructDamage[i] = 8;
+    nimbleDamage[i] = 6;
+    savageDamage[i] = 9;
+
+    DexNimbleAC[i] = 6;
+    StrSavageAC[i] = 6;
   }
   if (i >= 9) {
     skillItem[i] = 2;
@@ -207,13 +282,23 @@ for (let i = 1; i <= 20; i++) {
     maxScore[i] = 5;
     score14p[i] = 4;
     score14[i] = 4;
+    score12[i] = 3;
+    score10[i] = 2;
+
     runes2[i] = 2;
+
+    bombPlusSplash[i] = 7;
 
     overdriveCritical[i] = 7;
   }
   if (i >= 11) {
     casterProf[i] = 4;
     classdc2[i] = i + 4;
+
+    bomb[i] = 2;
+    mutagen[i] = 3;
+
+    bombPlusSplash[i] = 8;
 
     sneak[i] = 3;
     implementEmpower[i] = 6;
@@ -232,10 +317,24 @@ for (let i = 1; i <= 20; i++) {
     strategic[i] = 4;
     precise[i] = 5;
   }
+  if (i >= 14) {
+    ACunarmedPro[i] = i + 4;
+    ACathleticsProf[i] = i + 6;
+
+    acDice[i] = 3;
+    constructDamage[i] = 11;
+    nimbleDamage[i] = 8;
+    savageDamage[i] = 13;
+
+    DexNimbleAC[i] = 8;
+    StrSavageAC[i] = 7;
+  }
   if (i >= 15) {
     martialSpec[i] = 2;
     score16pp[i] = 5;
     score16p[i] = 5;
+    score12[i] = 4;
+    score10[i] = 3;
     spellProf[i] = 6;
     maxSkill[i] = i + 8;
     runes[i] = 2;
@@ -260,6 +359,9 @@ for (let i = 1; i <= 20; i++) {
     maxScore[i] = 6;
     skillItem[i] = 3;
     classdc1[i] = i + 6;
+    bomb[i] = 3;
+    mutagen[i] = 4;
+    bombPlusSplash[i] = 10;
 
     sneak[i] = 4;
     strategic[i] = 5;
@@ -289,6 +391,8 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 20) {
     maxScore[i] = 7;
+    score10[i] = 4;
+    bombPlusSplash[i] = 11;
 
     overdriveCritical[i] = 10;
   }
@@ -308,30 +412,51 @@ for (let i = 1; i <= 20; i++) {
   casterRanged[i] = (casterSpec[i] * casterProf[i]) / 2;
 }
 export const profTrendValues = {
-  [profTrends.TRAINED]: trained,
-  [profTrends.FIGHTERWEAPON]: fighterAB,
-  [profTrends.MARTIALWEAPON]: martialAB,
-  [profTrends.CASTERWEAPON]: casterAB,
-  [profTrends.ALCHWEAPON]: alchAB,
-  [profTrends.CASTERSPELL]: casterSpellAttack,
-  [profTrends.CLASSDC1]: classdc1,
-  [profTrends.CLASSDC2]: classdc2,
-  [profTrends.MCSPELL]: mcspell,
-  [profTrends.MAXSKILL]: maxSkill,
+  [profTrends.UNTRAINED]: valuesFromBonusLevels([]),
+  [profTrends.TRAINED]: valuesFromBonusLevels([1, 1], true),
+  [profTrends.FIGHTERWEAPON]: valuesFromBonusLevels(
+    [1, 1, 1, 1, 5, 5, 13, 13],
+    true
+  ),
+  [profTrends.MARTIALWEAPON]: valuesFromBonusLevels([1, 1, 5, 5, 13, 13], true),
+  [profTrends.CASTERWEAPON]: valuesFromBonusLevels([1, 1, 11, 11], true),
+  [profTrends.ALCHWEAPON]: valuesFromBonusLevels([1, 1, 7, 7], true),
+  [profTrends.CASTERSPELL]: valuesFromBonusLevels(
+    [1, 1, 7, 7, 15, 15, 19, 19],
+    true
+  ),
+  [profTrends.CLASSDC1]: valuesFromBonusLevels([1, 1, 9, 9, 17, 17], true),
+  [profTrends.CLASSDC2]: valuesFromBonusLevels([1, 1, 11, 11, 19, 19], true),
+  [profTrends.MCSPELL]: valuesFromBonusLevels([1, 1, 12, 12, 18, 18], true),
+  [profTrends.MAXSKILL]: valuesFromBonusLevels(
+    [1, 1, 3, 3, 7, 7, 15, 15],
+    true
+  ),
+  [profTrends.ANIMALCOMPANION]: valuesFromBonusLevels([1, 1, 14, 14], true),
+  [profTrends.SAVAGEACATHLETICS]: valuesFromBonusLevels(
+    [1, 1, 4, 4, 14, 14],
+    true
+  ),
 };
 export const statTrendValues = {
-  [statTrends.AS10]: zero,
-  [statTrends.AS18a]: maxScore,
+  [statTrends.AS10]: valuesFromBonusLevels([]),
+  [statTrends.AS18a]: valuesFromBonusLevels([1, 1, 1, 1, 10, 17, 20]),
   [statTrends.AS16a]: score16pp,
   [statTrends.AS16pp]: score16p,
   [statTrends.AS16p]: score16,
   [statTrends.AS14pp]: score14p,
   [statTrends.AS14p]: score14,
+  [statTrends.AS12p]: score12,
+  [statTrends.AS10p]: score10,
+  [statTrends.NIMBLEAC]: DexNimbleAC,
+  [statTrends.SAVAGEAC]: StrSavageAC,
 };
 export const itemTrendValues = {
   [itemTrends.NONE]: zero,
   [itemTrends.WEAPON]: weaponItem,
   [itemTrends.SKILL]: skillItem,
+  [itemTrends.BOMB]: bomb,
+  [itemTrends.MUTAGEN]: mutagen,
 };
 
 export const MAPvalues = {
@@ -362,6 +487,7 @@ export const dieTrendValues = {
   [dieTrends.RUNE]: runes,
   [dieTrends.RUNE2]: runes2,
   [dieTrends.DEADLY]: deadly,
+  [dieTrends.BOMB]: mutagen,
   [dieTrends.SNEAK]: sneak,
   [dieTrends.STRATEGIC]: strategic,
   [dieTrends.PRECISE]: precise,
@@ -369,6 +495,7 @@ export const dieTrendValues = {
   [dieTrends.PRECISIONEDGE2]: preEdge2,
   [dieTrends.PRECISIONEDGE3]: preEdge3,
   [dieTrends.KISTRIKE]: kiStrike,
+  [dieTrends.ANIMALCOMPANION]: acDice,
 };
 
 export const damageTrendValues = {
@@ -381,6 +508,8 @@ export const damageTrendValues = {
   [damageTrends.SPELLLEVEL1]: spellDice,
   [damageTrends.LEVEL]: level,
   [damageTrends.HALFLEVEL]: halfLevel,
+  [damageTrends.BOMB]: mutagen,
+  [damageTrends.BOMBPLUS]: bombPlusSplash,
   [damageTrends.RAGE]: rage,
   [damageTrends.ANIMALRAGE]: animalrage,
   [damageTrends.DRAGONRAGE]: dragonrage,
@@ -391,6 +520,9 @@ export const damageTrendValues = {
   [damageTrends.OVERDRIVES]: overdriveSuccess,
   [damageTrends.OVERDRIVEC]: overdriveCritical,
   [damageTrends.IMPLEMENT]: implementEmpower,
+  [damageTrends.CONSTRUCT]: constructDamage,
+  [damageTrends.NIMBLE]: nimbleDamage,
+  [damageTrends.SAVAGE]: savageDamage,
 };
 
 const extremeAC: defaultValue = {

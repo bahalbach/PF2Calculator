@@ -308,7 +308,7 @@ export const ActivityPath = ({ id }: { id: number }) => {
       )}
       <Button
         variant="outlined"
-        onClick={(event) => {
+        onClick={() => {
           window.location.href = "#routine-activity-list";
           dispatch(setNewActivityParent({ parentId: id }));
         }}

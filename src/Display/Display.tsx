@@ -11,6 +11,7 @@ import {
   Select,
   Switch,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 
 import useGenerateGraphs from "./useGenerateGraphs";
@@ -36,6 +37,9 @@ const Display = () => {
     // byLevelPerDamageChart,
   } = useGenerateGraphs(graphType);
   // const [perMulti, setPerMulti] = useState(2);
+  const isBigEnough = useMediaQuery((theme: any) => {
+    return theme.breakpoints.up("sm");
+  });
 
   return (
     <React.Fragment>
@@ -49,7 +53,7 @@ const Display = () => {
                   onChange={() => setShowByLevel(!showByLevel)}
                 />
               }
-              label="Display By Level Graph"
+              label={isBigEnough ? "Display By Level Graph" : "By Level Graph"}
               // sx={{ background: "lightgrey", width: 1 }}
             />
           </Grid>
@@ -72,7 +76,9 @@ const Display = () => {
               onChange={() => setShowSingleLevel(!showSingleLevel)}
             />
           }
-          label="Display Single Level Graph"
+          label={
+            isBigEnough ? "Display Single Level Graph" : "Single Level Graph"
+          }
         />
         <Collapse in={showSingleLevel}>
           <SingleLevelInput />

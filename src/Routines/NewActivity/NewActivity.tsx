@@ -41,6 +41,10 @@ import {
   skillProfTrends,
   skillActivities,
   SkillInfo,
+  CantripInfo,
+  spells,
+  SpellInfo,
+  spellProfTrends,
 } from "../../Model/newActivityInfo";
 import { TooltipSelect } from "../../TooltipSelect";
 
@@ -558,9 +562,131 @@ function SkillSelection() {
 }
 
 function CantripSelection() {
-  return <React.Fragment>select cantrip/prof/ascore/dscore</React.Fragment>;
+  const [proficiency, setProficiency] = useState<ProfTrend>(
+    profTrends.CASTERSPELL
+  );
+  const [abilityScore, setAbilityScore] = useState<StatTrend>(statTrends.AS18a);
+  const [cantrip, setCantrip] = useState<typeof cantrips[number]>(cantrips[0]);
+
+  const cantripInfo: CantripInfo = {
+    proficiency,
+    abilityScore,
+    cantrip,
+  };
+
+  const dispatch = useAppDispatch();
+
+  return (
+    <Grid container spacing={{ xs: 1, sm: 2 }}>
+      <Grid item>
+        <TooltipSelect
+          title="Select which proficiency progression to apply."
+          label="Proficiency"
+          value={proficiency}
+          onChange={(e) => {
+            setProficiency(e.target.value as ProfTrend);
+          }}
+        >
+          {makeOptions(spellProfTrends)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <TooltipSelect
+          title="Select which ability score progression to apply."
+          label="Ability Score"
+          value={abilityScore}
+          onChange={(e) => {
+            setAbilityScore(e.target.value as StatTrend);
+          }}
+        >
+          {makeOptions(statTrends)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <TooltipSelect
+          title="Select which cantrip to use."
+          label="Cantrip"
+          value={cantrip}
+          onChange={(e) => {
+            setCantrip(e.target.value as typeof cantrips[number]);
+          }}
+        >
+          {makeOptions(cantrips)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <Button
+          variant="contained"
+          onClick={() => dispatch(activityPathCreated({ cantripInfo }))}
+        >
+          Create New Activity
+        </Button>
+      </Grid>
+    </Grid>
+  );
 }
 
 function SpellSelection() {
-  return <React.Fragment>select spell/prof/ascore</React.Fragment>;
+  const [proficiency, setProficiency] = useState<ProfTrend>(
+    profTrends.CASTERSPELL
+  );
+  const [abilityScore, setAbilityScore] = useState<StatTrend>(statTrends.AS18a);
+  const [spell, setSpell] = useState<typeof spells[number]>(spells[0]);
+
+  const spellInfo: SpellInfo = {
+    proficiency,
+    abilityScore,
+    spell,
+  };
+
+  const dispatch = useAppDispatch();
+
+  return (
+    <Grid container spacing={{ xs: 1, sm: 2 }}>
+      <Grid item>
+        <TooltipSelect
+          title="Select which proficiency progression to apply."
+          label="Proficiency"
+          value={proficiency}
+          onChange={(e) => {
+            setProficiency(e.target.value as ProfTrend);
+          }}
+        >
+          {makeOptions(spellProfTrends)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <TooltipSelect
+          title="Select which ability score progression to apply."
+          label="Ability Score"
+          value={abilityScore}
+          onChange={(e) => {
+            setAbilityScore(e.target.value as StatTrend);
+          }}
+        >
+          {makeOptions(statTrends)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <TooltipSelect
+          title="Select which spell to use."
+          label="Spell"
+          value={spell}
+          onChange={(e) => {
+            setSpell(e.target.value as typeof spells[number]);
+          }}
+        >
+          {makeOptions(spells)}
+        </TooltipSelect>
+      </Grid>
+      <Grid item>
+        <Button
+          variant="contained"
+          onClick={() => dispatch(activityPathCreated({ spellInfo }))}
+        >
+          Create New Activity
+        </Button>
+      </Grid>
+    </Grid>
+  );
 }

@@ -1,4 +1,4 @@
-import { statTrendValues } from "./defaults";
+import { statTrendValues, valuesFromBonusLevels } from "./defaults";
 import {
   conditions,
   DamageTrend,
@@ -44,6 +44,16 @@ export type SkillInfo = {
   abilityScore: StatTrend;
   itemBonus: ItemTrend;
   skillActivity: typeof skillActivities[number];
+};
+export type CantripInfo = {
+  proficiency: ProfTrend;
+  abilityScore: StatTrend;
+  cantrip: typeof cantrips[number];
+};
+export type SpellInfo = {
+  proficiency: ProfTrend;
+  abilityScore: StatTrend;
+  spell: typeof spells[number];
 };
 
 export const activityTypes = {
@@ -111,7 +121,6 @@ const swashbucklerOptions = [
   "Precise Finisher",
 ] as const;
 const magusOptions = ["Normal", "Arcane Cascade"] as const;
-export const cantrips = ["Telekinetic Projectile"] as const;
 
 export const strikeActivities = [
   "Strike",
@@ -161,7 +170,24 @@ export const critSpecs = [
 ] as const;
 
 export const skillProfTrends = [profTrends.TRAINED, profTrends.MAXSKILL];
+export const spellProfTrends = [
+  profTrends.TRAINED,
+  profTrends.CASTERSPELL,
+  profTrends.MCSPELL,
+  profTrends.CLASSDC1,
+  profTrends.CLASSDC2,
+];
+
 export const skillActivities = ["Trip", "Grapple", "Demoralize"] as const;
+export const cantrips = [
+  "Electric Arc",
+  "Daze",
+  "Gouging Claw",
+  "Produce Flame",
+  "Ray of Frost",
+  "Telekinetic Projectile",
+] as const;
+export const spells = ["Fear", "Fireball"] as const;
 
 export const classWeaponProf = (className: string, classOption: string) => {
   if (["Fighter", "Gunslinger"].includes(className))
@@ -564,4 +590,43 @@ export const hasSkillDamage = (skillInfo: SkillInfo) => {
     return true;
   }
   return false;
+};
+
+export const getCantripTarget = (cantripInfo: CantripInfo) => {
+  switch (cantripInfo.cantrip) {
+    case "Electric Arc":
+      return { type: "Save", targetType: defenses.REF } as const;
+    case "Daze":
+      return { type: "Save", targetType: defenses.WILL } as const;
+
+    default:
+      return { targetType: defenses.AC };
+  }
+};
+export const getCantripDamage = (cantripInfo: CantripInfo) => {
+  switch (cantripInfo.cantrip) {
+    case "Electric Arc":
+      return { damageCondition: dCond.BASIC, diceSize: diceSizes[4] };
+    case "Daze":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.NONE,
+        dieAdjustments: valuesFromBonusLevels([5, 9, 13, 17]),
+      };
+    case "Telekinetic Projectile":
+      return {};
+    default:
+      return { diceSize: diceSizes[4] };
+  }
+};
+export const getSpellTarget = (spellInfo: SpellInfo) => {
+  switch (spellInfo.spell) {
+    case "Fireball":
+      return { targetType: defenses.REF };
+    case "Fear":
+      return { targetType: defenses.WILL };
+
+    default:
+      return { targetType: defenses.REF };
+  }
 };

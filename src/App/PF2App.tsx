@@ -31,7 +31,6 @@ function PF2App() {
   const createNewActivity = useAppSelector(selectCreateNewActivity);
 
   const isBigEnough = useMediaQuery((theme: any) => {
-    console.log(`Theme is ${theme}`);
     return theme.breakpoints.up("md");
   });
 

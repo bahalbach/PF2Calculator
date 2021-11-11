@@ -59,6 +59,7 @@ export const activityTypes = {
 export type ActivityType = typeof activityTypes[keyof typeof activityTypes];
 
 export const profTrends = {
+  UNTRAINED: "Untrained",
   TRAINED: "Trained Proficiency",
   FIGHTERWEAPON: "Fighter Weapon (1, 5, 13)",
   MARTIALWEAPON: "Martial Weapon (5, 13)",
@@ -69,6 +70,8 @@ export const profTrends = {
   CLASSDC2: "Class/Spell (11, 19)",
   MCSPELL: "MC Spell (12, 18)",
   MAXSKILL: "Max skill (3, 7, 15)",
+  ANIMALCOMPANION: "Animal/Construct Companion (14)",
+  SAVAGEACATHLETICS: "Construct/Savage AC Atheletics (8, 14)",
 } as const;
 export type ProfTrend = typeof profTrends[keyof typeof profTrends];
 
@@ -80,6 +83,10 @@ export const statTrends = {
   AS16p: "16 to 18",
   AS14pp: "14 to 20",
   AS14p: "14 to 18",
+  AS12p: "12 to 18",
+  AS10p: "10 to 18",
+  NIMBLEAC: "Dex 16 Nimble AC",
+  SAVAGEAC: "Str 16 Construct/Savage AC",
 } as const;
 export type StatTrend = typeof statTrends[keyof typeof statTrends];
 
@@ -87,6 +94,8 @@ export const itemTrends = {
   NONE: "None",
   WEAPON: "Weapon (2, 10, 16)",
   SKILL: "Skill (3, 9, 17)",
+  BOMB: "Bomb (3, 11, 17)",
+  MUTAGEN: "Mutagen (1, 3, 11, 17)",
 } as const;
 export type ItemTrend = typeof itemTrends[keyof typeof itemTrends];
 
@@ -163,6 +172,7 @@ export const dieTrends = {
   RUNE: "Runes (8, 15)",
   RUNE2: "Runes (8, 10, 16)",
   DEADLY: "Deadly (1, 12, 19)",
+  BOMB: "Bomb (1, 3, 11, 17)",
   SNEAK: "Sneak Attack (1, 5, 11, 17)",
   STRATEGIC: "Strategic Strike (1, 5, 9, 13, 17)",
   PRECISE: "Precise Strike (1, 1, 5, 9, 13, 17)",
@@ -170,6 +180,7 @@ export const dieTrends = {
   PRECISIONEDGE2: "Precision Edge 2(17, 19)",
   PRECISIONEDGE3: "Precision Edge 3(19)",
   KISTRIKE: "Ki Strike (1, 9, 17)",
+  ANIMALCOMPANION: "Animal/Construct Companion (1, 4, 14)",
 } as const;
 export type DieTrend = typeof dieTrends[keyof typeof dieTrends];
 
@@ -183,6 +194,8 @@ export const damageTrends = {
   SPELLLEVEL1: "1 x Spell Level",
   LEVEL: "Level",
   HALFLEVEL: "1/2 Level",
+  BOMB: "Bomb Splash (1, 3, 11, 17)",
+  BOMBPLUS: "Max Int Calculated/Expanded Splash",
   RAGE: "Rage",
   ANIMALRAGE: "Animal Rage",
   DRAGONRAGE: "Dragon Rage",
@@ -193,6 +206,9 @@ export const damageTrends = {
   OVERDRIVES: "Overdrive Success",
   OVERDRIVEC: "Overdrive Critical",
   IMPLEMENT: "Implement's Empowerment",
+  CONSTRUCT: "Construct Companion Damage",
+  NIMBLE: "Str 14 Nimble AC Damage",
+  SAVAGE: "Str 16 Savage AC Damage",
 } as const;
 export type DamageTrend = typeof damageTrends[keyof typeof damageTrends];
 
@@ -201,7 +217,10 @@ export const damageTypes = {
   B: "bludgeoning",
   P: "piercing",
   S: "slashing",
+  BLEED: "bleed",
   FIRE: "fire",
+  COLD: "Cold",
+  MENTAL: "Mental",
   FORCE: "force",
   PRECISION: "precision",
 } as const;
