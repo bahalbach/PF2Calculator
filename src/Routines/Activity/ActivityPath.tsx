@@ -37,10 +37,13 @@ import { effectCreated } from "../RoutineSlice/routineSlice";
 import { RootState } from "../../App/store";
 import {
   Button,
+  ButtonBase,
+  Collapse,
   FormControl,
   Grid,
   InputLabel,
   List,
+  ListItemButton,
   ListSubheader,
   Paper,
   Select,
@@ -67,14 +70,7 @@ export const ActivityPath = ({ id }: { id: number }) => {
     routineId,
     condition,
 
-    rollType,
     type,
-    profTrend,
-    statTrend,
-    itemTrend,
-    bonusAdjustments,
-    MAP,
-    targetType,
 
     damages,
     effects,
@@ -82,16 +78,6 @@ export const ActivityPath = ({ id }: { id: number }) => {
   } = useAppSelector((state: RootState) => selectactivityPathById(state, id)!);
 
   const dispatch = useAppDispatch();
-
-  let isSave = type === activityTypes.SAVE;
-
-  const bonusLevelList = LevelList(
-    "bonusAdjustments",
-    dispatch,
-    activityPathUpdated,
-    id,
-    bonusAdjustments
-  );
 
   return (
     <Paper sx={{ my: 2, p: 1 }}>
@@ -130,156 +116,7 @@ export const ActivityPath = ({ id }: { id: number }) => {
           ""
         )}
       </Grid>
-
-      <RollBonusDisplay
-        rollInfo={{
-          isSave,
-          profTrend,
-          statTrend,
-          itemTrend,
-          MAP,
-          bonusAdjustments,
-        }}
-      />
-
-      <Box
-        sx={{
-          p: 1,
-          mb: 1,
-          "&:hover": { bgcolor: "rgb(50,50,50,.05)" },
-        }}
-      >
-        <Grid container spacing={{ xs: 1, sm: 2 }} sx={{}}>
-          <Grid item>
-            <TooltipSelect
-              title="Advantage is rolling twice and taking the higher roll, disadvantage is taking the lower"
-              label="Roll Type"
-              value={rollType}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { rollType: e.target.value },
-                  })
-                );
-              }}
-            >
-              {rollOptions}
-            </TooltipSelect>
-          </Grid>
-          <Grid item>
-            <FormControl size="small">
-              <InputLabel id="activity-type-input">Activity Type</InputLabel>
-              <Select
-                labelId="activity-type-input"
-                label="Activity Type"
-                value={type}
-                onChange={(e) => {
-                  dispatch(
-                    activityPathUpdated({
-                      id,
-                      changes: { type: e.target.value },
-                    })
-                  );
-                }}
-              >
-                {activityTypeOptions}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item>
-            <TooltipSelect
-              title="An increase in proficiency (+2) is applied at each level in ()"
-              label="Proficiency"
-              value={profTrend}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { profTrend: e.target.value },
-                  })
-                );
-              }}
-            >
-              {profTrendOptions}
-            </TooltipSelect>
-          </Grid>
-          <Grid item>
-            <TooltipSelect
-              title="Bonuses from the listed ability score are applied at the appropriate levels. An ability score starts at the first value and is increased at levels 5, 10, 15, and 20 or until it reaches the second value listed. 'apex' means a bonus from an apex item is added to that score at the level in ()"
-              label="Ability Score"
-              value={statTrend}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { statTrend: e.target.value },
-                  })
-                );
-              }}
-            >
-              {statTrendOptions}
-            </TooltipSelect>
-          </Grid>
-          <Grid item>
-            <TooltipSelect
-              title="Item bonuses are applied at the levels in ()."
-              label="Item Bonus"
-              value={itemTrend}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { itemTrend: e.target.value },
-                  })
-                );
-              }}
-            >
-              {itemBTrendOptions}
-            </TooltipSelect>
-          </Grid>
-          {bonusLevelList}
-          {isSave ? (
-            <Grid item>
-              <TooltipSelect
-                title="The multiple attack penalty that is applied to this attack."
-                label="MAP"
-                value={MAP}
-                onChange={(e) => {
-                  dispatch(
-                    activityPathUpdated({
-                      id,
-                      changes: { MAP: e.target.value },
-                    })
-                  );
-                }}
-              >
-                {MAPOptions}
-              </TooltipSelect>
-            </Grid>
-          ) : (
-            ""
-          )}
-          <Grid item>
-            <TooltipSelect
-              title="What defense is targeted"
-              label="Target Defense"
-              value={targetType}
-              onChange={(e) => {
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { targetType: e.target.value },
-                  })
-                );
-              }}
-            >
-              {defenseOptions}
-            </TooltipSelect>
-          </Grid>
-        </Grid>
-      </Box>
-
+      <Roll id={id} />
       {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
 
       {damages.map((damageId) => (
@@ -287,7 +124,6 @@ export const ActivityPath = ({ id }: { id: number }) => {
       ))}
       {/* </List> */}
       <Button
-        sx={{ mb: 3 }}
         variant="outlined"
         size="small"
         onClick={() => dispatch(damageCreated({ parentId: id }))}
@@ -299,7 +135,6 @@ export const ActivityPath = ({ id }: { id: number }) => {
         <Effect parentId={id} id={effectId} key={effectId} />
       ))}
       <Button
-        sx={{ mb: 3 }}
         variant="outlined"
         size="small"
         onClick={() => dispatch(effectCreated({ parentId: id }))}
@@ -376,6 +211,188 @@ export const ActivityPath = ({ id }: { id: number }) => {
   );
 };
 
+const Roll = ({ id }: { id: number }) => {
+  const {
+    rollType,
+    type,
+    profTrend,
+    statTrend,
+    itemTrend,
+    bonusAdjustments,
+    MAP,
+    targetType,
+  } = useAppSelector((state: RootState) => selectactivityPathById(state, id)!);
+
+  const dispatch = useAppDispatch();
+
+  const [showContent, setShowContent] = useState(false);
+
+  let isSave = type === activityTypes.SAVE;
+
+  const bonusLevelList = LevelList(
+    "bonusAdjustments",
+    dispatch,
+    activityPathUpdated,
+    id,
+    bonusAdjustments
+  );
+
+  return (
+    <React.Fragment>
+      <RollBonusDisplay
+        rollInfo={{
+          isSave,
+          profTrend,
+          statTrend,
+          itemTrend,
+          MAP,
+          bonusAdjustments,
+        }}
+        onClick={() => setShowContent(!showContent)}
+      />
+      <Collapse in={showContent}>
+        <Box
+          sx={{
+            p: 1,
+            mb: 1,
+            "&:hover": { bgcolor: "rgb(50,50,50,.05)" },
+          }}
+        >
+          <Grid container spacing={{ xs: 1, sm: 2 }} sx={{}}>
+            <Grid item>
+              <TooltipSelect
+                title="Advantage is rolling twice and taking the higher roll, disadvantage is taking the lower"
+                label="Roll Type"
+                value={rollType}
+                onChange={(e) => {
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { rollType: e.target.value },
+                    })
+                  );
+                }}
+              >
+                {rollOptions}
+              </TooltipSelect>
+            </Grid>
+            <Grid item>
+              <FormControl size="small">
+                <InputLabel id="activity-type-input">Activity Type</InputLabel>
+                <Select
+                  labelId="activity-type-input"
+                  label="Activity Type"
+                  value={type}
+                  onChange={(e) => {
+                    dispatch(
+                      activityPathUpdated({
+                        id,
+                        changes: { type: e.target.value },
+                      })
+                    );
+                  }}
+                >
+                  {activityTypeOptions}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <TooltipSelect
+                title="An increase in proficiency (+2) is applied at each level in ()"
+                label="Proficiency"
+                value={profTrend}
+                onChange={(e) => {
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { profTrend: e.target.value },
+                    })
+                  );
+                }}
+              >
+                {profTrendOptions}
+              </TooltipSelect>
+            </Grid>
+            <Grid item>
+              <TooltipSelect
+                title="Bonuses from the listed ability score are applied at the appropriate levels. An ability score starts at the first value and is increased at levels 5, 10, 15, and 20 or until it reaches the second value listed. 'apex' means a bonus from an apex item is added to that score at the level in ()"
+                label="Ability Score"
+                value={statTrend}
+                onChange={(e) => {
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { statTrend: e.target.value },
+                    })
+                  );
+                }}
+              >
+                {statTrendOptions}
+              </TooltipSelect>
+            </Grid>
+            <Grid item>
+              <TooltipSelect
+                title="Item bonuses are applied at the levels in ()."
+                label="Item Bonus"
+                value={itemTrend}
+                onChange={(e) => {
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { itemTrend: e.target.value },
+                    })
+                  );
+                }}
+              >
+                {itemBTrendOptions}
+              </TooltipSelect>
+            </Grid>
+            {bonusLevelList}
+            {!isSave ? (
+              <Grid item>
+                <TooltipSelect
+                  title="The multiple attack penalty that is applied to this attack."
+                  label="MAP"
+                  value={MAP}
+                  onChange={(e) => {
+                    dispatch(
+                      activityPathUpdated({
+                        id,
+                        changes: { MAP: e.target.value },
+                      })
+                    );
+                  }}
+                >
+                  {MAPOptions}
+                </TooltipSelect>
+              </Grid>
+            ) : (
+              ""
+            )}
+            <Grid item>
+              <TooltipSelect
+                title="What defense is targeted"
+                label="Target Defense"
+                value={targetType}
+                onChange={(e) => {
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { targetType: e.target.value },
+                    })
+                  );
+                }}
+              >
+                {defenseOptions}
+              </TooltipSelect>
+            </Grid>
+          </Grid>
+        </Box>
+      </Collapse>
+    </React.Fragment>
+  );
+};
+
 interface PropsType {
   rollInfo: {
     isSave: boolean;
@@ -385,11 +402,13 @@ interface PropsType {
     itemTrend: ItemTrend;
     bonusAdjustments: Adjustment;
   };
+  onClick: any;
 }
 const RollBonusDisplay = ({
   rollInfo: { isSave, MAP, profTrend, statTrend, itemTrend, bonusAdjustments },
+  onClick,
 }: PropsType) => {
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(20);
   // const {isSave, MAP, profTrend, statTrend, itemTrend, bonusAdjustments} = rollInfo;
   let totalBonus = 0;
 
@@ -404,16 +423,13 @@ const RollBonusDisplay = ({
   // updateLevel(1);
 
   return (
-    <Grid
-      container
-      columnSpacing={{ xs: 2 }}
-      alignItems="baseline"
-      sx={{ my: 0 }}
-    >
+    <Grid container columnSpacing={{ xs: 2 }} alignItems="baseline">
       <Grid item xs="auto">
-        <Typography variant="h6">{"Roll: "}</Typography>
+        <ListItemButton onClick={onClick}>
+          <Typography variant="h6">{"Roll "}</Typography>
+        </ListItemButton>
       </Grid>
-      <Grid item alignSelf="flex-start" sx={{ mt: "4px", width: 100 }}>
+      <Grid item alignSelf="center" sx={{ ml: -2, mt: 1, width: 100 }}>
         <Slider
           size="small"
           value={level}
