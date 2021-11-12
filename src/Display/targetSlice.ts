@@ -81,6 +81,9 @@ export const {
   selectTotal: selectTotaltargets,
 } = targetAdapter.getSelectors((state: RootState) => state.targets);
 
+export const selectRoutineLevel = (state: RootState) =>
+  state.targets.entities[0]!.routineLevel;
+
 const updateTargetLevel = (state: EntityState<Target>, targetLevel: number) => {
   state.entities[id]!.overrideAC =
     defaultACs[state.entities[id]!.ACTrend][targetLevel];
