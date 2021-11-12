@@ -432,7 +432,7 @@ const DamageDisplay = ({
   for (let dt of damageTrend) {
     staticDamage += damageTrendValues[dt][level];
   }
-  let averageDamage = staticDamage + (diceSize + 1 / 2) * diceNumber;
+  let averageDamage = staticDamage + ((diceSize + 1) / 2) * diceNumber;
   let fatalString =
     " (" + diceNumber.toString() + "d" + fatalDie.toString() + " on Crit)";
 
