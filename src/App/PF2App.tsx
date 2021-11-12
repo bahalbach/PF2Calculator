@@ -15,7 +15,7 @@ import {
   selectSelectedActivityPath,
   selectCreateNewActivity,
 } from "../Routines/RoutineSlice/routineSlice";
-import { Container, Grid, Box } from "@mui/material";
+import { Container, Grid, Box, Button } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 // import Header from "./Header";
 import { ActivityPath } from "../Routines/Activity/ActivityPath";
@@ -26,10 +26,6 @@ import { useAppSelector } from "./hooks";
 ReactGA.initialize("G-JR2YK097BG");
 
 function PF2App() {
-  const selectedRoutine = useAppSelector(selectSelectedRoutine);
-  const selectedActivityPath = useAppSelector(selectSelectedActivityPath);
-  const createNewActivity = useAppSelector(selectCreateNewActivity);
-
   const isBigEnough = useMediaQuery((theme: any) => {
     return theme.breakpoints.up("md");
   });
@@ -54,23 +50,7 @@ function PF2App() {
               sx={{ height: "100%", overflow: "auto" }}
             >
               <Box sx={{}}>
-                {/* <TargetInput id={0} /> */}
-                <Adsense client="ca-pub-8032326260699508" slot="3994991926" />
-                <Routines />
-                {selectedRoutine !== undefined ? (
-                  <SelectedRoutine routineId={selectedRoutine} />
-                ) : (
-                  ""
-                )}
-                {selectedActivityPath !== undefined ? (
-                  <ActivityPath id={selectedActivityPath} />
-                ) : createNewActivity ? (
-                  <NewActivity />
-                ) : (
-                  ""
-                )}
-                <Export />
-                <Adsense client="ca-pub-8032326260699508" slot="3994991926" />
+                <Controls />
               </Box>
             </Grid>
             <Grid
@@ -86,29 +66,75 @@ function PF2App() {
           </Grid>
         ) : (
           <React.Fragment>
-            {/* <TargetInput id={0} /> */}
-            <Adsense client="ca-pub-8032326260699508" slot="3994991926" />
             <Display />
-            <Routines />
-            {selectedRoutine !== undefined ? (
-              <SelectedRoutine routineId={selectedRoutine} />
-            ) : (
-              ""
-            )}
-            {selectedActivityPath !== undefined ? (
-              <ActivityPath id={selectedActivityPath} />
-            ) : createNewActivity ? (
-              <NewActivity />
-            ) : (
-              ""
-            )}
-            <Export />
-            <Adsense client="ca-pub-8032326260699508" slot="3994991926" />
+            <Controls />
+            {/* <Adsense client="ca-pub-8032326260699508" slot="3994991926" /> */}
           </React.Fragment>
         )}
       </Container>
     </React.Fragment>
   );
 }
+
+const Controls = () => {
+  const selectedRoutine = useAppSelector(selectSelectedRoutine);
+  const selectedActivityPath = useAppSelector(selectSelectedActivityPath);
+  const createNewActivity = useAppSelector(selectCreateNewActivity);
+
+  return (
+    <React.Fragment>
+      <Routines />
+      {selectedRoutine !== undefined ? (
+        <SelectedRoutine routineId={selectedRoutine} />
+      ) : (
+        ""
+      )}
+      {selectedActivityPath !== undefined ? (
+        <ActivityPath id={selectedActivityPath} />
+      ) : createNewActivity ? (
+        <NewActivity />
+      ) : (
+        ""
+      )}
+      <Export />
+      <Grid container sx={{ mt: 2 }} justifyContent="space-evenly">
+        <Grid item>
+          <Donate />
+        </Grid>
+        <Grid item>
+          <Contact />
+        </Grid>
+      </Grid>
+    </React.Fragment>
+  );
+};
+
+const Donate = () => {
+  return (
+    <Box>
+      <a href="https://www.buymeacoffee.com/bahalbach" target="_blank">
+        <img
+          src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png"
+          alt="Buy Me A Coffee"
+          width="217px"
+          height="60px"
+        />
+      </a>
+    </Box>
+  );
+};
+
+const Contact = () => {
+  return (
+    <Button
+      sx={{ height: 60, width: 217 }}
+      variant="outlined"
+      color="primary"
+      href="mailto:bahalbach@gmail.com"
+    >
+      Contact Me
+    </Button>
+  );
+};
 
 export default PF2App;
