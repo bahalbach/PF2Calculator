@@ -6,6 +6,7 @@ import { LevelList } from "./LevelList";
 import {
   activityPathContinued,
   damageCreated,
+  emptyActivityPathCreated,
   setNewActivityParent,
 } from "../RoutineSlice/routineSlice";
 import {
@@ -176,32 +177,34 @@ export const ActivityPath = ({
             ))}
           </List>
 
-          {type === activityTypes.STRIKE ? (
-            <Button
-              variant="contained"
-              onClick={() => {
-                window.location.href = "#routine-activity-list";
-                dispatch(
-                  activityPathContinued({
-                    parentId: id,
-                  })
-                );
-              }}
-            >
-              Continue Attack
-            </Button>
-          ) : (
-            ""
-          )}
-          <Button
-            variant="outlined"
-            onClick={() => {
-              window.location.href = "#routine-activity-list";
-              dispatch(setNewActivityParent({ parentId: id }));
-            }}
-          >
-            New Child Activity
-          </Button>
+          <Grid container spacing={{ xs: 1 }} sx={{ my: 2, p: 1 }}>
+            <Grid item container xs={6} justifyContent="center">
+              <Button
+                variant="contained"
+                onClick={() => {
+                  window.location.href = "#routine-activity-list";
+                  dispatch(
+                    activityPathContinued({
+                      parentId: id,
+                    })
+                  );
+                }}
+              >
+                Continue Attack
+              </Button>
+            </Grid>
+            <Grid item container xs={6} justifyContent="center">
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  window.location.href = "#routine-activity-list";
+                  dispatch(setNewActivityParent({ parentId: id }));
+                }}
+              >
+                New Child Activity
+              </Button>
+            </Grid>
+          </Grid>
         </Collapse>
       </Paper>
       {apIds.map((apId) => (

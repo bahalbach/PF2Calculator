@@ -277,6 +277,7 @@ export const routinesSlice = createSlice({
         const { id, routineId, activityType } = action.payload;
         let ap = {
           ...defaultActivity,
+          profTrend: profTrends.UNTRAINED,
           id,
           routineId,
         } as ActivityPath;
