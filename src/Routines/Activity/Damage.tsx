@@ -144,7 +144,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           }}
         >
           {/* <Divider textAlign="left" sx={{ mt: 0, mb: 1 }}></Divider> */}
-          <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
+          <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
             <Grid item xs="auto">
               <IconButton
                 color="primary"
@@ -156,9 +156,13 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                 <DeleteIcon />
               </IconButton>
             </Grid>
+            {/* <Grid item xs="auto">
+              <Typography>Apply damage </Typography>
+            </Grid> */}
 
-            <Grid item xs="auto">
+            <Grid item xs>
               <TooltipSelect
+                fullWidth={true}
                 title="When this damage instance applies. For example: for extra damage on a critical hit, like with deadly or fatal weapons, use 'On Crit'. Don't forget to change when using a save instead of an attack."
                 value={damageCondition}
                 label="Condition"
@@ -174,8 +178,31 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                 {damageConditionOptions}
               </TooltipSelect>
             </Grid>
-            {/* </Grid>
-      <Grid container spacing={{ xs: 1, sm: 2 }}> */}
+            <Grid item xs>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="damage-when-input">When Target</InputLabel>
+                <Select
+                  labelId="damage-when-input"
+                  id="damage-when"
+                  multiple
+                  value={damageWhen}
+                  label="When Target"
+                  renderValue={(selected) => selected.join(" or ")}
+                  onChange={(e) =>
+                    dispatch(
+                      damageUpdated({
+                        id,
+                        changes: { damageWhen: e.target.value },
+                      })
+                    )
+                  }
+                >
+                  {makeOptions(whenConditions)}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Grid container spacing={{ xs: 1, sm: 2 }}>
             <Grid item>
               <TooltipSelect
                 title="How much the damage is multiplied by. For example: if you want to average the damage of two different attacks, add both and set the multiplier to .5"
@@ -254,29 +281,6 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                   label="Persistent"
                 />
               </Tooltip>
-            </Grid>
-            <Grid item>
-              <FormControl size="small">
-                <InputLabel id="damage-when-input">When Target</InputLabel>
-                <Select
-                  labelId="damage-when-input"
-                  id="damage-when"
-                  multiple
-                  value={damageWhen}
-                  label="When Target"
-                  renderValue={(selected) => selected.join(" or ")}
-                  onChange={(e) =>
-                    dispatch(
-                      damageUpdated({
-                        id,
-                        changes: { damageWhen: e.target.value },
-                      })
-                    )
-                  }
-                >
-                  {makeOptions(whenConditions)}
-                </Select>
-              </FormControl>
             </Grid>
           </Grid>
           <Divider textAlign="left" sx={{ mt: 1, mb: 1 }}>

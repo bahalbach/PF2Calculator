@@ -13,9 +13,17 @@ type Props = {
   value: any;
   onChange: (e: SelectChangeEvent) => void;
   children: JSX.Element[];
+  fullWidth?: boolean;
 };
 
-const TooltipSelect = ({ title, label, value, onChange, children }: Props) => {
+const TooltipSelect = ({
+  title,
+  label,
+  value,
+  onChange,
+  children,
+  fullWidth = false,
+}: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -28,6 +36,7 @@ const TooltipSelect = ({ title, label, value, onChange, children }: Props) => {
       }}
     >
       <FormControl
+        fullWidth={fullWidth}
         size="small"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}

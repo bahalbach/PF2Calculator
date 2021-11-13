@@ -74,7 +74,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
             "&:hover": { bgcolor: "rgb(50,50,50,.05)" },
           }}
         >
-          <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
+          <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
             <Grid item xs="auto">
               <IconButton
                 aria-label="delete"
@@ -86,8 +86,9 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                 <DeleteIcon />
               </IconButton>
             </Grid>
-            <Grid item>
+            <Grid item xs>
               <TooltipSelect
+                fullWidth={true}
                 title="When this effect applies, depending on the result of this activities roll. For example the spell 'fear' should have 'On Success' 'Frightened' '1', 'On Failure' 'Frightened' '2' etc."
                 value={effectCondition}
                 label="Condition"
@@ -103,6 +104,31 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                 {conditionOptions}
               </TooltipSelect>
             </Grid>
+            <Grid item xs>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="damage-when-input">When Target</InputLabel>
+                <Select
+                  labelId="damage-when-input"
+                  id="damage-when"
+                  multiple
+                  value={damageWhen}
+                  label="When Target"
+                  renderValue={(selected) => selected.join(" or ")}
+                  onChange={(e) =>
+                    dispatch(
+                      effectUpdated({
+                        id,
+                        changes: { damageWhen: e.target.value },
+                      })
+                    )
+                  }
+                >
+                  {makeOptions(whenConditions)}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Grid container spacing={{ xs: 1, sm: 2 }}>
             <Grid item>
               <TooltipSelect
                 title="The effect that is applied to the target when 'Condition' is met."
@@ -177,29 +203,6 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                 valueLabelDisplay="auto"
                 getAriaValueText={(v) => `${v}`}
               />
-            </Grid>
-            <Grid item>
-              <FormControl size="small">
-                <InputLabel id="damage-when-input">When Target</InputLabel>
-                <Select
-                  labelId="damage-when-input"
-                  id="damage-when"
-                  multiple
-                  value={damageWhen}
-                  label="When Target"
-                  renderValue={(selected) => selected.join(" or ")}
-                  onChange={(e) =>
-                    dispatch(
-                      effectUpdated({
-                        id,
-                        changes: { damageWhen: e.target.value },
-                      })
-                    )
-                  }
-                >
-                  {makeOptions(whenConditions)}
-                </Select>
-              </FormControl>
             </Grid>
           </Grid>
         </Box>
