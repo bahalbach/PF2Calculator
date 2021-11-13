@@ -4,7 +4,9 @@ import { useAppDispatch, useAppSelector } from "../App/hooks";
 import {
   emptyActivityPathCreated,
   routineUpdated,
+  selectCreateNewActivity,
   selectRoutineById,
+  selectSelectedActivityPath,
   setNewActivityParent,
 } from "./RoutineSlice/routineSlice";
 import { ActivityPathStub } from "./ActivityPathStub";
@@ -21,13 +23,18 @@ import {
 } from "@mui/material";
 import { activityTypes } from "../Model/types";
 import { Box } from "@mui/system";
+import { ActivityPath } from "./Activity/ActivityPath";
 
 function SelectedRoutine({ routineId }: { routineId: number }) {
   // const selectedRoutine = useSelector(selectSelectedRoutine);
   const { name, startLevel, endLevel, description, apIds } = useAppSelector(
     (state: RootState) => selectRoutineById(state, routineId)!
   );
+  const selectedActivityPath = useAppSelector(selectSelectedActivityPath);
+  const createNewActivity = useAppSelector(selectCreateNewActivity);
+
   const dispatch = useAppDispatch();
+
   let [tempName, setTempName] = useState(name);
   const [tempDescription, setTempDescription] = useState(description);
   let [validLevels, setValidLevels] = useState([startLevel, endLevel]);
@@ -38,174 +45,178 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
     [startLevel, endLevel]
   );
 
+  const displayAllRoutines =
+    selectedActivityPath === undefined && !createNewActivity;
+
   return (
-    <Paper sx={{ my: 2, p: 1 }}>
-      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ p: 1 }}>
-        <Grid item xs={12} sm={8} md={12} lg={8}>
-          <TextField
-            fullWidth
-            label="Routine Name"
-            placeholder="Fighter d8 2 strikes"
-            value={tempName}
-            onChange={(e) => {
-              setTempName(e.target.value);
-            }}
-            onBlur={() =>
-              dispatch(
-                routineUpdated({ id: routineId, changes: { name: tempName } })
-              )
-            }
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} md={12} lg={4}>
-          <Typography align="center">
-            Valid Levels: {startLevel} to {endLevel}
-          </Typography>
-          <Box sx={{ px: 2 }}>
-            <Slider
-              getAriaLabel={() => "Valid levels"}
-              value={validLevels}
-              min={1}
-              max={20}
-              marks
-              // @ts-ignore
-              onChange={(e, nv: number[]) => setValidLevels(nv)}
+    <React.Fragment>
+      <Paper sx={{ my: 2, p: 1 }}>
+        <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ p: 1 }}>
+          <Grid item xs={12} sm={8} md={12} lg={8}>
+            <TextField
+              fullWidth
+              label="Routine Name"
+              placeholder="Fighter d8 2 strikes"
+              value={tempName}
+              onChange={(e) => {
+                setTempName(e.target.value);
+              }}
+              onBlur={() =>
+                dispatch(
+                  routineUpdated({ id: routineId, changes: { name: tempName } })
+                )
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={4} md={12} lg={4}>
+            <Typography align="center">
+              Valid Levels: {startLevel} to {endLevel}
+            </Typography>
+            <Box sx={{ px: 2 }}>
+              <Slider
+                getAriaLabel={() => "Valid levels"}
+                value={validLevels}
+                min={1}
+                max={20}
+                marks
+                // @ts-ignore
+                onChange={(e, nv: number[]) => setValidLevels(nv)}
+                onBlur={() =>
+                  dispatch(
+                    routineUpdated({
+                      id: routineId,
+                      changes: {
+                        startLevel: validLevels[0],
+                        endLevel: validLevels[1],
+                      },
+                    })
+                  )
+                }
+                valueLabelDisplay="auto"
+                getAriaValueText={(v) => `${v}`}
+              />
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              label="Routine Description"
+              placeholder="A Fighter making two strikes with a longsword. Critical Specialization at 5. 1d6 runes at 8 and 15."
+              value={tempDescription}
+              onChange={(e) => {
+                setTempDescription(e.target.value);
+              }}
               onBlur={() =>
                 dispatch(
                   routineUpdated({
                     id: routineId,
-                    changes: {
-                      startLevel: validLevels[0],
-                      endLevel: validLevels[1],
-                    },
+                    changes: { description: tempDescription },
                   })
                 )
               }
-              valueLabelDisplay="auto"
-              getAriaValueText={(v) => `${v}`}
             />
-          </Box>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            multiline
-            label="Routine Description"
-            placeholder="A Fighter making two strikes with a longsword. Critical Specialization at 5. 1d6 runes at 8 and 15."
-            value={tempDescription}
-            onChange={(e) => {
-              setTempDescription(e.target.value);
-            }}
-            onBlur={() =>
-              dispatch(
-                routineUpdated({
-                  id: routineId,
-                  changes: { description: tempDescription },
-                })
-              )
-            }
-          />
-        </Grid>
-      </Grid>
-      {/* <Paper sx={{ my: 2, p: 1 }}> */}
-      <List
-        id="routine-activity-list"
-        subheader={<ListSubheader>Activities</ListSubheader>}
-      >
-        {apIds.map((apId) => (
-          <ActivityPathStub key={apId} id={apId} level={0} />
-        ))}
-      </List>
-      {/* </Paper> */}
-      <Grid container spacing={{ xs: 1 }} sx={{ my: 2, p: 1 }}>
-        <Grid
-          item
-          container
-          xs={6}
-          sm={3}
-          md={6}
-          lg={3}
-          justifyContent="center"
+        {/* <Paper sx={{ my: 2, p: 1 }}> */}
+        <List
+          id="routine-activity-list"
+          subheader={<ListSubheader>Activities</ListSubheader>}
         >
-          <Button
-            size="small"
-            fullWidth
-            variant="contained"
-            onClick={() => dispatch(setNewActivityParent({ routineId }))}
+          {apIds.map((apId) => (
+            <ActivityPathStub key={apId} id={apId} level={0} />
+          ))}
+        </List>
+        {/* </Paper> */}
+        <Grid container spacing={{ xs: 1 }} sx={{ my: 2, p: 1 }}>
+          <Grid
+            item
+            container
+            xs={6}
+            sm={3}
+            md={6}
+            lg={3}
+            justifyContent="center"
           >
-            Create New Activity
-          </Button>
-        </Grid>
-        <Grid
-          item
-          container
-          xs={6}
-          sm={3}
-          md={6}
-          lg={3}
-          justifyContent="center"
-        >
-          <Button
-            size="small"
-            fullWidth
-            variant="outlined"
-            onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
+            <Button
+              size="small"
+              fullWidth
+              variant="contained"
+              onClick={() => dispatch(setNewActivityParent({ routineId }))}
+            >
+              Create New Activity
+            </Button>
+          </Grid>
+          <Grid
+            item
+            container
+            xs={6}
+            sm={3}
+            md={6}
+            lg={3}
+            justifyContent="center"
           >
-            New Empty Activity
-          </Button>
-        </Grid>
-        <Grid
-          item
-          container
-          xs={6}
-          sm={3}
-          md={6}
-          lg={3}
-          justifyContent="center"
-        >
-          <Button
-            size="small"
-            fullWidth
-            variant="outlined"
-            onClick={() =>
-              dispatch(
-                emptyActivityPathCreated({
-                  routineId,
-                  activityType: activityTypes.STRIKE,
-                })
-              )
-            }
+            <Button
+              size="small"
+              fullWidth
+              variant="outlined"
+              onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
+            >
+              New Empty Activity
+            </Button>
+          </Grid>
+          <Grid
+            item
+            container
+            xs={6}
+            sm={3}
+            md={6}
+            lg={3}
+            justifyContent="center"
           >
-            New Martial Strike
-          </Button>
-        </Grid>
-        <Grid
-          item
-          container
-          xs={6}
-          sm={3}
-          md={6}
-          lg={3}
-          justifyContent="center"
-        >
-          <Button
-            size="small"
-            fullWidth
-            variant="outlined"
-            onClick={() =>
-              dispatch(
-                emptyActivityPathCreated({
-                  routineId,
-                  activityType: activityTypes.SAVE,
-                })
-              )
-            }
+            <Button
+              size="small"
+              fullWidth
+              variant="outlined"
+              onClick={() =>
+                dispatch(
+                  emptyActivityPathCreated({
+                    routineId,
+                    activityType: activityTypes.STRIKE,
+                  })
+                )
+              }
+            >
+              New Martial Strike
+            </Button>
+          </Grid>
+          <Grid
+            item
+            container
+            xs={6}
+            sm={3}
+            md={6}
+            lg={3}
+            justifyContent="center"
           >
-            New Caster Save
-          </Button>
+            <Button
+              size="small"
+              fullWidth
+              variant="outlined"
+              onClick={() =>
+                dispatch(
+                  emptyActivityPathCreated({
+                    routineId,
+                    activityType: activityTypes.SAVE,
+                  })
+                )
+              }
+            >
+              New Caster Save
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
-      {/* <Button
+        {/* <Button
         variant="outlined"
         onClick={() =>
           dispatch(activityPathCreated({ routineId, isStrike: false }))
@@ -213,9 +224,13 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
       >
         + Save
       </Button> */}
-      {/* <EffectInput /> */}
-      {/* </div> */}
-    </Paper>
+        {/* <EffectInput /> */}
+        {/* </div> */}
+      </Paper>
+      {displayAllRoutines
+        ? apIds.map((apId) => <ActivityPath key={apId} id={apId} level={0} />)
+        : ""}
+    </React.Fragment>
   );
 }
 

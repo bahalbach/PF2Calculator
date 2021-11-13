@@ -168,7 +168,11 @@ export const routinesSlice = createSlice({
       state.parentRoutine = undefined;
     },
     setActivityPath: (state, action) => {
-      state.selectedActivityPath = action.payload;
+      if (state.selectedActivityPath === action.payload) {
+        state.selectedActivityPath = undefined;
+      } else {
+        state.selectedActivityPath = action.payload;
+      }
       state.parentActivity = undefined;
       state.parentRoutine = undefined;
     },
@@ -610,7 +614,7 @@ export const selectSelectedRoutineObject = (state: RootState) => {
 export const selectRoutineDescriptions = (state: RootState) => {
   return Object.values(state.routines.routines.entities)
     .filter((routine) => routine?.display)
-    .map((routine) => routine?.name + " " + routine?.description);
+    .map((routine) => routine?.name + ": " + routine?.description);
 };
 
 export const selectImportState = (state: RootState) => {

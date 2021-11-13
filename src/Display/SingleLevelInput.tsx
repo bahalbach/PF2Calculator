@@ -156,6 +156,12 @@ const SingleLevelInput = () => {
               })
             );
           }}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 100,
+            type: "number",
+          }}
         />
       </Grid>
       <Grid item xs={2}>
@@ -178,6 +184,12 @@ const SingleLevelInput = () => {
                 },
               })
             );
+          }}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 100,
+            type: "number",
           }}
         />
       </Grid>
@@ -202,6 +214,12 @@ const SingleLevelInput = () => {
               })
             );
           }}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 100,
+            type: "number",
+          }}
         />
       </Grid>
       <Grid item xs={2}>
@@ -225,6 +243,12 @@ const SingleLevelInput = () => {
               })
             );
           }}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 100,
+            type: "number",
+          }}
         />
       </Grid>
       <Grid item xs={2}>
@@ -247,6 +271,12 @@ const SingleLevelInput = () => {
                 },
               })
             );
+          }}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 100,
+            type: "number",
           }}
         />
       </Grid>
@@ -302,6 +332,12 @@ const WeaknessInput = ({ id, parentId }: { id: number; parentId: number }) => {
           setTempVal(newVal.toString());
           dispatch(weaknessUpdated({ id, changes: { value: newVal } }));
         }}
+        inputProps={{
+          step: 1,
+          min: -100,
+          max: 100,
+          type: "number",
+        }}
       />
     </Grid>
   );
@@ -336,6 +372,12 @@ const AddWeakness = ({ parentId }: { parentId: number }) => {
         onChange={(e) => {
           setTempVal(e.target.value);
           e.target.focus();
+        }}
+        inputProps={{
+          step: 1,
+          min: -100,
+          max: 100,
+          type: "number",
         }}
       />
     </Grid>

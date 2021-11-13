@@ -58,7 +58,7 @@ const Display = () => {
             />
           </Grid>
           <Grid item>
-            <Upload />
+            <Upload byLevel={true} />
           </Grid>
         </Grid>
         <Collapse in={showByLevel}>
@@ -69,17 +69,26 @@ const Display = () => {
       </Paper>
 
       <Paper sx={{ p: 1, my: 2 }}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={showSingleLevel}
-              onChange={() => setShowSingleLevel(!showSingleLevel)}
+        <Grid container>
+          <Grid item xs>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showSingleLevel}
+                  onChange={() => setShowSingleLevel(!showSingleLevel)}
+                />
+              }
+              label={
+                isBigEnough
+                  ? "Display Single Level Graph"
+                  : "Single Level Graph"
+              }
             />
-          }
-          label={
-            isBigEnough ? "Display Single Level Graph" : "Single Level Graph"
-          }
-        />
+          </Grid>
+          <Grid item>
+            <Upload byLevel={false} />
+          </Grid>
+        </Grid>
         <Collapse in={showSingleLevel}>
           <SingleLevelInput />
           {/* <JointInput /> */}

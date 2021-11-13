@@ -5,11 +5,15 @@ export const sharingSlice = createSlice({
   name: "sharing",
   initialState: {
     graphUrl: "",
+    singleLevelGraphUrl: "",
     imgLink: "",
   },
   reducers: {
     graphSaved: (state, action) => {
       state.graphUrl = action.payload;
+    },
+    singleLevelGraphSaved: (state, action) => {
+      state.singleLevelGraphUrl = action.payload;
     },
     saveImgLink: (state, action) => {
       state.imgLink = action.payload;
@@ -17,10 +21,11 @@ export const sharingSlice = createSlice({
   },
 });
 
-export const { graphSaved, saveImgLink } = sharingSlice.actions;
+export const { graphSaved, singleLevelGraphSaved, saveImgLink } =
+  sharingSlice.actions;
 
 export default sharingSlice.reducer;
 
-export const selectGraphUrl = (state: RootState) => {
-  return state.sharing.graphUrl;
+export const selectGraphUrl = (state: RootState, byLevel: boolean) => {
+  return byLevel ? state.sharing.graphUrl : state.sharing.singleLevelGraphUrl;
 };

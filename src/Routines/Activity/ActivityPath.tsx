@@ -64,7 +64,13 @@ import {
 import { Adjustment } from "../RoutineSlice/RoutineTypes";
 import { Box } from "@mui/system";
 
-export const ActivityPath = ({ id }: { id: number }) => {
+export const ActivityPath = ({
+  id,
+  level = 0,
+}: {
+  id: number;
+  level?: number;
+}) => {
   const {
     parentId,
     routineId,
@@ -80,134 +86,111 @@ export const ActivityPath = ({ id }: { id: number }) => {
   const dispatch = useAppDispatch();
 
   return (
-    <Paper sx={{ my: 2, p: 1 }}>
-      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
-        <Grid item xs="auto">
+    <React.Fragment>
+      <Paper sx={{ my: 2, p: 1, ml: level * 2 }}>
+        <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
+          <Grid item xs="auto">
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<DeleteIcon />}
+              onClick={(e) => {
+                dispatch(activityPathRemoved({ id, parentId, routineId }));
+              }}
+            >
+              Delete
+            </Button>
+          </Grid>
+          {parentId !== undefined ? (
+            <Grid item xs>
+              <TooltipSelect
+                title='Depending on the roll of the parent activity, should this activity happen. For example: to add another strike only when you hit with the previous one, have the second strike be a child of the first with the condition "Success or Better"'
+                value={condition}
+                label="Condition"
+                onChange={(e) =>
+                  dispatch(
+                    activityPathUpdated({
+                      id,
+                      changes: { condition: e.target.value },
+                    })
+                  )
+                }
+              >
+                {conditionOptions}
+              </TooltipSelect>
+            </Grid>
+          ) : (
+            ""
+          )}
+        </Grid>
+        <Roll id={id} />
+        {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
+
+        {damages.map((damageId) => (
+          <Damage parentId={id} id={damageId} key={damageId} />
+        ))}
+        {/* </List> */}
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => dispatch(damageCreated({ parentId: id }))}
+        >
+          Add Damage
+        </Button>
+
+        {effects.map((effectId) => (
+          <Effect parentId={id} id={effectId} key={effectId} />
+        ))}
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => dispatch(effectCreated({ parentId: id }))}
+        >
+          Add Effect
+        </Button>
+
+        <List subheader={<ListSubheader>Child Activities</ListSubheader>}>
+          {apIds.map((apId) => (
+            <ActivityPathStub
+              key={apId}
+              id={apId}
+              level={0}
+              displayChildren={false}
+            />
+          ))}
+        </List>
+
+        {type === activityTypes.STRIKE ? (
           <Button
-            variant="outlined"
-            size="small"
-            startIcon={<DeleteIcon />}
-            onClick={(e) => {
-              dispatch(activityPathRemoved({ id, parentId, routineId }));
+            variant="contained"
+            onClick={() => {
+              window.location.href = "#routine-activity-list";
+              dispatch(
+                activityPathContinued({
+                  parentId: id,
+                })
+              );
             }}
           >
-            Delete
+            Continue Attack
           </Button>
-        </Grid>
-        {parentId !== undefined ? (
-          <Grid item xs>
-            <TooltipSelect
-              title='Depending on the roll of the parent activity, should this activity happen. For example: to add another strike only when you hit with the previous one, have the second strike be a child of the first with the condition "Success or Better"'
-              value={condition}
-              label="Condition"
-              onChange={(e) =>
-                dispatch(
-                  activityPathUpdated({
-                    id,
-                    changes: { condition: e.target.value },
-                  })
-                )
-              }
-            >
-              {conditionOptions}
-            </TooltipSelect>
-          </Grid>
         ) : (
           ""
         )}
-      </Grid>
-      <Roll id={id} />
-      {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
-
-      {damages.map((damageId) => (
-        <Damage parentId={id} id={damageId} key={damageId} />
-      ))}
-      {/* </List> */}
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => dispatch(damageCreated({ parentId: id }))}
-      >
-        Add Damage
-      </Button>
-
-      {effects.map((effectId) => (
-        <Effect parentId={id} id={effectId} key={effectId} />
-      ))}
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => dispatch(effectCreated({ parentId: id }))}
-      >
-        Add Effect
-      </Button>
-
-      <List subheader={<ListSubheader>Child Activities</ListSubheader>}>
-        {apIds.map((apId) => (
-          <ActivityPathStub
-            key={apId}
-            id={apId}
-            level={0}
-            displayChildren={false}
-          />
-        ))}
-      </List>
-
-      {type === activityTypes.STRIKE ? (
         <Button
-          variant="contained"
+          variant="outlined"
           onClick={() => {
             window.location.href = "#routine-activity-list";
-            dispatch(
-              activityPathContinued({
-                parentId: id,
-              })
-            );
+            dispatch(setNewActivityParent({ parentId: id }));
           }}
         >
-          Continue Attack
+          New Child Activity
         </Button>
-      ) : (
-        ""
-      )}
-      <Button
-        variant="outlined"
-        onClick={() => {
-          window.location.href = "#routine-activity-list";
-          dispatch(setNewActivityParent({ parentId: id }));
-        }}
-      >
-        New Child Activity
-      </Button>
-
-      {/* <div className="box">
-        {apIds.map((apId) => (
-          <ActivityPath id={apId} key={apId} />
-        ))}
-        <button
-          className="add"
-          onClick={() =>
-            dispatch(
-              activityPathCreated({
-                parentId: id,
-                isStrike: true,
-                applyMAP: true,
-              })
-            )
-          }
-        >
-          + Strike
-        </button>
-        <button
-          className="add"
-          onClick={() =>
-            dispatch(activityPathCreated({ parentId: id, isStrike: false }))
-          }
-        >
-          + Save
-        </button>
-      </div> */}
-    </Paper>
+      </Paper>
+      {apIds.map((apId) => (
+        <ActivityPath key={apId} id={apId} level={level + 1} />
+      ))}
+    </React.Fragment>
   );
 };
 

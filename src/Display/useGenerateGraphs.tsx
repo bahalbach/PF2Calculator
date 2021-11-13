@@ -19,7 +19,7 @@ import createPlotlyComponent from "react-plotly.js/factory";
 import { defaultACs, defaultSaves } from "../Model/defaults";
 import { Dictionary } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../App/hooks";
-import { graphSaved } from "./sharingSlice";
+import { graphSaved, singleLevelGraphSaved } from "./sharingSlice";
 const Plot = createPlotlyComponent(Plotly);
 
 const useGenerateGraphs = (graphType: string) => {
@@ -42,6 +42,15 @@ const useGenerateGraphs = (graphType: string) => {
       dispatch(graphSaved(url));
     });
   };
+  const saveSingleLevelGraph = (_figure: any, graphDiv: Plotly.Root) => {
+    Plotly.toImage(graphDiv, {
+      format: "png",
+      height: 1000,
+      width: 1000,
+    }).then((url) => {
+      dispatch(singleLevelGraphSaved(url));
+    });
+  };
 
   const evaluator = new ActivityPathEvaluator(
     activityPaths,
@@ -56,12 +65,13 @@ const useGenerateGraphs = (graphType: string) => {
   let title = "@" + currentTarget.routineLevel;
   let byLevelTile = currentTarget.name;
 
-  title += " Vs ";
-  title += " AC: "; //+ defaultACs[currentTarget.ACTrend][displayLevel];
-  title += " Fort: "; //+ defaultSaves[currentTarget.FortTrend][displayLevel];
-  title += " Ref: "; //+ defaultSaves[currentTarget.RefTrend][displayLevel];
-  title += " Will: "; //+ defaultSaves[currentTarget.WillTrend][displayLevel];
-  title += " Per: "; //+ defaultSaves[currentTarget.PerTrend][displayLevel];
+  title += " Vs";
+  if (currentTarget.flatfooted) title += " flatfooted";
+  title += " AC: " + currentTarget.overrideAC; //+ defaultACs[currentTarget.ACTrend][displayLevel];
+  title += " F: " + currentTarget.overrideFort; //+ defaultSaves[currentTarget.FortTrend][displayLevel];
+  title += " R: " + currentTarget.overrideRef; //+ defaultSaves[currentTarget.RefTrend][displayLevel];
+  title += " W: " + currentTarget.overrideWill; //+ defaultSaves[currentTarget.WillTrend][displayLevel];
+  title += " P: " + currentTarget.overridePer; //+ defaultSaves[currentTarget.PerTrend][displayLevel];
 
   // byLevelTile += " Vs ";
   // byLevelTile += " AC: " + currentTarget.ACTrend;
@@ -127,6 +137,8 @@ const useGenerateGraphs = (graphType: string) => {
       }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
+      onInitialized={saveGraph}
+      onUpdate={saveGraph}
     />
   );
 
@@ -174,8 +186,8 @@ const useGenerateGraphs = (graphType: string) => {
       }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
-      onInitialized={saveGraph}
-      onUpdate={saveGraph}
+      onInitialized={saveSingleLevelGraph}
+      onUpdate={saveSingleLevelGraph}
     />
   );
   let byLevelPerDamageChart = (
