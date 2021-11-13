@@ -452,13 +452,13 @@ const DamageDisplay = ({
     ")";
 
   return (
-    <Grid container alignItems="baseline" columnSpacing={{ xs: 2 }}>
+    <Grid container alignItems="center" columnSpacing={{ xs: 2 }}>
       <Grid item xs="auto">
         <ListItemButton onClick={onClick}>
           <Typography variant="h6">{"Damage "}</Typography>
         </ListItemButton>
       </Grid>
-      <Grid item alignSelf="center" sx={{ ml: -2, mt: 1, width: 100 }}>
+      <Grid item sx={{ ml: -2, mt: 1, width: 100 }}>
         <Slider
           size="small"
           value={level}

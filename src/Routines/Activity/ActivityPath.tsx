@@ -77,6 +77,7 @@ export const ActivityPath = ({
     condition,
 
     type,
+    MAP,
 
     damages,
     effects,
@@ -85,10 +86,24 @@ export const ActivityPath = ({
 
   const dispatch = useAppDispatch();
 
+  const [showContent, setShowContent] = useState(false);
+
+  const showMAP = type !== activityTypes.SAVE && MAPvalues[MAP] !== 0;
+
   return (
     <React.Fragment>
       <Paper sx={{ my: 2, p: 1, ml: level * 2 }}>
-        <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0 }}>
+        <Grid container spacing={{ xs: 1, sm: 2 }} alignItems="center">
+          <Grid item xs="auto">
+            <ListItemButton onClick={() => setShowContent(!showContent)}>
+              <Typography variant="h6">Activity</Typography>
+            </ListItemButton>
+          </Grid>
+          <Grid item xs="auto">
+            <Typography>
+              {type} {showMAP ? MAPvalues[MAP] : ""}
+            </Typography>
+          </Grid>
           <Grid item xs="auto">
             <Button
               variant="outlined"
@@ -123,69 +138,71 @@ export const ActivityPath = ({
             ""
           )}
         </Grid>
-        <Roll id={id} />
-        {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
+        <Collapse in={showContent} mountOnEnter>
+          <Roll id={id} />
+          {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
 
-        {damages.map((damageId) => (
-          <Damage parentId={id} id={damageId} key={damageId} />
-        ))}
-        {/* </List> */}
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => dispatch(damageCreated({ parentId: id }))}
-        >
-          Add Damage
-        </Button>
-
-        {effects.map((effectId) => (
-          <Effect parentId={id} id={effectId} key={effectId} />
-        ))}
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => dispatch(effectCreated({ parentId: id }))}
-        >
-          Add Effect
-        </Button>
-
-        <List subheader={<ListSubheader>Child Activities</ListSubheader>}>
-          {apIds.map((apId) => (
-            <ActivityPathStub
-              key={apId}
-              id={apId}
-              level={0}
-              displayChildren={false}
-            />
+          {damages.map((damageId) => (
+            <Damage parentId={id} id={damageId} key={damageId} />
           ))}
-        </List>
-
-        {type === activityTypes.STRIKE ? (
+          {/* </List> */}
           <Button
-            variant="contained"
+            variant="outlined"
+            size="small"
+            onClick={() => dispatch(damageCreated({ parentId: id }))}
+          >
+            Add Damage
+          </Button>
+
+          {effects.map((effectId) => (
+            <Effect parentId={id} id={effectId} key={effectId} />
+          ))}
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => dispatch(effectCreated({ parentId: id }))}
+          >
+            Add Effect
+          </Button>
+
+          <List subheader={<ListSubheader>Child Activities</ListSubheader>}>
+            {apIds.map((apId) => (
+              <ActivityPathStub
+                key={apId}
+                id={apId}
+                level={0}
+                displayChildren={false}
+              />
+            ))}
+          </List>
+
+          {type === activityTypes.STRIKE ? (
+            <Button
+              variant="contained"
+              onClick={() => {
+                window.location.href = "#routine-activity-list";
+                dispatch(
+                  activityPathContinued({
+                    parentId: id,
+                  })
+                );
+              }}
+            >
+              Continue Attack
+            </Button>
+          ) : (
+            ""
+          )}
+          <Button
+            variant="outlined"
             onClick={() => {
               window.location.href = "#routine-activity-list";
-              dispatch(
-                activityPathContinued({
-                  parentId: id,
-                })
-              );
+              dispatch(setNewActivityParent({ parentId: id }));
             }}
           >
-            Continue Attack
+            New Child Activity
           </Button>
-        ) : (
-          ""
-        )}
-        <Button
-          variant="outlined"
-          onClick={() => {
-            window.location.href = "#routine-activity-list";
-            dispatch(setNewActivityParent({ parentId: id }));
-          }}
-        >
-          New Child Activity
-        </Button>
+        </Collapse>
       </Paper>
       {apIds.map((apId) => (
         <ActivityPath key={apId} id={apId} level={level + 1} />
@@ -406,13 +423,13 @@ const RollBonusDisplay = ({
   // updateLevel(1);
 
   return (
-    <Grid container columnSpacing={{ xs: 2 }} alignItems="baseline">
+    <Grid container columnSpacing={{ xs: 2 }} alignItems="center">
       <Grid item xs="auto">
         <ListItemButton onClick={onClick}>
           <Typography variant="h6">{"Roll "}</Typography>
         </ListItemButton>
       </Grid>
-      <Grid item alignSelf="center" sx={{ ml: -2, mt: 1, width: 100 }}>
+      <Grid item sx={{ ml: -2, mt: 1, width: 100 }}>
         <Slider
           size="small"
           value={level}
