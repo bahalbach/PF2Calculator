@@ -451,7 +451,7 @@ const DamageDisplay = ({
     <Grid container alignItems="baseline" columnSpacing={{ xs: 2 }}>
       <Grid item xs="auto">
         <ListItemButton onClick={onClick}>
-          <Typography variant="h6">{"Damage: "}</Typography>
+          <Typography variant="h6">{"Damage "}</Typography>
         </ListItemButton>
       </Grid>
       <Grid item alignSelf="center" sx={{ ml: -2, mt: 1, width: 100 }}>
