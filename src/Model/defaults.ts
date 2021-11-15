@@ -1,4 +1,3 @@
-import { activityDamageDice } from "./newActivityInfo";
 import {
   ACTrends,
   profTrends,

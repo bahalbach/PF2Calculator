@@ -1,7 +1,7 @@
 import React from "react";
 
 import ReactGA from "react-ga4";
-import { Adsense } from "@ctrl/react-adsense";
+// import { Adsense } from "@ctrl/react-adsense";
 
 import Display from "../Display/Display";
 import SelectedRoutine from "../Routines/SelectedRoutine";
@@ -112,7 +112,11 @@ const Controls = () => {
 const Donate = () => {
   return (
     <Box>
-      <a href="https://www.buymeacoffee.com/bahalbach" target="_blank">
+      <a
+        href="https://www.buymeacoffee.com/bahalbach"
+        target="_blank"
+        rel="noreferrer"
+      >
         <img
           src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png"
           alt="Buy Me A Coffee"

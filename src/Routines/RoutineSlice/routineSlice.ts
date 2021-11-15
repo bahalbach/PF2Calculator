@@ -1,7 +1,6 @@
 import {
   createEntityAdapter,
   createSlice,
-  EntityState,
   PayloadAction,
   Update,
 } from "@reduxjs/toolkit";
@@ -72,7 +71,6 @@ import {
   RoutineObject,
   State,
 } from "./RoutineTypes";
-import { damageTrendValues } from "../../Model/defaults";
 
 export const routinesAdapter = createEntityAdapter<Routine>();
 export const activityPathAdapter = createEntityAdapter<ActivityPath>();
@@ -964,7 +962,7 @@ const createCantripDamages = (
       persistent: true,
     };
     newDamages.push(id);
-    damageAdapter.addOne(state.damages, cantripDamage);
+    damageAdapter.addOne(state.damages, persDamage);
   }
   return newDamages;
 };

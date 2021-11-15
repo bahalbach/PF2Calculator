@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  FormControl,
-  Select,
-  InputLabel,
-  TextField,
-  Grid,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
+import { TextField, Grid, IconButton, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
 import { Dispatch } from "redux";
 import { levelOptions } from "../../Model/options";
 import { Adjustment } from "../RoutineSlice/RoutineTypes";
-import { ArrowRight } from "@mui/icons-material";
 import { TooltipSelect } from "../../TooltipSelect";
 
 type Adjustments = {

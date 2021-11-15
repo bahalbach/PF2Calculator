@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../App/hooks";
-import { selecttargetById, Target, targetUpdated } from "./targetSlice";
+import { selecttargetById, targetUpdated } from "./targetSlice";
 // import { damageTypes } from "../Model/types";
 // import {
 //   selectweaknessById,
@@ -12,19 +12,7 @@ import { selecttargetById, Target, targetUpdated } from "./targetSlice";
 // } from "./weaknessSlice";
 // import { EntityId } from "@reduxjs/toolkit";
 import { RootState } from "../App/store";
-import { ACOptions, SaveOptions } from "../Model/options";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  Grid,
-  Paper,
-  TextField,
-  FormControlLabel,
-  Switch,
-  Slider,
-  Typography,
-} from "@mui/material";
+import { Grid, TextField, FormControlLabel, Switch } from "@mui/material";
 
 const JointInput = () => {
   const id = 0;
@@ -69,6 +57,7 @@ const JointInput = () => {
           }}
           onBlur={() => {
             let newVal = parseFloat(perMul);
+            if (Number.isNaN(newVal)) newVal = 0;
             setPerMul(newVal.toString());
             dispatch(
               targetUpdated({

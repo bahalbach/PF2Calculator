@@ -219,8 +219,8 @@ export const damageTypes = {
   S: "slashing",
   BLEED: "bleed",
   FIRE: "fire",
-  COLD: "Cold",
-  MENTAL: "Mental",
+  COLD: "cold",
+  MENTAL: "mental",
   FORCE: "force",
   PRECISION: "precision",
 } as const;

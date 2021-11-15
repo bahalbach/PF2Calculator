@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../App/hooks";
-import { selecttargetById, Target, targetUpdated } from "./targetSlice";
+import { selecttargetById, targetUpdated } from "./targetSlice";
 // import { damageTypes } from "../Model/types";
 // import {
 //   selectweaknessById,
@@ -12,24 +12,17 @@ import { selecttargetById, Target, targetUpdated } from "./targetSlice";
 // } from "./weaknessSlice";
 // import { EntityId } from "@reduxjs/toolkit";
 import { RootState } from "../App/store";
-import {
-  ACOptions,
-  makeOptions,
-  SaveOptions,
-  weaknessOptions,
-} from "../Model/options";
+import { weaknessOptions } from "../Model/options";
 import {
   FormControl,
   InputLabel,
   Select,
   Grid,
-  Paper,
   TextField,
-  FormControlLabel,
-  Switch,
   Slider,
   Typography,
   SelectChangeEvent,
+  Tooltip,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import {
@@ -44,11 +37,6 @@ import { damageTypes } from "../Model/types";
 const SingleLevelInput = () => {
   const id = 0;
   const {
-    persistentMultiplier,
-    flatfooted,
-    percentSelectedRoutine,
-
-    graphType,
     routineLevel,
     targetLevel,
     overrideAC,
@@ -72,222 +60,242 @@ const SingleLevelInput = () => {
     setRef(overrideRef.toString());
     setWill(overrideWill.toString());
     setPer(overridePer.toString());
-  }, [overrideAC]);
+  }, [overrideAC, overrideFort, overrideRef, overrideWill, overridePer]);
 
   const dispatch = useAppDispatch();
 
+  // const [showContent, setShowContent] = useState(false);
+
   return (
-    <Grid
-      container
-      columns={{ xs: 10 }}
-      spacing={{ xs: 1, sm: 2 }}
-      sx={{ my: 1, p: 1 }}
-    >
-      <Grid item xs={5}>
-        <Box sx={{ px: 2 }}>
-          <Typography>Level: {routineLevel}</Typography>
-          <Slider
-            // aria-label="Always visible"
-            value={routineLevel}
-            // getAriaValueText={(v) => `${v}`}
-            // valueLabelDisplay="on"
-            step={1}
-            min={1}
-            max={20}
-            marks
-            onChange={(e, nv) => {
+    <React.Fragment>
+      <Grid
+        container
+        spacing={{ xs: 1, sm: 2 }}
+        sx={{ my: 1, p: 1 }}
+        alignItems="center"
+      >
+        <Grid item xs={6} container justifyContent="center">
+          <Typography id="routine-level">Level: {routineLevel}</Typography>
+
+          <Box sx={{ px: 2, width: 1 }}>
+            <Slider
+              aria-labelledby="routine-level"
+              valueLabelDisplay="auto"
+              value={routineLevel}
+              step={1}
+              min={1}
+              max={20}
+              marks
+              onChange={(_, nv) => {
+                let newTargetLevel = Number(nv) + (targetLevel - routineLevel);
+                newTargetLevel = Math.min(24, Math.max(-1, newTargetLevel));
+                dispatch(
+                  targetUpdated({
+                    id,
+                    changes: {
+                      routineLevel: nv,
+                      targetLevel: newTargetLevel,
+                    },
+                  })
+                );
+              }}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={6} container justifyContent="center">
+          <Typography id="target-level">Target Level: {targetLevel}</Typography>
+          <Box sx={{ px: 2, width: 1 }}>
+            <Slider
+              aria-labelledby="target-level"
+              valueLabelDisplay="auto"
+              value={targetLevel}
+              step={1}
+              min={-1}
+              max={24}
+              marks
+              onChange={(e, nv) => {
+                dispatch(
+                  targetUpdated({
+                    id,
+                    changes: {
+                      targetLevel: nv,
+                    },
+                  })
+                );
+              }}
+            />
+          </Box>
+        </Grid>
+
+        {/* <Grid item xs="auto">
+          <ListItemButton onClick={() => setShowContent(!showContent)}>
+            <Typography variant="h6">Target</Typography>
+          </ListItemButton>
+        </Grid>
+        <Grid item xs container justifyContent="center">
+          <Typography>{`${AC}/${Fort}/${Ref}/${Will}/${Per}`}</Typography>
+        </Grid> */}
+      </Grid>
+      {/* <Collapse in={showContent}> */}
+      <Grid container spacing={{ xs: 1, sm: 2 }} justifyContent="center">
+        <Grid item xs={4} sm={2}>
+          <TextField
+            fullWidth
+            label="AC"
+            value={AC}
+            onChange={(e) => {
+              setAC(e.target.value);
+              e.target.focus();
+            }}
+            onBlur={() => {
+              let newVal = parseInt(AC);
+              setAC(newVal.toString());
               dispatch(
                 targetUpdated({
                   id,
                   changes: {
-                    routineLevel: nv,
+                    overrideAC: newVal,
                   },
                 })
               );
             }}
+            inputProps={{
+              step: 1,
+              min: 0,
+              max: 100,
+              type: "number",
+            }}
           />
-        </Box>
-      </Grid>
-
-      <Grid item xs={5}>
-        <Box sx={{ px: 2 }}>
-          <Typography>Target Level: {targetLevel}</Typography>
-          <Slider
-            // aria-label="Always visible"
-            value={targetLevel}
-            // getAriaValueText={(v) => `${v}`}
-            // valueLabelDisplay="on"
-            step={1}
-            min={-1}
-            max={24}
-            marks
-            onChange={(e, nv) => {
+        </Grid>
+        <Grid item xs={4} sm={2}>
+          <TextField
+            fullWidth
+            label="Fort"
+            value={Fort}
+            onChange={(e) => {
+              setFort(e.target.value);
+              e.target.focus();
+            }}
+            onBlur={() => {
+              let newVal = parseInt(Fort);
+              setFort(newVal.toString());
               dispatch(
                 targetUpdated({
                   id,
                   changes: {
-                    targetLevel: nv,
+                    overrideFort: newVal,
                   },
                 })
               );
             }}
+            inputProps={{
+              step: 1,
+              min: 0,
+              max: 100,
+              type: "number",
+            }}
           />
-        </Box>
+        </Grid>
+        <Grid item xs={4} sm={2}>
+          <TextField
+            fullWidth
+            label="Ref"
+            value={Ref}
+            onChange={(e) => {
+              setRef(e.target.value);
+              e.target.focus();
+            }}
+            onBlur={() => {
+              let newVal = parseInt(Ref);
+              setRef(newVal.toString());
+              dispatch(
+                targetUpdated({
+                  id,
+                  changes: {
+                    overrideRef: newVal,
+                  },
+                })
+              );
+            }}
+            inputProps={{
+              step: 1,
+              min: 0,
+              max: 100,
+              type: "number",
+            }}
+          />
+        </Grid>
+        <Grid item xs={4} sm={2}>
+          <TextField
+            fullWidth
+            label="Will"
+            value={Will}
+            onChange={(e) => {
+              setWill(e.target.value);
+              e.target.focus();
+            }}
+            onBlur={() => {
+              let newVal = parseInt(Will);
+              setWill(newVal.toString());
+              dispatch(
+                targetUpdated({
+                  id,
+                  changes: {
+                    overrideWill: newVal,
+                  },
+                })
+              );
+            }}
+            inputProps={{
+              step: 1,
+              min: 0,
+              max: 100,
+              type: "number",
+            }}
+          />
+        </Grid>
+        <Grid item xs={4} sm={2}>
+          <TextField
+            fullWidth
+            label="Perception"
+            value={Per}
+            onChange={(e) => {
+              setPer(e.target.value);
+              e.target.focus();
+            }}
+            onBlur={() => {
+              let newVal = parseInt(Per);
+              setPer(newVal.toString());
+              dispatch(
+                targetUpdated({
+                  id,
+                  changes: {
+                    overridePer: newVal,
+                  },
+                })
+              );
+            }}
+            inputProps={{
+              step: 1,
+              min: 0,
+              max: 100,
+              type: "number",
+            }}
+          />
+        </Grid>
       </Grid>
-
-      <Grid item xs={2}>
-        <TextField
-          fullWidth
-          label="AC"
-          value={AC}
-          onChange={(e) => {
-            setAC(e.target.value);
-            e.target.focus();
-          }}
-          onBlur={() => {
-            let newVal = parseInt(AC);
-            setAC(newVal.toString());
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  overrideAC: newVal,
-                },
-              })
-            );
-          }}
-          inputProps={{
-            step: 1,
-            min: 0,
-            max: 100,
-            type: "number",
-          }}
-        />
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 1, p: 1 }}>
+        <Grid item container alignItems="center" xs="auto">
+          <Typography>Resistance/Weakness: </Typography>
+        </Grid>
+        {weaknesses.map((weaknessId) => (
+          <WeaknessInput parentId={id} id={weaknessId} key={weaknessId} />
+        ))}
+        <AddWeakness parentId={id} />
       </Grid>
-      <Grid item xs={2}>
-        <TextField
-          fullWidth
-          label="Fort"
-          value={Fort}
-          onChange={(e) => {
-            setFort(e.target.value);
-            e.target.focus();
-          }}
-          onBlur={() => {
-            let newVal = parseInt(Fort);
-            setFort(newVal.toString());
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  overrideFort: newVal,
-                },
-              })
-            );
-          }}
-          inputProps={{
-            step: 1,
-            min: 0,
-            max: 100,
-            type: "number",
-          }}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          fullWidth
-          label="Ref"
-          value={Ref}
-          onChange={(e) => {
-            setRef(e.target.value);
-            e.target.focus();
-          }}
-          onBlur={() => {
-            let newVal = parseInt(Ref);
-            setRef(newVal.toString());
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  overrideRef: newVal,
-                },
-              })
-            );
-          }}
-          inputProps={{
-            step: 1,
-            min: 0,
-            max: 100,
-            type: "number",
-          }}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          fullWidth
-          label="Will"
-          value={Will}
-          onChange={(e) => {
-            setWill(e.target.value);
-            e.target.focus();
-          }}
-          onBlur={() => {
-            let newVal = parseInt(Will);
-            setWill(newVal.toString());
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  overrideWill: newVal,
-                },
-              })
-            );
-          }}
-          inputProps={{
-            step: 1,
-            min: 0,
-            max: 100,
-            type: "number",
-          }}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          fullWidth
-          label="Perception"
-          value={Per}
-          onChange={(e) => {
-            setPer(e.target.value);
-            e.target.focus();
-          }}
-          onBlur={() => {
-            let newVal = parseInt(Per);
-            setPer(newVal.toString());
-            dispatch(
-              targetUpdated({
-                id,
-                changes: {
-                  overridePer: newVal,
-                },
-              })
-            );
-          }}
-          inputProps={{
-            step: 1,
-            min: 0,
-            max: 100,
-            type: "number",
-          }}
-        />
-      </Grid>
-      <Grid item container alignItems="center">
-        <Typography>Resistance/Weakness: </Typography>
-      </Grid>
-      {weaknesses.map((weaknessId) => (
-        <WeaknessInput parentId={id} id={weaknessId} key={weaknessId} />
-      ))}
-      <AddWeakness parentId={id} />
-    </Grid>
+      {/* </Collapse> */}
+    </React.Fragment>
   );
 };
 
@@ -318,27 +326,30 @@ const WeaknessInput = ({ id, parentId }: { id: number; parentId: number }) => {
   return (
     <Grid item>
       <WeaknessSelect value={type} onChange={updateOrRemoveWeakness} />
-      <TextField
-        size="small"
-        label="Value"
-        value={tempVal}
-        sx={{ width: "7ch" }}
-        onChange={(e) => {
-          setTempVal(e.target.value);
-          e.target.focus();
-        }}
-        onBlur={() => {
-          let newVal = parseInt(tempVal);
-          setTempVal(newVal.toString());
-          dispatch(weaknessUpdated({ id, changes: { value: newVal } }));
-        }}
-        inputProps={{
-          step: 1,
-          min: -100,
-          max: 100,
-          type: "number",
-        }}
-      />
+      <Tooltip title="Positive numbers are resistances. Negative numbers are weaknesses.">
+        <TextField
+          size="small"
+          label="Value"
+          value={tempVal}
+          sx={{ width: "9ch" }}
+          onChange={(e) => {
+            setTempVal(e.target.value);
+            e.target.focus();
+          }}
+          onBlur={() => {
+            let newVal = parseInt(tempVal);
+            if (Number.isNaN(newVal)) newVal = 0;
+            setTempVal(newVal.toString());
+            dispatch(weaknessUpdated({ id, changes: { value: newVal } }));
+          }}
+          inputProps={{
+            step: 1,
+            min: -100,
+            max: 100,
+            type: "number",
+          }}
+        />
+      </Tooltip>
     </Grid>
   );
 };
@@ -351,10 +362,12 @@ const AddWeakness = ({ parentId }: { parentId: number }) => {
   const addWeakness = (e: SelectChangeEvent) => {
     if (e.target.value !== damageTypes.NONE) {
       // need to create a new weakness
+      let value = Number(tempVal);
+      if (Number.isNaN(value)) value = 0;
       dispatch(
         weaknessCreated({
           type: e.target.value,
-          value: tempVal,
+          value: value,
           parentId: parentId,
         })
       );
@@ -364,22 +377,24 @@ const AddWeakness = ({ parentId }: { parentId: number }) => {
   return (
     <Grid item>
       <WeaknessSelect value={damageTypes.NONE} onChange={addWeakness} />
-      <TextField
-        size="small"
-        label="Value"
-        value={tempVal}
-        sx={{ width: "7ch" }}
-        onChange={(e) => {
-          setTempVal(e.target.value);
-          e.target.focus();
-        }}
-        inputProps={{
-          step: 1,
-          min: -100,
-          max: 100,
-          type: "number",
-        }}
-      />
+      <Tooltip title="Positive numbers are resistances. Negative numbers are weaknesses.">
+        <TextField
+          size="small"
+          label="Value"
+          value={tempVal}
+          sx={{ width: "9ch" }}
+          onChange={(e) => {
+            setTempVal(e.target.value);
+            // e.target.focus();
+          }}
+          inputProps={{
+            step: 1,
+            min: -100,
+            max: 100,
+            type: "number",
+          }}
+        />
+      </Tooltip>
     </Grid>
   );
 };

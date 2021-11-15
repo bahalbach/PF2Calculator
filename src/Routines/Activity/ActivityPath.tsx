@@ -6,7 +6,6 @@ import { LevelList } from "./LevelList";
 import {
   activityPathContinued,
   damageCreated,
-  emptyActivityPathCreated,
   setNewActivityParent,
 } from "../RoutineSlice/routineSlice";
 import {
@@ -29,7 +28,6 @@ import {
   ItemTrend,
   MAP,
   ProfTrend,
-  rollTypes,
   StatTrend,
 } from "../../Model/types";
 import { Damage } from "./Damage";
@@ -38,7 +36,6 @@ import { effectCreated } from "../RoutineSlice/routineSlice";
 import { RootState } from "../../App/store";
 import {
   Button,
-  ButtonBase,
   Collapse,
   FormControl,
   Grid,
@@ -49,13 +46,11 @@ import {
   Paper,
   Select,
   Slider,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ActivityPathStub } from "../ActivityPathStub";
 import { TooltipSelect } from "../../TooltipSelect";
-import { selectRoutineLevel } from "../../Display/targetSlice";
 import {
   itemTrendValues,
   MAPvalues,

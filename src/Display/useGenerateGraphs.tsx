@@ -16,7 +16,6 @@ import { ActivityPathEvaluator } from "../Calculation/EvaluateActivityPath";
 
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
-import { defaultACs, defaultSaves } from "../Model/defaults";
 import { Dictionary } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../App/hooks";
 import { graphSaved, singleLevelGraphSaved } from "./sharingSlice";
