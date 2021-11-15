@@ -100,7 +100,10 @@ const Routines = () => {
           >
             <Button
               variant="contained"
-              onClick={() => dispatch(routineCreated({ copy: false }))}
+              onClick={() => {
+                window.location.href = "#create-new-activity";
+                dispatch(routineCreated({ copy: false }));
+              }}
             >
               Create New Routine
             </Button>

@@ -190,6 +190,37 @@ export const cantrips = [
 ] as const;
 export const spells = ["Fear", "Fireball"] as const;
 
+export const getStrikeName = (strikeInfo: StrikeInfo) => {
+  let name = strikeInfo.cClass;
+  if (strikeInfo.classOption !== "")
+    name += " (" + strikeInfo.classOption + ")";
+  name += " - ";
+  name +=
+    strikeInfo.numStrikes +
+    " " +
+    strikeInfo.activity +
+    " - d" +
+    strikeInfo.dieSize;
+  for (let trait in strikeInfo.traits) {
+    if (strikeInfo.traits[trait]) {
+      name += " " + trait;
+      if (trait === "fatal") {
+        name += " d" + strikeInfo.fatalSize;
+      }
+      if (trait === "deadly") {
+        name += " d" + strikeInfo.deadlySize;
+      }
+    }
+  }
+  if (strikeInfo.critSpec) {
+    name += " " + strikeInfo.critSpecType;
+  }
+
+  let description = "";
+
+  return [name, description];
+};
+
 export const classWeaponProf = (className: string, classOption: string) => {
   if (["Fighter", "Gunslinger"].includes(className))
     return profTrends.FIGHTERWEAPON;

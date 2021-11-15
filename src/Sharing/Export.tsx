@@ -50,14 +50,15 @@ const ImportExport = () => {
       dispatch(importRoutine(r));
     }
   };
-  // const copy = () => {
-  //   if (textAreaRef.current) {
-  //     textAreaRef.current.select();
-  //     textAreaRef!.current.setSelectionRange(0, 99999); /* For mobile devices */
-  //     navigator.clipboard.writeText(textAreaRef.current.value);
-  //     // document.execCommand("copy");
-  //   }
-  // };
+  const copy = () => {
+    if (navigator.clipboard !== undefined) {
+      // textAreaRef.current.select();
+      // textAreaRef!.current.setSelectionRange(0, 99999); /* For mobile devices */
+      navigator.clipboard.writeText(textValue);
+      setTextValue("Copied");
+      // document.execCommand("copy");
+    }
+  };
   return (
     <Paper sx={{ p: 1 }}>
       <Typography variant="h5">Import and Export Here:</Typography>
@@ -67,6 +68,9 @@ const ImportExport = () => {
         </Grid>
         <Grid item>
           <Button onClick={paste}>Export</Button>
+        </Grid>
+        <Grid item>
+          <Button onClick={copy}>Copy</Button>
         </Grid>
         {/* <Grid item>
           <Button onClick={saveRoutines}>Save Routines</Button>
@@ -81,6 +85,7 @@ const ImportExport = () => {
           <TextField
             fullWidth
             multiline
+            maxRows={5}
             label="Routine code"
             placeholder="Enter routine code here to import."
             value={textValue}

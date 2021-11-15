@@ -109,7 +109,7 @@ export default function NewActivity({
 }
 
 function StrikeSelection() {
-  const [runes, setRunes] = useState<DieTrend>(dieTrends.RUNE);
+  const [runes, setRunes] = useState<DieTrend>(dieTrends.RUNE2);
   const [cClass, setCClass] = useState<typeof classes[number]>(classes[6]);
   const [activity, setActivity] = useState<string>("Strike");
   const [cantrip, setCantrip] = useState<string>(cantrips[0]);
@@ -174,7 +174,7 @@ function StrikeSelection() {
   };
 
   return (
-    <Grid container spacing={{ xs: 1, sm: 2 }}>
+    <Grid container spacing={{ xs: 1, sm: 2 }} id="create-new-activity">
       <Grid item>
         <TooltipSelect
           title="Which class's proficiency and weapon specialization to use."

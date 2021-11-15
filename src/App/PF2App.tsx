@@ -97,7 +97,7 @@ const Controls = () => {
         ""
       )}
       <Export />
-      <Grid container sx={{ mt: 2 }} justifyContent="space-evenly">
+      <Grid container sx={{ my: 2 }} justifyContent="space-evenly">
         <Grid item>
           <Donate />
         </Grid>

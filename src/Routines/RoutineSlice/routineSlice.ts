@@ -37,6 +37,7 @@ import {
   getCantripDamage,
   getSpellTarget,
   hasBackswing,
+  getStrikeName,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -207,6 +208,7 @@ export const routinesSlice = createSlice({
         action: PayloadAction<{ id: number; copy: boolean }>
       ) => {
         const { id, copy } = action.payload;
+        state.parentRoutine = undefined;
         if (copy && state.selectedRoutine !== undefined) {
           const routine = state.routines.entities[state.selectedRoutine]!;
           const name = routine.name + " Copy";
@@ -220,19 +222,19 @@ export const routinesSlice = createSlice({
         } else {
           routinesAdapter.addOne(state.routines, {
             id,
-            name: "New Routine",
+            name: "",
             display: true,
             apIds: [],
             levelDiff: 0,
-            description: "Enter a description here.",
+            description: "",
             startLevel: 1,
             endLevel: 20,
           });
+          state.parentRoutine = id;
         }
         state.selectedRoutine = id;
         state.selectedActivityPath = undefined;
         state.parentActivity = undefined;
-        state.parentRoutine = undefined;
       },
       prepare: ({ copy = false }) => {
         const id = ++routineId;
@@ -280,6 +282,8 @@ export const routinesSlice = createSlice({
           id,
           routineId,
         } as ActivityPath;
+        let name = "";
+        let description = "";
         if (activityType !== undefined) {
           if (activityType === activityTypes.STRIKE) {
             let damages = copyDamages(state, defaultStrikeParent.damages);
@@ -292,6 +296,7 @@ export const routinesSlice = createSlice({
               damages,
               effects,
             };
+            name = "Martial - 1 Strike - d8 Sword";
           }
           if (activityType === activityTypes.SAVE) {
             let damages = copyDamages(state, defaultSaveParent.damages);
@@ -304,10 +309,18 @@ export const routinesSlice = createSlice({
               damages,
               effects,
             };
+            name = "Caster - Fireball";
           }
+        } else {
         }
 
         state.routines.entities[routineId]!.apIds.push(id);
+        if (state.routines.entities[routineId]!.name === "") {
+          state.routines.entities[routineId]!.name = name;
+        }
+        if (state.routines.entities[routineId]!.description === "") {
+          state.routines.entities[routineId]!.description = description;
+        }
         activityPathAdapter.addOne(state.activityPaths, ap);
         state.selectedActivityPath = id;
         state.parentActivity = undefined;
@@ -343,6 +356,8 @@ export const routinesSlice = createSlice({
 
       const { strikeInfo, skillInfo, cantripInfo, spellInfo } = action.payload;
       let ids: number[] = [];
+      let name = "";
+      let description = "";
 
       if (strikeInfo !== undefined) {
         ids = createStrikeActivity(
@@ -352,6 +367,7 @@ export const routinesSlice = createSlice({
           strikeInfo,
           strikeInfo.numPrevStrikes
         );
+        [name, description] = getStrikeName(strikeInfo);
       }
       if (skillInfo !== undefined) {
         ids = createSkillActivity(state, parentId, routineId, skillInfo);
@@ -365,6 +381,12 @@ export const routinesSlice = createSlice({
 
       if (routineId !== undefined) {
         state.routines.entities[routineId]!.apIds.push(...ids);
+        if (state.routines.entities[routineId]!.name === "") {
+          state.routines.entities[routineId]!.name = name;
+        }
+        if (state.routines.entities[routineId]!.description === "") {
+          state.routines.entities[routineId]!.description = description;
+        }
       }
       if (parentId !== undefined) {
         state.activityPaths.entities[parentId]!.apIds.push(...ids);
@@ -600,7 +622,7 @@ export const selectCreateNewActivity = (state: RootState) =>
   (state.routines.parentRoutine !== undefined ||
     state.routines.parentActivity !== undefined);
 export const selectSelectedRoutineObject = (state: RootState) => {
-  if (state.routines.selectedRoutine) {
+  if (state.routines.selectedRoutine !== undefined) {
     const routine =
       state.routines.routines.entities[state.routines.selectedRoutine]!;
     const routineObject = {

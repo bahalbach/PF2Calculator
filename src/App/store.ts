@@ -96,7 +96,7 @@ store.dispatch(
     id: 1,
     damageCondition: dCond.STRIKE,
 
-    dieTrend: dieTrends.RUNE,
+    dieTrend: dieTrends.RUNE2,
     dieAdjustments: { ...empty },
     diceSize: 6,
     fatal: false,
