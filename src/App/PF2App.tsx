@@ -97,7 +97,12 @@ const Controls = () => {
         ""
       )}
       <Export />
-      <Grid container sx={{ my: 2 }} justifyContent="space-evenly">
+      <Grid
+        container
+        sx={{ my: 2 }}
+        justifyContent="space-evenly"
+        alignItems="center"
+      >
         <Grid item>
           <Donate />
         </Grid>
@@ -111,7 +116,7 @@ const Controls = () => {
 
 const Donate = () => {
   return (
-    <Box>
+    <Box sx={{ height: 60, width: 217 }}>
       <a
         href="https://www.buymeacoffee.com/bahalbach"
         target="_blank"
