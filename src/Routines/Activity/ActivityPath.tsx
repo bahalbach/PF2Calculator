@@ -63,9 +63,11 @@ import { Box } from "@mui/system";
 export const ActivityPath = ({
   id,
   level = 0,
+  open = false,
 }: {
   id: number;
   level?: number;
+  open?: boolean;
 }) => {
   const {
     parentId,
@@ -82,7 +84,7 @@ export const ActivityPath = ({
 
   const dispatch = useAppDispatch();
 
-  const [showContent, setShowContent] = useState(false);
+  const [showContent, setShowContent] = useState(open);
 
   const showMAP = type !== activityTypes.SAVE && MAPvalues[MAP] !== 0;
 

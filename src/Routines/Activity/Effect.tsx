@@ -54,8 +54,19 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
 
   return (
     <React.Fragment>
-      <Grid container columnSpacing={{ xs: 2 }} alignItems="baseline">
+      <Grid container columnSpacing={{ xs: 2 }} alignItems="center">
         <Grid item xs="auto">
+          <IconButton
+            aria-label="delete"
+            color="primary"
+            onClick={(e) => {
+              dispatch(effectRemoved({ id, parentId }));
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Grid>
+        <Grid item xs="auto" sx={{ ml: -2 }}>
           <ListItemButton onClick={() => setShowContent(!showContent)}>
             <Typography variant="h6">Effect</Typography>
           </ListItemButton>
@@ -75,17 +86,6 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
           }}
         >
           <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
-            <Grid item xs="auto">
-              <IconButton
-                aria-label="delete"
-                color="primary"
-                onClick={(e) => {
-                  dispatch(effectRemoved({ id, parentId }));
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Grid>
             <Grid item xs>
               <TooltipSelect
                 fullWidth={true}
@@ -152,7 +152,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                 <TextField
                   size="small"
                   label="Value"
-                  sx={{ width: "7ch" }}
+                  sx={{ width: "9ch" }}
                   value={value}
                   onChange={(e) => {
                     setValue(e.target.value);
@@ -160,6 +160,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                   }}
                   onBlur={() => {
                     let newVal = parseInt(value);
+                    if (Number.isNaN(newVal)) newVal = 0;
                     setValue(newVal.toString());
                     dispatch(
                       effectUpdated({
@@ -169,6 +170,12 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                         },
                       })
                     );
+                  }}
+                  inputProps={{
+                    step: 1,
+                    min: 0,
+                    max: 10,
+                    type: "number",
                   }}
                 />
               </Grid>

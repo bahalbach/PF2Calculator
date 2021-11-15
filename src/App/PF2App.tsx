@@ -90,7 +90,7 @@ const Controls = () => {
         ""
       )}
       {selectedActivityPath !== undefined ? (
-        <ActivityPath id={selectedActivityPath} />
+        <ActivityPath id={selectedActivityPath} open={true} />
       ) : createNewActivity ? (
         <NewActivity />
       ) : (
@@ -132,7 +132,7 @@ const Contact = () => {
   return (
     <Button
       sx={{ height: 60, width: 217 }}
-      variant="outlined"
+      variant="contained"
       color="primary"
       href="mailto:bahalbach@gmail.com"
     >

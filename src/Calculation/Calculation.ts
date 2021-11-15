@@ -258,6 +258,12 @@ function calculateExpectedDamage(
       bonus += itemTrendValues[activity.itemTrend][level];
       bonus += activity.bonusAdjustments[level];
       bonus += MAPvalues[activity.MAP];
+
+      bonus +=
+        targetState["Cicumstance Bonus to next attack"] +
+        targetState["Status Bonus to all attacks"];
+      targetState["Cicumstance Bonus to next attack"] = 0;
+
       DC = targetValue + defenseBonus - targetPenalty;
       if (activity.targetType === defenses.AC) {
         if (targetState.Flatfooted) DC -= 2;

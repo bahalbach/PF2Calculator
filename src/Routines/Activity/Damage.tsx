@@ -133,6 +133,8 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           damageAdjustments,
         }}
         onClick={() => setShowContent(!showContent)}
+        id={id}
+        parentId={parentId}
       />
       <Collapse in={showContent}>
         <Box
@@ -145,17 +147,6 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
         >
           {/* <Divider textAlign="left" sx={{ mt: 0, mb: 1 }}></Divider> */}
           <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
-            <Grid item xs="auto">
-              <IconButton
-                color="primary"
-                size="small"
-                onClick={(e) => {
-                  dispatch(damageRemoved({ id, parentId }));
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Grid>
             {/* <Grid item xs="auto">
               <Typography>Apply damage </Typography>
             </Grid> */}
@@ -417,6 +408,8 @@ interface PropsType {
     damageAdjustments: Adjustment;
   };
   onClick: any;
+  id: number;
+  parentId: number;
 }
 const DamageDisplay = ({
   damageInfo: {
@@ -429,8 +422,11 @@ const DamageDisplay = ({
     damageAdjustments,
   },
   onClick,
+  id,
+  parentId,
 }: PropsType) => {
   const [level, setLevel] = useState(20);
+  const dispatch = useAppDispatch();
   let diceNumber = dieTrendValues[dieTrend][level] + dieAdjustments[level];
   let staticDamage = damageAdjustments[level];
   for (let dt of damageTrend) {
@@ -454,6 +450,17 @@ const DamageDisplay = ({
   return (
     <Grid container alignItems="center" columnSpacing={{ xs: 2 }}>
       <Grid item xs="auto">
+        <IconButton
+          color="primary"
+          size="small"
+          onClick={(e) => {
+            dispatch(damageRemoved({ id, parentId }));
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Grid>
+      <Grid item xs="auto" sx={{ ml: -2 }}>
         <ListItemButton onClick={onClick}>
           <Typography variant="h6">{"Damage "}</Typography>
         </ListItemButton>

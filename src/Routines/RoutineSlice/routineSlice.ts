@@ -36,6 +36,7 @@ import {
   getCantripTarget,
   getCantripDamage,
   getSpellTarget,
+  hasBackswing,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -149,7 +150,7 @@ const defaultDamage = {
 const defaultEffect = {
   effectCondition: conditions.ALWAYS,
   effectType: effectTypes.FLATFOOT,
-  effectValue: 0,
+  effectValue: 1,
   startLevel: 1,
   endLevel: 20,
   damageWhen: [whenConditions.Always],
@@ -833,6 +834,18 @@ const createStrikeEffects = (
     newEffects.push(id);
     effectAdapter.addOne(state.effects, critSpecEffect);
   }
+  if (hasBackswing(strikeInfo)) {
+    id = ++effectId;
+    const backswingEffect: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition: conditions.FAIL_WORSE,
+      effectType: effectValueTypes.BONUSC1,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, backswingEffect);
+  }
+
   return newEffects;
 };
 

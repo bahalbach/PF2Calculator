@@ -297,6 +297,29 @@ class ActivityPathEvaluator {
                 };
               break;
 
+            case effectTypes.BONUSC1:
+              if (
+                effectValue &&
+                targetStates[i]["Cicumstance Bonus to next attack"] <
+                  effectValue
+              )
+                targetStates[i] = {
+                  ...targetStates[i],
+                  "Cicumstance Bonus to next attack": effectValue,
+                };
+              break;
+
+            case effectTypes.BONUSSA:
+              if (
+                effectValue &&
+                targetStates[i]["Status Bonus to all attacks"] < effectValue
+              )
+                targetStates[i] = {
+                  ...targetStates[i],
+                  "Status Bonus to all attacks": effectValue,
+                };
+              break;
+
             default:
               console.log(`Effect type ${effectType} not implemented`);
           }

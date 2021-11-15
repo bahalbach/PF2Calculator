@@ -136,6 +136,7 @@ store.dispatch(
     id: 0,
     effectCondition: conditions.CRIT,
     effectType: effectTypes.FLATFOOT,
+    effectValue: 1,
     startLevel: 5,
     endLevel: 20,
     damageWhen: [whenConditions.Always],

@@ -245,6 +245,8 @@ export type EffectStateType =
 export const effectValueTypes = {
   FRIGHTENED: "Frightened",
   CLUMSY: "Clumsy",
+  BONUSC1: "Cicumstance Bonus to next attack",
+  BONUSSA: "Status Bonus to all attacks",
 } as const;
 export type EffectValueType =
   typeof effectValueTypes[keyof typeof effectValueTypes];

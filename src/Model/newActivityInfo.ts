@@ -153,6 +153,7 @@ export const classOptions: ClassOptions = {
 
 export const weaponTraits = [
   "agile",
+  "backswing",
   "deadly",
   "fatal",
   "forceful",
@@ -469,6 +470,9 @@ export const classDamageAdjustments = (strikeInfo: StrikeInfo) => {
   return adjustments;
 };
 
+export const hasBackswing = (strikeInfo: StrikeInfo) => {
+  return strikeInfo.traits["backswing"];
+};
 export const hasDeadly = (strikeInfo: StrikeInfo) => {
   return strikeInfo.traits["deadly"];
 };
@@ -495,7 +499,7 @@ export const hasHammerCritSpec = (strikeInfo: StrikeInfo) => {
   return strikeInfo.critSpec && strikeInfo.critSpecType === "Hammer";
 };
 export const hasSpearCritSpec = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.critSpec && strikeInfo.critSpecType === "Hammer";
+  return strikeInfo.critSpec && strikeInfo.critSpecType === "Spear";
 };
 export const critSpecDice = (strikeInfo: StrikeInfo) => {
   const adjustments: { [key: number]: number } = {};
@@ -552,7 +556,7 @@ export const getSkillEffects = (skillInfo: SkillInfo) => {
         {
           effectCondition: conditions.AT_LEAST_SUCC,
           effectType: effectTypes.PRONE,
-          effectValue: 0,
+          effectValue: 1,
         },
       ];
     case "Grapple":
@@ -560,12 +564,12 @@ export const getSkillEffects = (skillInfo: SkillInfo) => {
         {
           effectCondition: conditions.SUCC,
           effectType: effectTypes.GRAPPLED,
-          effectValue: 0,
+          effectValue: 1,
         },
         {
           effectCondition: conditions.CRIT,
           effectType: effectTypes.RESTRAINED,
-          effectValue: 0,
+          effectValue: 1,
         },
       ];
     case "Demoralize":

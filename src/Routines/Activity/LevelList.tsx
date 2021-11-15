@@ -112,7 +112,7 @@ export const LevelList = (
         <TextField
           size="small"
           label="Bonus"
-          sx={{ width: "7ch" }}
+          sx={{ width: "9ch" }}
           value={entries[i][1]}
           onChange={(e) => {
             let newEntries = entries.slice();

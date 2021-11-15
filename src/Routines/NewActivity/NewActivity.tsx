@@ -72,45 +72,45 @@ export default function NewActivity({
 
   return (
     <Paper sx={{ my: 2, p: 1 }}>
-      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ m: 2, p: 2 }}>
-        <Grid item>
+      {/* <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ m: 2, p: 2 }}>
+        <Grid item xs="auto">
           <Typography>Enter activity information</Typography>
-        </Grid>
-        <Grid item>
-          <FormControl>
-            <InputLabel>Activity Type</InputLabel>
-            <Select
-              value={activityType}
-              label="Activity Type"
-              onChange={(e) => {
-                setActivityType(e.target.value);
-              }}
-            >
-              {makeOptions(activityTypes)}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item>
-          {activityTypes.Strike === activityType ? (
-            <StrikeSelection />
-          ) : activityTypes.Skill === activityType ? (
-            <SkillSelection />
-          ) : activityTypes.Cantrip === activityType ? (
-            <CantripSelection />
-          ) : activityTypes.Spell === activityType ? (
-            <SpellSelection />
-          ) : (
-            ""
-          )}
-        </Grid>
-      </Grid>
+        </Grid> */}
+      {/* <Grid item xs="auto"> */}
+      <FormControl fullWidth sx={{ my: 2, p: 1 }}>
+        <InputLabel>Activity Type</InputLabel>
+        <Select
+          value={activityType}
+          label="Activity Type"
+          onChange={(e) => {
+            setActivityType(e.target.value);
+          }}
+        >
+          {makeOptions(activityTypes)}
+        </Select>
+      </FormControl>
+      {/* </Grid> */}
+      {/* <Grid item> */}
+      {activityTypes.Strike === activityType ? (
+        <StrikeSelection />
+      ) : activityTypes.Skill === activityType ? (
+        <SkillSelection />
+      ) : activityTypes.Cantrip === activityType ? (
+        <CantripSelection />
+      ) : activityTypes.Spell === activityType ? (
+        <SpellSelection />
+      ) : (
+        ""
+      )}
+      {/* </Grid> */}
+      {/* </Grid> */}
     </Paper>
   );
 }
 
 function StrikeSelection() {
   const [runes, setRunes] = useState<DieTrend>(dieTrends.RUNE);
-  const [cClass, setCClass] = useState<typeof classes[number]>(classes[7]);
+  const [cClass, setCClass] = useState<typeof classes[number]>(classes[6]);
   const [activity, setActivity] = useState<string>("Strike");
   const [cantrip, setCantrip] = useState<string>(cantrips[0]);
   const [classOption, setClassOption] = useState<string>("");
@@ -176,156 +176,126 @@ function StrikeSelection() {
   return (
     <Grid container spacing={{ xs: 1, sm: 2 }}>
       <Grid item>
-        <FormControl>
-          <InputLabel>Damage Rune Levels</InputLabel>
-          <Select
-            value={runes}
-            label="Damage Rune Levels"
-            onChange={(e) => {
-              setRunes(e.target.value as DieTrend);
-            }}
-          >
-            {makeOptions(runeTrends)}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item>
-        <FormControl>
-          <InputLabel>Class</InputLabel>
-          <Select
-            value={cClass}
-            label="Class"
-            onChange={(e) => {
-              setClass(e.target.value as typeof classes[number]);
-            }}
-          >
-            {makeOptions(classes)}
-          </Select>
-        </FormControl>
+        <TooltipSelect
+          title="Which class's proficiency and weapon specialization to use."
+          value={cClass}
+          label="Class"
+          onChange={(e) => {
+            setClass(e.target.value as typeof classes[number]);
+          }}
+        >
+          {makeOptions(classes)}
+        </TooltipSelect>
       </Grid>
 
       {showClassOptions() ? (
         <Grid item>
-          <FormControl>
-            <InputLabel>Class Option</InputLabel>
-            <Select
-              value={classOption}
-              label="Class Option"
-              onChange={(e) => {
-                setClassOption(e.target.value);
-              }}
-            >
-              {makeOptions(classOptions[cClass])}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="Which abilities are applied"
+            value={classOption}
+            label="Class Option"
+            onChange={(e) => {
+              setClassOption(e.target.value);
+            }}
+          >
+            {makeOptions(classOptions[cClass])}
+          </TooltipSelect>
         </Grid>
       ) : (
         ""
       )}
 
       <Grid item>
-        <FormControl>
-          <InputLabel>Activity</InputLabel>
-          <Select
-            value={activity}
-            label="Activity"
-            onChange={(e) => {
-              setActivity(e.target.value);
-            }}
-          >
-            {
-              // @ts-ignore
-              makeOptions(strikeActivities)
-            }
-          </Select>
-        </FormControl>
+        <TooltipSelect
+          title="Which activity to use"
+          value={activity}
+          label="Activity"
+          onChange={(e) => {
+            setActivity(e.target.value);
+          }}
+        >
+          {
+            // @ts-ignore
+            makeOptions(strikeActivities)
+          }
+        </TooltipSelect>
       </Grid>
       {showCantrip() ? (
         <Grid item>
-          <FormControl>
-            <InputLabel>Cantrip</InputLabel>
-            <Select
-              value={cantrip}
-              label="Cantrip"
-              onChange={(e) => {
-                setCantrip(e.target.value);
-              }}
-            >
-              {makeOptions(cantrips)}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="Which spell to add to the strike"
+            value={cantrip}
+            label="Spell"
+            onChange={(e) => {
+              setCantrip(e.target.value);
+            }}
+          >
+            {makeOptions(cantrips)}
+          </TooltipSelect>
         </Grid>
       ) : (
         ""
       )}
       <Grid item>
-        <FormControl>
-          <InputLabel>Attack Abilitiy Score</InputLabel>
-          <Select
-            value={attackScore}
-            label="Attack Abilitiy Score"
-            onChange={(e) => {
-              setAttackScore(e.target.value as StatTrend);
-            }}
-          >
-            {
-              // @ts-ignore
-              makeOptions(statTrends)
-            }
-          </Select>
-        </FormControl>
+        <TooltipSelect
+          title="What ability score bonus progression to add to the attack roll."
+          value={attackScore}
+          label="Attack Abilitiy Score"
+          onChange={(e) => {
+            setAttackScore(e.target.value as StatTrend);
+          }}
+        >
+          {
+            // @ts-ignore
+            makeOptions(statTrends)
+          }
+        </TooltipSelect>
       </Grid>
       <Grid item>
-        <FormControl>
-          <InputLabel>Damage Abilitiy Score</InputLabel>
-          <Select
-            value={damageScore}
-            label="Damage Abilitiy Score"
-            onChange={(e) => {
-              setDamageScore(e.target.value as StatTrend);
-            }}
-          >
-            {
-              // @ts-ignore
-              makeOptions(statTrends)
-            }
-          </Select>
-        </FormControl>
+        <TooltipSelect
+          title="What ability score bonus progression to add to the damage roll. Not applied to ranged attacks."
+          value={damageScore}
+          label="Damage Abilitiy Score"
+          onChange={(e) => {
+            setDamageScore(e.target.value as StatTrend);
+          }}
+        >
+          {
+            // @ts-ignore
+            makeOptions(statTrends)
+          }
+        </TooltipSelect>
       </Grid>
       {showCantripScore() ? (
         <Grid item>
-          <FormControl>
-            <InputLabel>Mental Abilitiy Score</InputLabel>
-            <Select
-              value={cantripScore}
-              label="Cantrip Abilitiy Score"
-              onChange={(e) => {
-                setCantripScore(e.target.value as StatTrend);
-              }}
-            >
-              {
-                // @ts-ignore
-                makeOptions(statTrends)
-              }
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="What ability score bonus progression to add to the damage roll."
+            value={cantripScore}
+            label="Mental Abilitiy Score"
+            onChange={(e) => {
+              setCantripScore(e.target.value as StatTrend);
+            }}
+          >
+            {
+              // @ts-ignore
+              makeOptions(statTrends)
+            }
+          </TooltipSelect>
         </Grid>
       ) : (
         ""
       )}
       <Grid item>
-        <FormControl>
-          <InputLabel>Damage Die</InputLabel>
-          <Select
-            value={dieSize}
-            label="Damage Die"
-            onChange={(e) => {
-              setDieSize(Number(e.target.value));
-            }}
-          >
-            {diceSizeOptions}
-          </Select>
-        </FormControl>
+        <TooltipSelect
+          title="Weapon damage die"
+          value={dieSize}
+          label="Damage Die"
+          onChange={(e) => {
+            setDieSize(Number(e.target.value));
+          }}
+        >
+          {diceSizeOptions}
+        </TooltipSelect>
       </Grid>
 
       {/* Weapon Traits */}
@@ -364,36 +334,32 @@ function StrikeSelection() {
       </Grid>
       {traits["deadly"] ? (
         <Grid item>
-          <FormControl>
-            <InputLabel>Deadly Die</InputLabel>
-            <Select
-              value={deadlySize}
-              label="Deadly Die"
-              onChange={(e) => {
-                setDeadlySize(Number(e.target.value));
-              }}
-            >
-              {diceSizeOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="Deadly damage die."
+            value={deadlySize}
+            label="Deadly Die"
+            onChange={(e) => {
+              setDeadlySize(Number(e.target.value));
+            }}
+          >
+            {diceSizeOptions}
+          </TooltipSelect>
         </Grid>
       ) : (
         ""
       )}
       {traits["fatal"] ? (
         <Grid item>
-          <FormControl>
-            <InputLabel>Fatal Die</InputLabel>
-            <Select
-              value={fatalSize}
-              label="Fatal Die"
-              onChange={(e) => {
-                setFatalSize(Number(e.target.value));
-              }}
-            >
-              {diceSizeOptions}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="Fatal damage die."
+            value={fatalSize}
+            label="Fatal Die"
+            onChange={(e) => {
+              setFatalSize(Number(e.target.value));
+            }}
+          >
+            {diceSizeOptions}
+          </TooltipSelect>
         </Grid>
       ) : (
         ""
@@ -413,8 +379,11 @@ function StrikeSelection() {
       {/* crit spec level slider */}
       {critSpec ? (
         <Grid item>
-          <Typography align="center">At Level {critSpecLevel}</Typography>
+          <Typography align="center" id="crit-spec-level">
+            At Level {critSpecLevel}
+          </Typography>
           <Slider
+            aria-labelledby="crit-spec-level"
             value={critSpecLevel}
             min={1}
             max={20}
@@ -427,22 +396,33 @@ function StrikeSelection() {
       )}
       {critSpec ? (
         <Grid item>
-          <FormControl>
-            <InputLabel>Weapon Group</InputLabel>
-            <Select
-              value={critSpecType}
-              label="Weapon Group"
-              onChange={(e) => setCritSpecType(e.target.value)}
-            >
-              {makeOptions(critSpecs)}
-            </Select>
-          </FormControl>
+          <TooltipSelect
+            title="What weapon group's effect to apply on a critical hit."
+            value={critSpecType}
+            label="Weapon Group"
+            onChange={(e) => setCritSpecType(e.target.value)}
+          >
+            {makeOptions(critSpecs)}
+          </TooltipSelect>
         </Grid>
       ) : (
         ""
       )}
 
       <Grid item>
+        <TooltipSelect
+          title="What levels the damages from property runes such as 'flaming' are applied."
+          value={runes}
+          label="Damage Rune Levels"
+          onChange={(e) => {
+            setRunes(e.target.value as DieTrend);
+          }}
+        >
+          {makeOptions(runeTrends)}
+        </TooltipSelect>
+      </Grid>
+
+      <Grid item xs="auto">
         <TooltipSelect
           title="Select the number of previous attacks."
           value={numPrevStrikes}
@@ -454,7 +434,7 @@ function StrikeSelection() {
           {makeOptions([0, 1, 2])}
         </TooltipSelect>
       </Grid>
-      <Grid item xs={6} sm={3} md={4} lg={2}>
+      <Grid item xs="auto">
         <TooltipSelect
           title="Select the number of attacks to make with the selected options."
           value={numStrikes}
@@ -468,7 +448,7 @@ function StrikeSelection() {
       </Grid>
 
       {/* Add Strike button */}
-      <Grid item>
+      <Grid item xs="auto">
         <Button
           variant="contained"
           onClick={() => dispatch(activityPathCreated({ strikeInfo }))}
