@@ -45,6 +45,7 @@ import {
   spells,
   SpellInfo,
   spellProfTrends,
+  attackSpells,
 } from "../../Model/newActivityInfo";
 import { TooltipSelect } from "../../TooltipSelect";
 
@@ -111,8 +112,11 @@ export default function NewActivity({
 function StrikeSelection() {
   const [runes, setRunes] = useState<DieTrend>(dieTrends.RUNE2);
   const [cClass, setCClass] = useState<typeof classes[number]>(classes[6]);
-  const [activity, setActivity] = useState<string>("Strike");
-  const [cantrip, setCantrip] = useState<string>(cantrips[0]);
+  const [activity, setActivity] =
+    useState<typeof strikeActivities[number]>("Strike");
+  const [spell, setSpell] = useState<typeof attackSpells[number]>(
+    attackSpells[0]
+  );
   const [classOption, setClassOption] = useState<string>("");
   const [attackScore, setAttackScore] = useState<StatTrend>(statTrends.AS18a);
   const [damageScore, setDamageScore] = useState<StatTrend>(statTrends.AS18a);
@@ -137,7 +141,7 @@ function StrikeSelection() {
     cClass,
     classOption,
     activity,
-    cantrip,
+    spell,
     attackScore,
     damageScore,
     cantripScore,
@@ -166,10 +170,24 @@ function StrikeSelection() {
     return classOptions[cClass].length > 0;
   };
   const showCantrip = (): boolean => {
+    if (activity === "Spell Strike") {
+      return true;
+    }
     return false;
   };
   const showCantripScore = (): boolean => {
-    if (cClass === "Inventor") return true;
+    if (cClass === "Inventor") {
+      if (
+        classOption === "Overdrive Success" ||
+        classOption === "Overdrive Critical"
+      ) {
+        return true;
+      }
+    }
+    if (activity === "Spell Strike") {
+      return true;
+    }
+
     return false;
   };
 
@@ -211,7 +229,7 @@ function StrikeSelection() {
           value={activity}
           label="Activity"
           onChange={(e) => {
-            setActivity(e.target.value);
+            setActivity(e.target.value as typeof strikeActivities[number]);
           }}
         >
           {
@@ -224,13 +242,13 @@ function StrikeSelection() {
         <Grid item>
           <TooltipSelect
             title="Which spell to add to the strike"
-            value={cantrip}
+            value={spell}
             label="Spell"
             onChange={(e) => {
-              setCantrip(e.target.value);
+              setSpell(e.target.value as typeof attackSpells[number]);
             }}
           >
-            {makeOptions(cantrips)}
+            {makeOptions(attackSpells)}
           </TooltipSelect>
         </Grid>
       ) : (

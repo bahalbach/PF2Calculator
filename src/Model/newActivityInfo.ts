@@ -3,6 +3,7 @@ import {
   conditions,
   DamageTrend,
   damageTrends,
+  DamageType,
   damageTypes,
   dCond,
   defenses,
@@ -20,10 +21,10 @@ import {
 
 export type StrikeInfo = {
   runes: DieTrend;
-  cClass: string;
+  cClass: typeof classes[number];
   classOption: string;
-  activity: string;
-  cantrip: string;
+  activity: typeof strikeActivities[number];
+  spell: typeof attackSpells[number];
   attackScore: StatTrend;
   damageScore: StatTrend;
   cantripScore: StatTrend;
@@ -125,6 +126,7 @@ const magusOptions = ["Normal", "Arcane Cascade"] as const;
 export const strikeActivities = [
   "Strike",
   "Power Attack",
+  "Spell Strike",
   "Ki Strike",
 ] as const;
 type ClassOptions = { [key in typeof classes[number]]: readonly string[] };
@@ -188,7 +190,14 @@ export const cantrips = [
   "Ray of Frost",
   "Telekinetic Projectile",
 ] as const;
-export const spells = ["Fear", "Fireball"] as const;
+export const spells = ["Fear", "Fireball", "Heroism"] as const;
+
+export const attackSpells = [
+  "Gouging Claw",
+  "Produce Flame",
+  "Ray of Frost",
+  "Telekinetic Projectile",
+];
 
 export const getStrikeName = (strikeInfo: StrikeInfo) => {
   let name = strikeInfo.cClass;
@@ -266,7 +275,11 @@ export const classAdjustments = (
   for (let i = 1; i <= 20; i++) {
     currentValue = 0;
 
-    if (strikeInfo.cClass === "Ranger (Flurry)" && i >= 17)
+    if (
+      strikeInfo.cClass === "Ranger" &&
+      strikeInfo.classOption === "Flurry Edge" &&
+      i >= 17
+    )
       currentValue += Math.min(strikeNumber, 2);
 
     if (strikeInfo.activity === "Ki Strike") currentValue += 1;
@@ -357,6 +370,9 @@ export const hasActivityDamageDice = (strikeInfo: StrikeInfo) => {
   if (strikeInfo.activity === "Ki Strike") {
     return true;
   }
+  if (strikeInfo.activity === "Spell Strike") {
+    return true;
+  }
   return false;
 };
 
@@ -368,10 +384,62 @@ export const activityDamageDice = (strikeInfo: StrikeInfo) => {
       damageType: damageTypes.FORCE,
     };
   }
+  if (strikeInfo.activity === "Spell Strike") {
+    return getSpellDamage(strikeInfo.spell, strikeInfo.cantripScore);
+  }
   return {
     dieTrend: dieTrends.NONE,
     diceSize: diceSizes[6],
     damageType: damageTypes.NONE,
+  };
+};
+
+const getSpellDamage = (
+  spell: typeof attackSpells[number],
+  abilityScore: StatTrend
+) => {
+  let damageType: DamageType = damageTypes.B;
+  let diceSize: number = diceSizes[4];
+  let dieTrend = dieTrends.SPELLLEVEL1;
+  let damageTrend = [abilityScore];
+
+  if (spell === "Telekinetic Projectile") {
+    diceSize = diceSizes[6];
+  }
+  if (spell === "Produce Flame") {
+    damageType = damageTypes.FIRE;
+  }
+  if (spell === "Gouging Claw") {
+    damageType = damageTypes.BLEED;
+  }
+  if (spell === "Ray of Frost") {
+    damageType = damageTypes.COLD;
+  }
+
+  return { damageType, dieTrend, diceSize, damageTrend };
+};
+
+export const hasActivityCritDamage = (strikeInfo: StrikeInfo) => {
+  return (
+    strikeInfo.spell === "Produce Flame" || strikeInfo.spell === "Gouging Claw"
+  );
+};
+
+export const activityCritDamage = (strikeInfo: StrikeInfo) => {
+  let damageType: DamageType = damageTypes.B;
+  let diceSize = diceSizes[4];
+  if (strikeInfo.spell === "Produce Flame") {
+    damageType = damageTypes.FIRE;
+  }
+  if (strikeInfo.spell === "Gouging Claw") {
+    damageType = damageTypes.BLEED;
+  }
+
+  return {
+    damageType,
+    diceSize,
+    dieTrend: dieTrends.SPELLLEVEL1,
+    persistent: true,
   };
 };
 

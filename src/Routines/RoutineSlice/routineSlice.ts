@@ -38,6 +38,8 @@ import {
   getSpellTarget,
   hasBackswing,
   getStrikeName,
+  hasActivityCritDamage,
+  activityCritDamage,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -750,14 +752,22 @@ const createStrikeDamages = (
   }
 
   if (hasActivityDamageDice(strikeInfo)) {
-    let { dieTrend, diceSize, damageType } = activityDamageDice(strikeInfo);
     id = ++damageId;
     const activityDamage: Damage = {
       ...defaultDamage,
       id,
-      dieTrend,
-      diceSize,
-      damageType,
+      ...activityDamageDice(strikeInfo),
+    };
+    damageAdapter.addOne(state.damages, activityDamage);
+    newDamages.push(id);
+  }
+  if (hasActivityCritDamage(strikeInfo)) {
+    id = ++damageId;
+    const activityDamage: Damage = {
+      ...defaultDamage,
+      id,
+      damageCondition: dCond.CRIT,
+      ...activityCritDamage(strikeInfo),
     };
     damageAdapter.addOne(state.damages, activityDamage);
     newDamages.push(id);
@@ -1088,6 +1098,45 @@ const createSpellEffects = (
     };
     newEffects.push(id);
     effectAdapter.addOne(state.effects, succ);
+  } else if (spellInfo.spell === "Heroism") {
+    let id = ++effectId;
+    const e3: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition: conditions.ALWAYS,
+      effectType: effectTypes.BONUSSA,
+      effectValue: 1,
+      startLevel: 5,
+      endLevel: 10,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, e3);
+
+    id = ++effectId;
+    const e6: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition: conditions.ALWAYS,
+      effectType: effectTypes.BONUSSA,
+      effectValue: 1,
+      startLevel: 11,
+      endLevel: 16,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, e6);
+
+    id = ++effectId;
+    const e9: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition: conditions.ALWAYS,
+      effectType: effectTypes.BONUSSA,
+      effectValue: 1,
+      startLevel: 17,
+      endLevel: 20,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, e9);
   }
 
   return newEffects;
