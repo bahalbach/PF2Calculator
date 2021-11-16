@@ -20,6 +20,7 @@ import {
 import {
   DamageTrend,
   damageTrends,
+  DamageType,
   DieTrend,
   whenConditions,
 } from "../../Model/types";
@@ -131,6 +132,8 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           fatalDie,
           damageTrend,
           damageAdjustments,
+          persistent,
+          damageType,
         }}
         onClick={() => setShowContent(!showContent)}
         id={id}
@@ -308,7 +311,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                     dispatch(
                       damageUpdated({
                         id,
-                        changes: { diceSize: e.target.value },
+                        changes: { diceSize: Number(e.target.value) },
                       })
                     )
                   }
@@ -350,7 +353,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                       dispatch(
                         damageUpdated({
                           id,
-                          changes: { fatalDie: e.target.value },
+                          changes: { fatalDie: Number(e.target.value) },
                         })
                       )
                     }
@@ -406,6 +409,8 @@ interface PropsType {
     fatalDie: number;
     damageTrend: DamageTrend[];
     damageAdjustments: Adjustment;
+    persistent: boolean;
+    damageType: DamageType;
   };
   onClick: any;
   id: number;
@@ -420,6 +425,8 @@ const DamageDisplay = ({
     fatalDie,
     damageTrend,
     damageAdjustments,
+    persistent,
+    damageType,
   },
   onClick,
   id,
@@ -441,11 +448,12 @@ const DamageDisplay = ({
     "d" +
     diceSize.toString() +
     (fatal ? fatalString : "") +
-    " + " +
-    staticDamage.toString() +
+    (staticDamage ? " + " + staticDamage.toString() : "") +
     " (avg: " +
     averageDamage.toString() +
-    ")";
+    ") " +
+    (persistent ? "persistent " : "") +
+    damageType;
 
   return (
     <Grid container alignItems="center" columnSpacing={{ xs: 2 }}>

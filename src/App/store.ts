@@ -3,7 +3,7 @@ import routineReducer, {
   damageAdded,
   effectAdded,
   routineAdded,
-  setRoutine,
+  routineCreated,
 } from "../Routines/RoutineSlice/routineSlice";
 import targetReducer, { targetAdded } from "../Display/targetSlice";
 import sharingReducer from "../Display/sharingSlice";
@@ -564,7 +564,8 @@ store.dispatch(
 //   })
 // );
 
-store.dispatch(setRoutine(0));
+store.dispatch(routineCreated({}));
+// window.location.href = "#create-new-activity";
 // store.dispatch(weaknessAdded({ id: 0, type: damageTypes.FIRE, value: 10 }));
 // store.dispatch(
 //   damageAdded({

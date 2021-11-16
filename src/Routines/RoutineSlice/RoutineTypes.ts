@@ -73,6 +73,7 @@ export interface ActivityPath {
   id: number;
   parentId?: number;
   routineId?: number;
+  name: string;
   condition: Condition;
 
   rollType: RollType;
@@ -92,6 +93,7 @@ export interface ActivityPathObject {
   id: number;
   parentId?: number;
   routineId?: number;
+  name: string;
   condition: Condition;
 
   rollType: RollType;

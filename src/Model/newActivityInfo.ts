@@ -199,8 +199,10 @@ export const attackSpells = [
   "Telekinetic Projectile",
 ];
 
-export const getStrikeName = (strikeInfo: StrikeInfo) => {
+export const getStrikeRoutineName = (strikeInfo: StrikeInfo) => {
   let name = strikeInfo.cClass;
+  let description = `${strikeInfo.numStrikes} ${strikeInfo.activity} with class ${strikeInfo.cClass} (${strikeInfo.classOption}) after ${strikeInfo.numPrevStrikes} previous strikes. Weapon is d${strikeInfo.dieSize} and has traits: `;
+
   if (strikeInfo.classOption !== "")
     name += " (" + strikeInfo.classOption + ")";
   name += " - ";
@@ -208,6 +210,38 @@ export const getStrikeName = (strikeInfo: StrikeInfo) => {
     strikeInfo.numStrikes +
     " " +
     strikeInfo.activity +
+    " - d" +
+    strikeInfo.dieSize;
+  for (let trait in strikeInfo.traits) {
+    if (strikeInfo.traits[trait]) {
+      name += " " + trait;
+      description += " " + trait;
+      if (trait === "fatal") {
+        name += " d" + strikeInfo.fatalSize;
+        description += " d" + strikeInfo.fatalSize;
+      }
+      if (trait === "deadly") {
+        name += " d" + strikeInfo.deadlySize;
+        description += " d" + strikeInfo.deadlySize;
+      }
+    }
+  }
+  if (strikeInfo.critSpec) {
+    name += " " + strikeInfo.critSpecType;
+  }
+
+  return [name, description];
+};
+
+export const getStrikeName = (strikeInfo: StrikeInfo, strikeNumber: number) => {
+  let name = strikeInfo.cClass;
+  if (strikeInfo.classOption !== "")
+    name += " (" + strikeInfo.classOption + ")";
+  name += " - ";
+  name +=
+    strikeInfo.activity +
+    // " " +
+    // (strikeNumber + 1) +
     " - d" +
     strikeInfo.dieSize;
   for (let trait in strikeInfo.traits) {
@@ -225,7 +259,28 @@ export const getStrikeName = (strikeInfo: StrikeInfo) => {
     name += " " + strikeInfo.critSpecType;
   }
 
-  let description = "";
+  return name;
+};
+export const getSpellRoutineName = (spellInfo: SpellInfo) => {
+  let name = spellInfo.spell;
+
+  let description = `Cast spell ${spellInfo.spell} with proficiency (${spellInfo.proficiency}) and ability score (${spellInfo.abilityScore}).`;
+
+  return [name, description];
+};
+
+export const getSkillRoutineName = (skillInfo: SkillInfo) => {
+  let name = skillInfo.skillActivity;
+
+  let description = `Use action ${skillInfo.skillActivity} with proficiency (${skillInfo.proficiency}), ability score (${skillInfo.abilityScore}), and item bonus (${skillInfo.itemBonus}).`;
+
+  return [name, description];
+};
+
+export const getCantripRoutineName = (cantripInfo: CantripInfo) => {
+  let name = cantripInfo.cantrip;
+
+  let description = `Cast spell ${cantripInfo.cantrip} with proficiency (${cantripInfo.proficiency}) and ability score (${cantripInfo.abilityScore}).`;
 
   return [name, description];
 };
@@ -421,7 +476,9 @@ const getSpellDamage = (
 
 export const hasActivityCritDamage = (strikeInfo: StrikeInfo) => {
   return (
-    strikeInfo.spell === "Produce Flame" || strikeInfo.spell === "Gouging Claw"
+    strikeInfo.activity === "Spell Strike" &&
+    (strikeInfo.spell === "Produce Flame" ||
+      strikeInfo.spell === "Gouging Claw")
   );
 };
 

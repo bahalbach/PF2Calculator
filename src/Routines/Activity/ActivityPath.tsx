@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../App/hooks";
 
@@ -46,6 +46,7 @@ import {
   Paper,
   Select,
   Slider,
+  TextField,
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -74,6 +75,8 @@ export const ActivityPath = ({
     routineId,
     condition,
 
+    name,
+
     type,
     MAP,
 
@@ -83,6 +86,9 @@ export const ActivityPath = ({
   } = useAppSelector((state: RootState) => selectactivityPathById(state, id)!);
 
   const dispatch = useAppDispatch();
+
+  let [tempName, setTempName] = useState(name);
+  useEffect(() => setTempName(name), [name]);
 
   const [showContent, setShowContent] = useState(open);
 
@@ -98,8 +104,10 @@ export const ActivityPath = ({
             </ListItemButton>
           </Grid>
           <Grid item xs="auto">
-            <Typography>
-              {type} {showMAP ? MAPvalues[MAP] : ""}
+            <Typography sx={{ ml: -1 }}>
+              {name}
+              {/* {type} */}
+              {showMAP ? " " + MAPvalues[MAP] : ""}
             </Typography>
           </Grid>
           <Grid item xs="auto">
@@ -137,6 +145,20 @@ export const ActivityPath = ({
           )}
         </Grid>
         <Collapse in={showContent} mountOnEnter>
+          <TextField
+            fullWidth
+            label="Activity Name"
+            placeholder="Fighter - Strike - d6 agile"
+            value={tempName}
+            onChange={(e) => {
+              setTempName(e.target.value);
+            }}
+            onBlur={() =>
+              dispatch(
+                activityPathUpdated({ id: id, changes: { name: tempName } })
+              )
+            }
+          />
           <Roll id={id} />
           {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
 

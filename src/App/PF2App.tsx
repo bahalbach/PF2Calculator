@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import ReactGA from "react-ga4";
 // import { Adsense } from "@ctrl/react-adsense";
@@ -80,6 +80,10 @@ const Controls = () => {
   const selectedRoutine = useAppSelector(selectSelectedRoutine);
   const selectedActivityPath = useAppSelector(selectSelectedActivityPath);
   const createNewActivity = useAppSelector(selectCreateNewActivity);
+
+  useEffect(() => {
+    if (createNewActivity) window.location.href = "#create-new-activity";
+  }, [createNewActivity]);
 
   return (
     <React.Fragment>

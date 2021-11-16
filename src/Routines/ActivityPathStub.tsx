@@ -23,6 +23,7 @@ import {
   activityPathRemoved,
 } from "./RoutineSlice/routineSlice";
 import { activityTypes } from "../Model/types";
+import { MAPvalues } from "../Model/defaults";
 
 export const ActivityPathStub = ({
   id,
@@ -33,9 +34,8 @@ export const ActivityPathStub = ({
   level: number;
   displayChildren?: boolean;
 }) => {
-  const { parentId, routineId, condition, type, apIds } = useAppSelector(
-    (state: RootState) => selectactivityPathById(state, id)!
-  );
+  const { parentId, routineId, name, condition, type, MAP, apIds } =
+    useAppSelector((state: RootState) => selectactivityPathById(state, id)!);
   const selectedActivityPath = useAppSelector(selectSelectedActivityPath);
   const parentActivityId = useAppSelector(selectParentActivityId);
 
@@ -49,6 +49,7 @@ export const ActivityPathStub = ({
     default:
       break;
   }
+  const showMAP = type !== activityTypes.SAVE && MAPvalues[MAP] !== 0;
 
   return (
     <React.Fragment>
@@ -73,7 +74,10 @@ export const ActivityPathStub = ({
         >
           {/* {displayCondition ? "Conditions" : ""} */}
           <ListItemIcon>{icon}</ListItemIcon>
-          <ListItemText primary={type} secondary={level > 0 ? condition : ""} />
+          <ListItemText
+            primary={name + " " + (showMAP ? MAPvalues[MAP] : "")}
+            secondary={level > 0 ? condition : ""}
+          />
         </ListItemButton>
       </ListItem>
       {displayChildren

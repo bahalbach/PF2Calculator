@@ -75,20 +75,26 @@ const Routines = () => {
       </Paper>
       <Paper sx={{ my: 2, p: 1 }}>
         <Grid container spacing={1}>
-          <Grid item xs={12} sm={6} md={12} lg={6}>
-            <FormControl fullWidth>
-              <InputLabel id="select-routine-label">Select Routine</InputLabel>
-              <Select
-                labelId="select-routine-label"
-                id="select-routine"
-                value={selectedRoutine}
-                label="Select Routine"
-                onChange={(e) => dispatch(setRoutine(e.target.value))}
-              >
-                {routineOptions}
-              </Select>
-            </FormControl>
-          </Grid>
+          {selectedRoutine !== undefined ? (
+            <Grid item xs={12} sm={6} md={12} lg={6}>
+              <FormControl fullWidth>
+                <InputLabel id="select-routine-label">
+                  Select Routine
+                </InputLabel>
+                <Select
+                  labelId="select-routine-label"
+                  id="select-routine"
+                  value={selectedRoutine}
+                  label="Select Routine"
+                  onChange={(e) => dispatch(setRoutine(e.target.value))}
+                >
+                  {routineOptions}
+                </Select>
+              </FormControl>
+            </Grid>
+          ) : (
+            ""
+          )}
           <Grid
             item
             container
@@ -101,7 +107,6 @@ const Routines = () => {
             <Button
               variant="contained"
               onClick={() => {
-                window.location.href = "#create-new-activity";
                 dispatch(routineCreated({ copy: false }));
               }}
             >

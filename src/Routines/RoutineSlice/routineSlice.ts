@@ -40,6 +40,10 @@ import {
   getStrikeName,
   hasActivityCritDamage,
   activityCritDamage,
+  getStrikeRoutineName,
+  getSkillRoutineName,
+  getCantripRoutineName,
+  getSpellRoutineName,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -106,6 +110,7 @@ const initialState: State = {
 };
 
 const defaultActivity = {
+  name: "",
   type: activityTypes.STRIKE,
   condition: conditions.ALWAYS,
   rollType: rollTypes.NORMAL,
@@ -251,7 +256,12 @@ export const routinesSlice = createSlice({
 
       routinesAdapter.removeOne(state.routines, routineId);
       if (routineId === state.selectedRoutine) {
-        state.selectedRoutine = undefined;
+        if (state.routines.ids.length === 0) {
+          state.selectedRoutine = undefined;
+        } else {
+          state.selectedRoutine =
+            state.routines.entities[state.routines.ids[0]]!.id;
+        }
         state.selectedActivityPath = undefined;
         state.parentActivity = undefined;
         state.parentRoutine = undefined;
@@ -290,11 +300,13 @@ export const routinesSlice = createSlice({
           if (activityType === activityTypes.STRIKE) {
             let damages = copyDamages(state, defaultStrikeParent.damages);
             let effects = copyEffects(state, defaultStrikeParent.effects);
+            name = "Martial - Strike - d8 Sword";
             ap = {
               ...defaultActivity,
               ...defaultStrikeParent,
               id,
               routineId,
+              name,
               damages,
               effects,
             };
@@ -303,15 +315,16 @@ export const routinesSlice = createSlice({
           if (activityType === activityTypes.SAVE) {
             let damages = copyDamages(state, defaultSaveParent.damages);
             let effects = copyEffects(state, defaultSaveParent.effects);
+            name = "Caster - Fireball";
             ap = {
               ...defaultActivity,
               ...defaultSaveParent,
               id,
               routineId,
+              name,
               damages,
               effects,
             };
-            name = "Caster - Fireball";
           }
         } else {
         }
@@ -369,15 +382,18 @@ export const routinesSlice = createSlice({
           strikeInfo,
           strikeInfo.numPrevStrikes
         );
-        [name, description] = getStrikeName(strikeInfo);
+        [name, description] = getStrikeRoutineName(strikeInfo);
       }
       if (skillInfo !== undefined) {
+        [name, description] = getSkillRoutineName(skillInfo);
         ids = createSkillActivity(state, parentId, routineId, skillInfo);
       }
       if (cantripInfo !== undefined) {
+        [name, description] = getCantripRoutineName(cantripInfo);
         ids = createCantripActivity(state, parentId, routineId, cantripInfo);
       }
       if (spellInfo !== undefined) {
+        [name, description] = getSpellRoutineName(spellInfo);
         ids = createSpellActivity(state, parentId, routineId, spellInfo);
       }
 
@@ -675,6 +691,7 @@ const createStrikeActivity = (
       strikeNumber + 1
     );
   }
+  const name = getStrikeName(strikeInfo, strikeNumber);
   let damages = createStrikeDamages(state, strikeInfo, strikeNumber);
   let effects = createStrikeEffects(state, strikeInfo, strikeNumber);
   let MAP = classWeaponMAP(strikeInfo);
@@ -684,6 +701,7 @@ const createStrikeActivity = (
     id,
     parentId,
     routineId,
+    name,
     type: activityTypes.STRIKE,
     profTrend: classWeaponProf(strikeInfo.cClass, strikeInfo.classOption),
     statTrend: strikeInfo.attackScore,
@@ -897,6 +915,7 @@ const createSkillActivity = (
     id,
     parentId,
     routineId,
+    name: skillInfo.skillActivity,
     type: activityTypes.SKILL,
     profTrend: skillInfo.proficiency,
     statTrend: skillInfo.abilityScore,
@@ -968,6 +987,7 @@ const createCantripActivity = (
     id,
     parentId,
     routineId,
+    name: cantripInfo.cantrip,
     profTrend: cantripInfo.proficiency,
     statTrend: cantripInfo.abilityScore,
     ...getCantripTarget(cantripInfo),
@@ -1028,6 +1048,7 @@ const createSpellActivity = (
     id,
     parentId,
     routineId,
+    name: spellInfo.spell,
     type: activityTypes.SAVE,
     profTrend: spellInfo.proficiency,
     statTrend: spellInfo.abilityScore,
@@ -1254,6 +1275,7 @@ const insertActivityPaths = (
     const damages = insertDamages(state, ap.damages);
     const effects = insertEffects(state, ap.effects);
 
+    if (ap.name === undefined) ap.name = "";
     activityPathAdapter.addOne(state.activityPaths, {
       ...ap,
       id,
