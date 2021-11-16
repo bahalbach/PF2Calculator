@@ -18,6 +18,7 @@ import {
   multiplierOptions,
 } from "../../Model/options";
 import {
+  DamageCond,
   DamageTrend,
   damageTrends,
   DamageType,
@@ -125,6 +126,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
     <React.Fragment>
       <DamageDisplay
         damageInfo={{
+          damageCondition,
           dieTrend,
           dieAdjustments,
           diceSize,
@@ -134,6 +136,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           damageAdjustments,
           persistent,
           damageType,
+          multiplier,
         }}
         onClick={() => setShowContent(!showContent)}
         id={id}
@@ -402,6 +405,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
 
 interface PropsType {
   damageInfo: {
+    damageCondition: DamageCond;
     dieTrend: DieTrend;
     dieAdjustments: Adjustment;
     diceSize: number;
@@ -411,6 +415,7 @@ interface PropsType {
     damageAdjustments: Adjustment;
     persistent: boolean;
     damageType: DamageType;
+    multiplier: number;
   };
   onClick: any;
   id: number;
@@ -418,6 +423,7 @@ interface PropsType {
 }
 const DamageDisplay = ({
   damageInfo: {
+    damageCondition,
     dieTrend,
     dieAdjustments,
     diceSize,
@@ -427,6 +433,7 @@ const DamageDisplay = ({
     damageAdjustments,
     persistent,
     damageType,
+    multiplier,
   },
   onClick,
   id,
@@ -444,6 +451,8 @@ const DamageDisplay = ({
     " (" + diceNumber.toString() + "d" + fatalDie.toString() + " on Crit)";
 
   let damageString =
+    damageCondition +
+    ": " +
     diceNumber.toString() +
     "d" +
     diceSize.toString() +
@@ -453,7 +462,8 @@ const DamageDisplay = ({
     averageDamage.toString() +
     ") " +
     (persistent ? "persistent " : "") +
-    damageType;
+    damageType +
+    (multiplier !== 1 ? " x" + multiplier : "");
 
   return (
     <Grid container alignItems="center" columnSpacing={{ xs: 2 }}>

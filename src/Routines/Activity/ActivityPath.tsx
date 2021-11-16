@@ -39,6 +39,7 @@ import {
   Collapse,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   List,
   ListItemButton,
@@ -97,68 +98,74 @@ export const ActivityPath = ({
   return (
     <React.Fragment>
       <Paper sx={{ my: 2, p: 1, ml: level * 2 }}>
-        <Grid container spacing={{ xs: 1, sm: 2 }} alignItems="center">
+        <Grid container columnSpacing={{ xs: 1, sm: 2 }} alignItems="center">
+          <Grid item xs="auto">
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={(e) => {
+                dispatch(activityPathRemoved({ id, parentId, routineId }));
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
           <Grid item xs="auto">
             <ListItemButton onClick={() => setShowContent(!showContent)}>
               <Typography variant="h6">Activity</Typography>
             </ListItemButton>
           </Grid>
           <Grid item xs="auto">
-            <Typography sx={{ ml: -1 }}>
+            <Typography>
+              {parentId !== undefined ? condition + ": " : ""}
               {name}
               {/* {type} */}
               {showMAP ? " " + MAPvalues[MAP] : ""}
             </Typography>
           </Grid>
-          <Grid item xs="auto">
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<DeleteIcon />}
-              onClick={(e) => {
-                dispatch(activityPathRemoved({ id, parentId, routineId }));
-              }}
-            >
-              Delete
-            </Button>
-          </Grid>
-          {parentId !== undefined ? (
-            <Grid item xs>
-              <TooltipSelect
-                title='Depending on the roll of the parent activity, should this activity happen. For example: to add another strike only when you hit with the previous one, have the second strike be a child of the first with the condition "Success or Better"'
-                value={condition}
-                label="Condition"
-                onChange={(e) =>
-                  dispatch(
-                    activityPathUpdated({
-                      id,
-                      changes: { condition: e.target.value },
-                    })
-                  )
-                }
-              >
-                {conditionOptions}
-              </TooltipSelect>
-            </Grid>
-          ) : (
-            ""
-          )}
         </Grid>
         <Collapse in={showContent} mountOnEnter>
-          <TextField
-            fullWidth
-            label="Activity Name"
-            placeholder="Fighter - Strike - d6 agile"
-            value={tempName}
-            onChange={(e) => {
-              setTempName(e.target.value);
-            }}
-            onBlur={() =>
-              dispatch(
-                activityPathUpdated({ id: id, changes: { name: tempName } })
-              )
-            }
-          />
+          <Grid container spacing={2} sx={{ mt: 1, px: 1 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Activity Name"
+                placeholder="Fighter - Strike - d6 agile"
+                value={tempName}
+                onChange={(e) => {
+                  setTempName(e.target.value);
+                }}
+                onBlur={() =>
+                  dispatch(
+                    activityPathUpdated({ id: id, changes: { name: tempName } })
+                  )
+                }
+              />
+            </Grid>
+
+            {parentId !== undefined ? (
+              <Grid item xs={12} sm={6}>
+                <TooltipSelect
+                  title='Depending on the roll of the parent activity, should this activity happen. For example: to add another strike only when you hit with the previous one, have the second strike be a child of the first with the condition "Success or Better"'
+                  value={condition}
+                  label="Condition"
+                  onChange={(e) =>
+                    dispatch(
+                      activityPathUpdated({
+                        id,
+                        changes: { condition: e.target.value },
+                      })
+                    )
+                  }
+                >
+                  {conditionOptions}
+                </TooltipSelect>
+              </Grid>
+            ) : (
+              ""
+            )}
+          </Grid>
           <Roll id={id} />
           {/* <List subheader={<ListSubheader>Damages</ListSubheader>}> */}
 

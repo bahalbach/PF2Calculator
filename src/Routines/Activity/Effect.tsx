@@ -73,6 +73,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
         </Grid>
         <Grid item>
           <Typography>
+            {effectCondition} {": "}
             {effectType} {showValue ? effectValue : ""}
           </Typography>
         </Grid>
