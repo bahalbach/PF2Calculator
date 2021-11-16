@@ -82,7 +82,10 @@ const Controls = () => {
   const createNewActivity = useAppSelector(selectCreateNewActivity);
 
   useEffect(() => {
-    if (createNewActivity) window.location.href = "#create-new-activity";
+    if (createNewActivity) {
+      window.location.href = "#create-new-activity";
+      ReactGA.send("create new activity");
+    }
   }, [createNewActivity]);
 
   return (
@@ -103,9 +106,10 @@ const Controls = () => {
       <Export />
       <Grid
         container
-        sx={{ my: 2 }}
+        sx={{ mb: 2, mt: 0 }}
         justifyContent="space-evenly"
         alignItems="center"
+        spacing={2}
       >
         <Grid item>
           <Donate />
@@ -120,7 +124,10 @@ const Controls = () => {
 
 const Donate = () => {
   return (
-    <Box sx={{ height: 60, width: 217 }}>
+    <Box
+      sx={{ height: 60, width: 217 }}
+      onClick={() => ReactGA.send("click buy me a coffee")}
+    >
       <a
         href="https://www.buymeacoffee.com/bahalbach"
         target="_blank"
