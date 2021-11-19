@@ -2,7 +2,7 @@ import { Button, Grid, Paper, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../App/hooks";
-import { exampleRoutines } from "../Model/exampleRoutines";
+// import { exampleRoutines } from "../Model/exampleRoutines";
 import { importStates } from "../Model/types";
 import {
   importRoutine,
@@ -45,11 +45,11 @@ const ImportExport = () => {
   //     }
   // };
   // const loadSavedRoutines = () => {};
-  const addExampleRoutines = () => {
-    for (let r of exampleRoutines) {
-      dispatch(importRoutine(r));
-    }
-  };
+  // const addExampleRoutines = () => {
+  //   for (let r of exampleRoutines) {
+  //     dispatch(importRoutine(r));
+  //   }
+  // };
   const copy = () => {
     if (navigator.clipboard !== undefined) {
       // textAreaRef.current.select();
@@ -61,7 +61,6 @@ const ImportExport = () => {
   };
   return (
     <Paper sx={{ p: 1 }}>
-      <Typography variant="h5">Import and Export Here:</Typography>
       <Grid container>
         <Grid item>
           <Button onClick={tryToAddRoutine}>Import</Button>
@@ -78,9 +77,9 @@ const ImportExport = () => {
         {/* <Grid item>
           <Button onClick={loadSavedRoutines}>Load Saved Routines</Button>
         </Grid> */}
-        <Grid item>
+        {/* <Grid item>
           <Button onClick={addExampleRoutines}>Add example Routines</Button>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           <TextField
             fullWidth

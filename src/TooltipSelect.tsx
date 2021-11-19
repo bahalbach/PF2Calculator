@@ -41,6 +41,7 @@ const TooltipSelect = ({
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onFocus={() => setOpen(false)}
+        sx={{ minWidth: 100 }}
       >
         <InputLabel>{label}</InputLabel>
         <Select label={label} value={value} onChange={onChange}>

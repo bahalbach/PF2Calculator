@@ -19,18 +19,8 @@ import {
   whenConditions,
 } from "./types";
 
-export type StrikeInfo = {
-  runes: DieTrend;
-  cClass: typeof classes[number];
-  classOption: string;
-  activity: typeof strikeActivities[number];
-  spell: typeof attackSpells[number];
-  attackScore: StatTrend;
-  damageScore: StatTrend;
-  cantripScore: StatTrend;
+export type WeaponInfo = {
   dieSize: number;
-  numPrevStrikes: number;
-  numStrikes: number;
   traits: {
     [k: string]: boolean;
   };
@@ -39,6 +29,29 @@ export type StrikeInfo = {
   critSpec: boolean;
   critSpecLevel: number;
   critSpecType: string;
+  runes: DieTrend;
+
+  numPrevStrikes: number;
+};
+
+export type StrikeInfo = {
+  cClass: typeof classes[number];
+  classOption: string;
+
+  activity: typeof strikeActivities[number];
+  spell: typeof attackSpells[number];
+  attackScore: StatTrend;
+  damageScore: StatTrend;
+  cantripScore: StatTrend;
+
+  numPrevStrikes: number;
+  numStrikes: number;
+  twf: boolean;
+  isStrikeSecondaryWeapon: boolean[];
+  previousHits: number;
+
+  weapon1: WeaponInfo;
+  weapon2: WeaponInfo;
 };
 export type SkillInfo = {
   proficiency: ProfTrend;
@@ -108,7 +121,7 @@ const barbarianOptions = [
   "spirit rage",
 ] as const;
 const clericOptions = ["Cloistered", "Warpriest"] as const;
-const rangerOptions = ["Normal", "Flurry Edge"] as const;
+const rangerOptions = ["Normal", "Flurry Edge", "Precision Edge"] as const;
 const inventorOptions = [
   "Normal",
   "Overdrive Success",
@@ -125,6 +138,7 @@ const magusOptions = ["Normal", "Arcane Cascade"] as const;
 
 export const strikeActivities = [
   "Strike",
+  "Double Slice",
   "Power Attack",
   "Spell Strike",
   "Ki Strike",
@@ -200,40 +214,56 @@ export const attackSpells = [
 ];
 
 export const getStrikeRoutineName = (strikeInfo: StrikeInfo) => {
+  const { weapon1, weapon2 } = strikeInfo;
   let name = strikeInfo.cClass;
-  let description = `${strikeInfo.numStrikes} ${strikeInfo.activity} with class ${strikeInfo.cClass} (${strikeInfo.classOption}) after ${strikeInfo.numPrevStrikes} previous strikes. Weapon is d${strikeInfo.dieSize} and has traits: `;
+  let description = `${strikeInfo.numStrikes} ${
+    strikeInfo.activity
+  } with class ${strikeInfo.cClass} (${strikeInfo.classOption}) after ${
+    strikeInfo.numPrevStrikes
+  } previous strikes. Weapon is ${getWeaponTraits(weapon1)}`;
 
   if (strikeInfo.classOption !== "")
     name += " (" + strikeInfo.classOption + ")";
   name += " - ";
-  name +=
-    strikeInfo.numStrikes +
-    " " +
-    strikeInfo.activity +
-    " - d" +
-    strikeInfo.dieSize;
-  for (let trait in strikeInfo.traits) {
-    if (strikeInfo.traits[trait]) {
-      name += " " + trait;
-      description += " " + trait;
-      if (trait === "fatal") {
-        name += " d" + strikeInfo.fatalSize;
-        description += " d" + strikeInfo.fatalSize;
-      }
-      if (trait === "deadly") {
-        name += " d" + strikeInfo.deadlySize;
-        description += " d" + strikeInfo.deadlySize;
-      }
-    }
+  if (strikeInfo.activity !== "Double Slice") {
+    name += strikeInfo.numStrikes + " ";
   }
-  if (strikeInfo.critSpec) {
-    name += " " + strikeInfo.critSpecType;
+  name += strikeInfo.activity + " - " + getWeaponTraits(weapon1);
+
+  if (strikeInfo.twf) {
+    name += " | " + getWeaponTraits(weapon2);
+    description += ". Weapon two is " + getWeaponTraits(weapon2);
   }
 
   return [name, description];
 };
 
-export const getStrikeName = (strikeInfo: StrikeInfo, strikeNumber: number) => {
+const getWeaponTraits = (weapon: WeaponInfo) => {
+  let info = "d" + weapon.dieSize;
+
+  for (let trait in weapon.traits) {
+    if (weapon.traits[trait]) {
+      info += " " + trait;
+      if (trait === "fatal") {
+        info += " d" + weapon.fatalSize;
+      }
+      if (trait === "deadly") {
+        info += " d" + weapon.deadlySize;
+      }
+    }
+  }
+  if (weapon.critSpec) {
+    info += " " + weapon.critSpecType;
+  }
+
+  return info;
+};
+
+export const getStrikeName = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
   let name = strikeInfo.cClass;
   if (strikeInfo.classOption !== "")
     name += " (" + strikeInfo.classOption + ")";
@@ -243,20 +273,20 @@ export const getStrikeName = (strikeInfo: StrikeInfo, strikeNumber: number) => {
     // " " +
     // (strikeNumber + 1) +
     " - d" +
-    strikeInfo.dieSize;
-  for (let trait in strikeInfo.traits) {
-    if (strikeInfo.traits[trait]) {
+    weapon.dieSize;
+  for (let trait in weapon.traits) {
+    if (weapon.traits[trait]) {
       name += " " + trait;
       if (trait === "fatal") {
-        name += " d" + strikeInfo.fatalSize;
+        name += " d" + weapon.fatalSize;
       }
       if (trait === "deadly") {
-        name += " d" + strikeInfo.deadlySize;
+        name += " d" + weapon.deadlySize;
       }
     }
   }
-  if (strikeInfo.critSpec) {
-    name += " " + strikeInfo.critSpecType;
+  if (weapon.critSpec) {
+    name += " " + weapon.critSpecType;
   }
 
   return name;
@@ -308,15 +338,19 @@ export const classWeaponProf = (className: string, classOption: string) => {
   return profTrends.MARTIALWEAPON;
 };
 
-export const classWeaponMAP = (strikeInfo: StrikeInfo) => {
+export const classWeaponMAP = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
   if (
     strikeInfo.cClass === "Ranger" &&
     strikeInfo.classOption === "Flurry Edge"
   ) {
-    if (strikeInfo.traits["agile"]) return MAPs.RA1;
+    if (weapon.traits["agile"]) return MAPs.RA1;
     else return MAPs.R1;
   } else {
-    if (strikeInfo.traits["agile"]) return MAPs.A1;
+    if (weapon.traits["agile"]) return MAPs.A1;
     else return MAPs.N1;
   }
 };
@@ -335,9 +369,19 @@ export const classAdjustments = (
       strikeInfo.classOption === "Flurry Edge" &&
       i >= 17
     )
-      currentValue += Math.min(strikeNumber, 2);
+      currentValue += Math.min(strikeNumber + strikeInfo.numPrevStrikes, 2);
 
     if (strikeInfo.activity === "Ki Strike") currentValue += 1;
+
+    if (
+      strikeInfo.activity === "Double Slice" &&
+      strikeNumber === 1 &&
+      (strikeInfo.twf
+        ? !strikeInfo.weapon2.traits["agile"]
+        : !strikeInfo.weapon1.traits["agile"])
+    ) {
+      currentValue -= 2;
+    }
 
     adjustments[i] = currentValue;
   }
@@ -357,7 +401,17 @@ export const activityWeaponDiceAdjustments = (strikeInfo: StrikeInfo) => {
   return adjustments;
 };
 
-export const hasClassDamageDice = (strikeInfo: StrikeInfo) => {
+export const hasClassPrecisionDamage = (
+  strikeInfo: StrikeInfo,
+  previousHits: number
+) => {
+  if (
+    strikeInfo.cClass === "Ranger" &&
+    strikeInfo.classOption === "Precision Edge" &&
+    previousHits < 3
+  ) {
+    return true;
+  }
   if (
     strikeInfo.cClass === "Rogue" &&
     strikeInfo.classOption === "Sneak Attack"
@@ -372,14 +426,37 @@ export const hasClassDamageDice = (strikeInfo: StrikeInfo) => {
   }
   if (
     strikeInfo.cClass === "Swashbuckler" &&
-    strikeInfo.classOption === "Precise Finisher"
+    (strikeInfo.classOption === "Precise Finisher" ||
+      strikeInfo.classOption === "Precise Strike")
   ) {
     return true;
   }
   return false;
 };
 
-export const classDamageDice = (strikeInfo: StrikeInfo) => {
+export const classPrecisionDamage = (
+  strikeInfo: StrikeInfo,
+  previousHits: number
+) => {
+  if (
+    strikeInfo.cClass === "Ranger" &&
+    strikeInfo.classOption === "Precision Edge" &&
+    previousHits < 3
+  ) {
+    let dieTrend: DieTrend = dieTrends.PRECISIONEDGE;
+    if (previousHits === 1) {
+      dieTrend = dieTrends.PRECISIONEDGE2;
+    }
+    if (previousHits === 2) {
+      dieTrend = dieTrends.PRECISIONEDGE3;
+    }
+    return {
+      dieTrend,
+      diceSize: diceSizes[8],
+      damageWhen: [whenConditions.Always],
+      damageTrend: [],
+    };
+  }
   if (
     strikeInfo.cClass === "Rogue" &&
     strikeInfo.classOption === "Sneak Attack"
@@ -387,8 +464,8 @@ export const classDamageDice = (strikeInfo: StrikeInfo) => {
     return {
       dieTrend: dieTrends.SNEAK,
       diceSize: diceSizes[6],
-      damageType: damageTypes.PRECISION,
       damageWhen: [whenConditions.FLATFOOT],
+      damageTrend: [],
     };
   }
   if (
@@ -398,8 +475,8 @@ export const classDamageDice = (strikeInfo: StrikeInfo) => {
     return {
       dieTrend: dieTrends.STRATEGIC,
       diceSize: diceSizes[6],
-      damageType: damageTypes.PRECISION,
       damageWhen: [whenConditions.Always],
+      damageTrend: [],
     };
   }
   if (
@@ -409,15 +486,26 @@ export const classDamageDice = (strikeInfo: StrikeInfo) => {
     return {
       dieTrend: dieTrends.PRECISE,
       diceSize: diceSizes[6],
-      damageType: damageTypes.PRECISION,
       damageWhen: [whenConditions.Always],
+      damageTrend: [],
+    };
+  }
+  if (
+    strikeInfo.cClass === "Swashbuckler" &&
+    strikeInfo.classOption === "Precise Strike"
+  ) {
+    return {
+      dieTrend: dieTrends.NONE,
+      diceSize: diceSizes[6],
+      damageWhen: [whenConditions.Always],
+      damageTrend: [damageTrends.PRECISE],
     };
   }
   return {
     dieTrend: dieTrends.NONE,
     diceSize: diceSizes[6],
-    damageType: damageTypes.PRECISION,
     damageWhen: [whenConditions.Always],
+    damageTrend: [],
   };
 };
 
@@ -502,11 +590,14 @@ export const activityCritDamage = (strikeInfo: StrikeInfo) => {
 
 export const classWeaponDamageTrends = (
   strikeInfo: StrikeInfo,
-  strikeNumber: number
+  strikeNumber: number,
+  useWeapon2: boolean = false
 ) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+
   const trends: DamageTrend[] = [];
 
-  if (!strikeInfo.traits["propulsive"] && !strikeInfo.traits["ranged"]) {
+  if (!weapon.traits["propulsive"] && !weapon.traits["ranged"]) {
     trends.push(strikeInfo.damageScore);
   }
 
@@ -531,10 +622,22 @@ export const classWeaponDamageTrends = (
     trends.push(damageTrends.MARTIALWEAPONSPEC);
   }
 
-  if (strikeInfo.traits["forceful"]) {
-    if (strikeNumber === 1) {
+  let thisWeaponStrikes = 0;
+  if (!strikeInfo.twf) {
+    thisWeaponStrikes = strikeNumber + strikeInfo.numPrevStrikes;
+  } else {
+    thisWeaponStrikes = weapon.numPrevStrikes;
+    for (let isWeapon2 of strikeInfo.isStrikeSecondaryWeapon) {
+      if ((isWeapon2 && useWeapon2) || (!isWeapon2 && !useWeapon2)) {
+        thisWeaponStrikes += 1;
+      }
+    }
+  }
+
+  if (weapon.traits["forceful"]) {
+    if (thisWeaponStrikes === 1) {
       trends.push(damageTrends.WEAPON);
-    } else if (strikeNumber >= 2) {
+    } else if (thisWeaponStrikes >= 2) {
       trends.push(damageTrends.WEAPON);
       trends.push(damageTrends.WEAPON);
     }
@@ -569,12 +672,6 @@ export const classWeaponDamageTrends = (
     }
   }
 
-  if (
-    strikeInfo.cClass === "Swashbuckler" &&
-    strikeInfo.classOption === "Precise Strike"
-  ) {
-    trends.push(damageTrends.PRECISE);
-  }
   // if (strikeInfo.cClass === "Inventor") {
   //   switch (strikeInfo.classOption) {
   //     case "Overdrive Success":
@@ -590,13 +687,18 @@ export const classWeaponDamageTrends = (
   return trends;
 };
 
-export const classDamageAdjustments = (strikeInfo: StrikeInfo) => {
+export const classDamageAdjustments = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+
   const adjustments: { [key: number]: number } = {};
   let currentValue = 0;
   for (let i = 1; i <= 20; i++) {
     currentValue = 0;
 
-    if (strikeInfo.traits["propulsive"]) {
+    if (weapon.traits["propulsive"]) {
       currentValue += Math.floor(
         statTrendValues[strikeInfo.damageScore][i] / 2
       );
@@ -626,43 +728,83 @@ export const classDamageAdjustments = (strikeInfo: StrikeInfo) => {
   return adjustments;
 };
 
-export const hasBackswing = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.traits["backswing"];
+export const hasBackswing = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.traits["backswing"];
 };
-export const hasDeadly = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.traits["deadly"];
+export const hasDeadly = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.traits["deadly"];
 };
-export const hasFatal = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.traits["fatal"];
+export const hasFatal = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.traits["fatal"];
 };
-export const hasPickCritSpec = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.critSpec && strikeInfo.critSpecType === "Pick";
+export const hasPickCritSpec = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.critSpec && weapon.critSpecType === "Pick";
 };
-export const hasKnifeCritSpec = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.critSpec && strikeInfo.critSpecType === "Knife";
+export const hasKnifeCritSpec = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.critSpec && weapon.critSpecType === "Knife";
 };
-export const hasCritSpecEffect = (strikeInfo: StrikeInfo) => {
+export const hasCritSpecEffect = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
   return (
-    hasSwordCritSpec(strikeInfo) ||
-    hasHammerCritSpec(strikeInfo) ||
-    hasSpearCritSpec(strikeInfo)
+    hasSwordCritSpec(strikeInfo, useWeapon2) ||
+    hasHammerCritSpec(strikeInfo, useWeapon2) ||
+    hasSpearCritSpec(strikeInfo, useWeapon2)
   );
 };
-export const hasSwordCritSpec = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.critSpec && strikeInfo.critSpecType === "Sword";
+export const hasSwordCritSpec = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.critSpec && weapon.critSpecType === "Sword";
 };
-export const hasHammerCritSpec = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.critSpec && strikeInfo.critSpecType === "Hammer";
+export const hasHammerCritSpec = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.critSpec && weapon.critSpecType === "Hammer";
 };
-export const hasSpearCritSpec = (strikeInfo: StrikeInfo) => {
-  return strikeInfo.critSpec && strikeInfo.critSpecType === "Spear";
+export const hasSpearCritSpec = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+  return weapon.critSpec && weapon.critSpecType === "Spear";
 };
-export const critSpecDice = (strikeInfo: StrikeInfo) => {
+export const critSpecDice = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+
   const adjustments: { [key: number]: number } = {};
   let currentValue = 0;
   for (let i = 1; i <= 20; i++) {
-    if (i >= strikeInfo.critSpecLevel) {
-      if (strikeInfo.critSpec && strikeInfo.critSpecType === "Knife") {
+    if (i >= weapon.critSpecLevel) {
+      if (weapon.critSpec && weapon.critSpecType === "Knife") {
         if (i >= 1) currentValue = 1;
       }
     }
@@ -670,18 +812,23 @@ export const critSpecDice = (strikeInfo: StrikeInfo) => {
   }
   return adjustments;
 };
-export const critSpecDamage = (strikeInfo: StrikeInfo) => {
+export const critSpecDamage = (
+  strikeInfo: StrikeInfo,
+  useWeapon2: boolean = false
+) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+
   const adjustments: { [key: number]: number } = {};
   let currentValue = 0;
   for (let i = 1; i <= 20; i++) {
-    if (i >= strikeInfo.critSpecLevel) {
-      if (strikeInfo.critSpec && strikeInfo.critSpecType === "Pick") {
+    if (i >= weapon.critSpecLevel) {
+      if (weapon.critSpec && weapon.critSpecType === "Pick") {
         if (i >= 1) currentValue = 2;
         if (i >= 4) currentValue = 4;
         if (i >= 12) currentValue = 6;
         if (i >= 19) currentValue = 8;
       }
-      if (strikeInfo.critSpec && strikeInfo.critSpecType === "Knife") {
+      if (weapon.critSpec && weapon.critSpecType === "Knife") {
         if (i >= 2) currentValue = 1;
         if (i >= 10) currentValue = 2;
         if (i >= 16) currentValue = 3;

@@ -23,8 +23,8 @@ import {
   hasSwordCritSpec,
   hasHammerCritSpec,
   hasSpearCritSpec,
-  hasClassDamageDice,
-  classDamageDice,
+  hasClassPrecisionDamage,
+  classPrecisionDamage,
   hasActivityDamageDice,
   activityDamageDice,
   SkillInfo,
@@ -67,6 +67,8 @@ import {
   whenConditions,
   importStates,
   ActivityType,
+  Condition,
+  MAP,
 } from "../../Model/types";
 import { RootState } from "../../App/store";
 import {
@@ -370,35 +372,29 @@ export const routinesSlice = createSlice({
       const { parentActivity: parentId, parentRoutine: routineId } = state;
 
       const { strikeInfo, skillInfo, cantripInfo, spellInfo } = action.payload;
-      let ids: number[] = [];
+      let id: number = 0;
       let name = "";
       let description = "";
 
       if (strikeInfo !== undefined) {
-        ids = createStrikeActivity(
-          state,
-          parentId,
-          routineId,
-          strikeInfo,
-          strikeInfo.numPrevStrikes
-        );
+        id = createStrikeActivity(state, parentId, routineId, strikeInfo, 0);
         [name, description] = getStrikeRoutineName(strikeInfo);
       }
       if (skillInfo !== undefined) {
         [name, description] = getSkillRoutineName(skillInfo);
-        ids = createSkillActivity(state, parentId, routineId, skillInfo);
+        id = createSkillActivity(state, parentId, routineId, skillInfo);
       }
       if (cantripInfo !== undefined) {
         [name, description] = getCantripRoutineName(cantripInfo);
-        ids = createCantripActivity(state, parentId, routineId, cantripInfo);
+        id = createCantripActivity(state, parentId, routineId, cantripInfo);
       }
       if (spellInfo !== undefined) {
         [name, description] = getSpellRoutineName(spellInfo);
-        ids = createSpellActivity(state, parentId, routineId, spellInfo);
+        id = createSpellActivity(state, parentId, routineId, spellInfo);
       }
 
       if (routineId !== undefined) {
-        state.routines.entities[routineId]!.apIds.push(...ids);
+        state.routines.entities[routineId]!.apIds.push(id);
         if (state.routines.entities[routineId]!.name === "") {
           state.routines.entities[routineId]!.name = name;
         }
@@ -407,10 +403,10 @@ export const routinesSlice = createSlice({
         }
       }
       if (parentId !== undefined) {
-        state.activityPaths.entities[parentId]!.apIds.push(...ids);
+        state.activityPaths.entities[parentId]!.apIds.push(id);
       }
 
-      state.selectedActivityPath = ids[0];
+      state.selectedActivityPath = id;
       state.parentActivity = undefined;
       state.parentRoutine = undefined;
     },
@@ -678,54 +674,320 @@ const createStrikeActivity = (
   parentId: number | undefined,
   routineId: number | undefined,
   strikeInfo: StrikeInfo,
-  strikeNumber: number
+  strikeNumber: number,
+  previousHits: number = 0,
+  condition: Condition = conditions.ALWAYS
 ) => {
+  let useWeapon2 = false;
+  if (strikeInfo.activity === "Double Slice" && strikeNumber === 1)
+    useWeapon2 = true;
+
   const id = ++activityPathId;
   let apIds: number[] = [];
   if (strikeNumber < strikeInfo.numStrikes - 1) {
-    apIds = createStrikeActivity(
+    if (strikeInfo.activity === "Double Slice") {
+      // if the first attack of double slice do no damage, but make 3 child activities for crit, hit, and miss
+      const onCrit = createStrikeActivity(
+        state,
+        id,
+        undefined,
+        strikeInfo,
+        strikeNumber + 1,
+        previousHits + 1,
+        conditions.CRIT
+      );
+      const onHit = createStrikeActivity(
+        state,
+        id,
+        undefined,
+        strikeInfo,
+        strikeNumber + 1,
+        previousHits + 1,
+        conditions.SUCC
+      );
+      const onMiss = createStrikeActivity(
+        state,
+        id,
+        undefined,
+        strikeInfo,
+        strikeNumber + 1,
+        previousHits,
+        conditions.FAIL_WORSE
+      );
+      apIds.push(onCrit, onHit, onMiss);
+    }
+    // need to combine damages for double slice with on miss, onHit, onCrit
+    else if (
+      strikeInfo.cClass === "Ranger" &&
+      strikeInfo.classOption === "Precision Edge"
+    ) {
+      const onHit = createStrikeActivity(
+        state,
+        id,
+        undefined,
+        strikeInfo,
+        strikeNumber + 1,
+        previousHits + 1,
+        conditions.AT_LEAST_SUCC
+      );
+      const onMiss = createStrikeActivity(
+        state,
+        id,
+        undefined,
+        strikeInfo,
+        strikeNumber + 1,
+        previousHits,
+        conditions.FAIL_WORSE
+      );
+      apIds.push(onHit, onMiss);
+    } else {
+      apIds.push(
+        createStrikeActivity(state, id, undefined, strikeInfo, strikeNumber + 1)
+      );
+    }
+  }
+  const name = getStrikeName(strikeInfo, useWeapon2);
+
+  let damages: number[] = [];
+  if (strikeInfo.activity === "Double Slice") {
+    if (strikeNumber < strikeInfo.numStrikes - 1) {
+      damages = [];
+    } else {
+      damages = createStrikeDamages(
+        state,
+        strikeInfo,
+        strikeNumber,
+        useWeapon2,
+        previousHits,
+        true,
+        condition
+        // which double slice activity is this? crit/hit/miss
+      );
+    }
+  } else {
+    damages = createStrikeDamages(
       state,
-      id,
-      undefined,
       strikeInfo,
-      strikeNumber + 1
+      strikeNumber,
+      useWeapon2,
+      previousHits
     );
   }
-  const name = getStrikeName(strikeInfo, strikeNumber);
-  let damages = createStrikeDamages(state, strikeInfo, strikeNumber);
   let effects = createStrikeEffects(state, strikeInfo, strikeNumber);
-  let MAP = classWeaponMAP(strikeInfo);
+  let MAP: MAP = classWeaponMAP(strikeInfo);
+
+  if (strikeNumber + strikeInfo.numPrevStrikes === 1) {
+    if (strikeInfo.activity !== "Double Slice") MAP = nextMAPs[MAP];
+  } else if (strikeNumber + strikeInfo.numPrevStrikes >= 2) {
+    if (
+      strikeInfo.activity === "Double Slice" &&
+      strikeNumber + strikeInfo.numPrevStrikes === 2
+    ) {
+      MAP = nextMAPs[MAP];
+    } else {
+      MAP = nextMAPs[nextMAPs[MAP]];
+    }
+  }
 
   activityPathAdapter.addOne(state.activityPaths, {
     ...defaultActivity,
     id,
     parentId,
     routineId,
+    condition,
     name,
     type: activityTypes.STRIKE,
     profTrend: classWeaponProf(strikeInfo.cClass, strikeInfo.classOption),
     statTrend: strikeInfo.attackScore,
     itemTrend: itemTrends.WEAPON,
     bonusAdjustments: classAdjustments(strikeInfo, strikeNumber),
-    MAP:
-      strikeNumber === 0
-        ? MAP
-        : strikeNumber === 1
-        ? nextMAPs[MAP]
-        : nextMAPs[nextMAPs[MAP]],
+    MAP,
 
     damages,
     effects,
     apIds,
   });
-  return [id];
+  return id;
 };
 const createStrikeDamages = (
   state: WritableDraft<State>,
   strikeInfo: StrikeInfo,
-  strikeNumber: number
+  strikeNumber: number,
+  useWeapon2: boolean = false,
+  previousHits: number = 0,
+  addDoubleSliceDamage: boolean = false,
+  doubleSliceCondition: Condition = conditions.FAIL_WORSE
 ) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
   const newDamages: number[] = [];
+
+  if (addDoubleSliceDamage) {
+    let weapon = strikeInfo.weapon1;
+    // use the first weapon for this damage always
+    if (doubleSliceCondition === conditions.CRIT) {
+      // add all damage as if crit... always
+      let id = ++damageId;
+      const weaponDamage: Damage = {
+        ...defaultDamage,
+        damageCondition: dCond.ALWAYS,
+        multiplier: 2,
+        id,
+        dieTrend: dieTrends.WEAPON,
+        dieAdjustments: activityWeaponDiceAdjustments(strikeInfo),
+        diceSize: hasFatal(strikeInfo) ? weapon.fatalSize : weapon.dieSize,
+        fatal: hasFatal(strikeInfo),
+        fatalDie: weapon.fatalSize,
+        damageTrend: classWeaponDamageTrends(strikeInfo, strikeNumber - 1),
+        damageAdjustments: classDamageAdjustments(strikeInfo),
+      };
+      damageAdapter.addOne(state.damages, weaponDamage);
+      newDamages.push(id);
+
+      id = ++damageId;
+      const runeDamage: Damage = {
+        ...defaultDamage,
+        damageCondition: dCond.ALWAYS,
+        multiplier: 2,
+        id,
+        dieTrend: weapon.runes,
+        diceSize: diceSizes[6],
+        damageType: damageTypes.FIRE,
+      };
+      damageAdapter.addOne(state.damages, runeDamage);
+      newDamages.push(id);
+
+      if (hasClassPrecisionDamage(strikeInfo, previousHits)) {
+        let { dieTrend, diceSize, damageWhen, damageTrend } =
+          classPrecisionDamage(strikeInfo, previousHits);
+        id = ++damageId;
+        const classDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.ALWAYS,
+          multiplier: 2,
+          id,
+          dieTrend,
+          diceSize,
+          damageType: damageTypes.PRECISION,
+          damageWhen,
+          damageTrend,
+        };
+        damageAdapter.addOne(state.damages, classDamage);
+        newDamages.push(id);
+      }
+
+      if (hasDeadly(strikeInfo)) {
+        let damageAdjustments = empty;
+        if (!hasFatal(strikeInfo) && hasPickCritSpec(strikeInfo))
+          damageAdjustments = critSpecDamage(strikeInfo);
+        id = ++damageId;
+        const critDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.ALWAYS,
+          id,
+          dieTrend: dieTrends.DEADLY,
+          diceSize: weapon.deadlySize,
+          damageAdjustments,
+        };
+        damageAdapter.addOne(state.damages, critDamage);
+        newDamages.push(id);
+      }
+      if (hasFatal(strikeInfo)) {
+        let damageAdjustments = empty;
+        if (hasPickCritSpec(strikeInfo))
+          damageAdjustments = critSpecDamage(strikeInfo);
+        id = ++damageId;
+        const critDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.ALWAYS,
+          id,
+          dieAdjustments: one,
+          diceSize: weapon.fatalSize,
+          damageAdjustments,
+        };
+        damageAdapter.addOne(state.damages, critDamage);
+        newDamages.push(id);
+      }
+      if (
+        !hasDeadly(strikeInfo) &&
+        !hasFatal(strikeInfo) &&
+        hasPickCritSpec(strikeInfo)
+      ) {
+        let damageAdjustments = critSpecDamage(strikeInfo);
+        id = ++damageId;
+        const critDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.ALWAYS,
+          id,
+          diceSize: weapon.fatalSize,
+          damageAdjustments,
+        };
+        damageAdapter.addOne(state.damages, critDamage);
+        newDamages.push(id);
+      }
+      if (hasKnifeCritSpec(strikeInfo)) {
+        let damageAdjustments = critSpecDamage(strikeInfo);
+        id = ++damageId;
+        const critDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.ALWAYS,
+          id,
+          dieAdjustments: critSpecDice(strikeInfo),
+          diceSize: diceSizes[6],
+          damageAdjustments,
+          persistent: true,
+        };
+        damageAdapter.addOne(state.damages, critDamage);
+        newDamages.push(id);
+      }
+    } else if (doubleSliceCondition === conditions.SUCC) {
+      // add hit damage always, add precision damage only on miss so we don't add it twice with the second attack
+      let id = ++damageId;
+      const weaponDamage: Damage = {
+        ...defaultDamage,
+        damageCondition: dCond.ALWAYS,
+        id,
+        dieTrend: dieTrends.WEAPON,
+        dieAdjustments: activityWeaponDiceAdjustments(strikeInfo),
+        diceSize: weapon.dieSize,
+        fatal: false,
+        fatalDie: weapon.fatalSize,
+        damageTrend: classWeaponDamageTrends(strikeInfo, strikeNumber - 1),
+        damageAdjustments: classDamageAdjustments(strikeInfo),
+      };
+      damageAdapter.addOne(state.damages, weaponDamage);
+      newDamages.push(id);
+
+      id = ++damageId;
+      const runeDamage: Damage = {
+        ...defaultDamage,
+        damageCondition: dCond.ALWAYS,
+        id,
+        dieTrend: weapon.runes,
+        diceSize: diceSizes[6],
+        damageType: damageTypes.FIRE,
+      };
+      damageAdapter.addOne(state.damages, runeDamage);
+      newDamages.push(id);
+
+      if (hasClassPrecisionDamage(strikeInfo, previousHits)) {
+        let { dieTrend, diceSize, damageWhen, damageTrend } =
+          classPrecisionDamage(strikeInfo, previousHits);
+        id = ++damageId;
+        const classDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.FAIL_WORSE,
+          id,
+          dieTrend,
+          diceSize,
+          damageType: damageTypes.PRECISION,
+          damageWhen,
+          damageTrend,
+        };
+        damageAdapter.addOne(state.damages, classDamage);
+        newDamages.push(id);
+      }
+    }
+  }
 
   let id = ++damageId;
   const weaponDamage: Damage = {
@@ -733,11 +995,11 @@ const createStrikeDamages = (
     id,
     dieTrend: dieTrends.WEAPON,
     dieAdjustments: activityWeaponDiceAdjustments(strikeInfo),
-    diceSize: strikeInfo.dieSize,
-    fatal: hasFatal(strikeInfo),
-    fatalDie: strikeInfo.fatalSize,
-    damageTrend: classWeaponDamageTrends(strikeInfo, strikeNumber),
-    damageAdjustments: classDamageAdjustments(strikeInfo),
+    diceSize: weapon.dieSize,
+    fatal: hasFatal(strikeInfo, useWeapon2),
+    fatalDie: weapon.fatalSize,
+    damageTrend: classWeaponDamageTrends(strikeInfo, strikeNumber, useWeapon2),
+    damageAdjustments: classDamageAdjustments(strikeInfo, useWeapon2),
   };
   damageAdapter.addOne(state.damages, weaponDamage);
   newDamages.push(id);
@@ -746,23 +1008,29 @@ const createStrikeDamages = (
   const runeDamage: Damage = {
     ...defaultDamage,
     id,
-    dieTrend: strikeInfo.runes,
+    dieTrend: weapon.runes,
     diceSize: diceSizes[6],
     damageType: damageTypes.FIRE,
   };
   damageAdapter.addOne(state.damages, runeDamage);
   newDamages.push(id);
 
-  if (hasClassDamageDice(strikeInfo)) {
-    let { dieTrend, diceSize, damageType, damageWhen } =
-      classDamageDice(strikeInfo);
+  if (
+    !(addDoubleSliceDamage && doubleSliceCondition === conditions.CRIT) &&
+    hasClassPrecisionDamage(strikeInfo, previousHits)
+  ) {
+    let { dieTrend, diceSize, damageWhen, damageTrend } = classPrecisionDamage(
+      strikeInfo,
+      previousHits
+    );
     id = ++damageId;
     const classDamage: Damage = {
       ...defaultDamage,
       id,
       dieTrend,
       diceSize,
-      damageType,
+      damageTrend,
+      damageType: damageTypes.PRECISION,
       damageWhen,
     };
     damageAdapter.addOne(state.damages, classDamage);
@@ -791,64 +1059,68 @@ const createStrikeDamages = (
     newDamages.push(id);
   }
 
-  if (hasDeadly(strikeInfo)) {
+  if (hasDeadly(strikeInfo, useWeapon2)) {
     let damageAdjustments = empty;
-    if (!hasFatal(strikeInfo) && hasPickCritSpec(strikeInfo))
-      damageAdjustments = critSpecDamage(strikeInfo);
+    if (
+      !hasFatal(strikeInfo, useWeapon2) &&
+      hasPickCritSpec(strikeInfo, useWeapon2)
+    )
+      damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
     id = ++damageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
       damageCondition: dCond.CRIT,
       dieTrend: dieTrends.DEADLY,
-      diceSize: strikeInfo.deadlySize,
+      diceSize: weapon.deadlySize,
       damageAdjustments,
     };
     damageAdapter.addOne(state.damages, critDamage);
     newDamages.push(id);
   }
-  if (hasFatal(strikeInfo)) {
+  if (hasFatal(strikeInfo, useWeapon2)) {
     let damageAdjustments = empty;
-    if (hasPickCritSpec(strikeInfo))
-      damageAdjustments = critSpecDamage(strikeInfo);
+    if (hasPickCritSpec(strikeInfo, useWeapon2))
+      damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
     id = ++damageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
       damageCondition: dCond.CRIT,
       dieAdjustments: one,
-      diceSize: strikeInfo.fatalSize,
+      diceSize: weapon.fatalSize,
       damageAdjustments,
     };
     damageAdapter.addOne(state.damages, critDamage);
     newDamages.push(id);
   }
   if (
-    !hasDeadly(strikeInfo) &&
-    !hasFatal(strikeInfo) &&
-    hasPickCritSpec(strikeInfo)
+    !hasDeadly(strikeInfo, useWeapon2) &&
+    !hasFatal(strikeInfo, useWeapon2) &&
+    hasPickCritSpec(strikeInfo, useWeapon2)
   ) {
-    let damageAdjustments = critSpecDamage(strikeInfo);
+    let damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
     id = ++damageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
       damageCondition: dCond.CRIT,
-      diceSize: strikeInfo.fatalSize,
+      diceSize: weapon.fatalSize,
       damageAdjustments,
     };
     damageAdapter.addOne(state.damages, critDamage);
     newDamages.push(id);
   }
-  if (hasKnifeCritSpec(strikeInfo)) {
-    let damageAdjustments = critSpecDamage(strikeInfo);
+  if (hasKnifeCritSpec(strikeInfo, useWeapon2)) {
+    let damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
     id = ++damageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
       damageCondition: dCond.CRIT,
-      dieAdjustments: critSpecDice(strikeInfo),
+      dieAdjustments: critSpecDice(strikeInfo, useWeapon2),
       diceSize: diceSizes[6],
+      damageType: damageTypes.BLEED,
       damageAdjustments,
       persistent: true,
     };
@@ -861,16 +1133,22 @@ const createStrikeDamages = (
 const createStrikeEffects = (
   state: WritableDraft<State>,
   strikeInfo: StrikeInfo,
-  strikeNumber: number
+  strikeNumber: number,
+  useWeapon2: boolean = false
 ) => {
+  let weapon = useWeapon2 ? strikeInfo.weapon2 : strikeInfo.weapon1;
+
   const newEffects: number[] = [];
   let id;
 
-  if (hasCritSpecEffect(strikeInfo)) {
+  if (hasCritSpecEffect(strikeInfo, useWeapon2)) {
     let effectType: EffectType = effectStateTypes.FLATFOOT;
-    if (hasSwordCritSpec(strikeInfo)) effectType = effectStateTypes.FLATFOOT;
-    if (hasHammerCritSpec(strikeInfo)) effectType = effectStateTypes.PRONE;
-    if (hasSpearCritSpec(strikeInfo)) effectType = effectValueTypes.CLUMSY;
+    if (hasSwordCritSpec(strikeInfo, useWeapon2))
+      effectType = effectStateTypes.FLATFOOT;
+    if (hasHammerCritSpec(strikeInfo, useWeapon2))
+      effectType = effectStateTypes.PRONE;
+    if (hasSpearCritSpec(strikeInfo, useWeapon2))
+      effectType = effectValueTypes.CLUMSY;
 
     id = ++effectId;
     const critSpecEffect: Effect = {
@@ -879,12 +1157,12 @@ const createStrikeEffects = (
       effectCondition: conditions.CRIT,
       effectType,
       effectValue: 1,
-      startLevel: strikeInfo.critSpecLevel,
+      startLevel: weapon.critSpecLevel,
     };
     newEffects.push(id);
     effectAdapter.addOne(state.effects, critSpecEffect);
   }
-  if (hasBackswing(strikeInfo)) {
+  if (hasBackswing(strikeInfo, useWeapon2)) {
     id = ++effectId;
     const backswingEffect: Effect = {
       ...defaultEffect,
@@ -925,7 +1203,7 @@ const createSkillActivity = (
     damages,
     effects,
   });
-  return [id];
+  return id;
 };
 
 const createSkillDamages = (
@@ -994,7 +1272,7 @@ const createCantripActivity = (
 
     damages,
   });
-  return [id];
+  return id;
 };
 
 const createCantripDamages = (
@@ -1057,7 +1335,7 @@ const createSpellActivity = (
     damages,
     effects,
   });
-  return [id];
+  return id;
 };
 
 const createSpellDamages = (

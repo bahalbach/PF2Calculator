@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import { diceSizeOptions, makeOptions } from "../../Model/options";
 import {
-  diceSizes,
   DieTrend,
   dieTrends,
   ItemTrend,
@@ -46,6 +45,7 @@ import {
   SpellInfo,
   spellProfTrends,
   attackSpells,
+  WeaponInfo,
 } from "../../Model/newActivityInfo";
 import { TooltipSelect } from "../../TooltipSelect";
 
@@ -110,81 +110,156 @@ export default function NewActivity({
 }
 
 function StrikeSelection() {
-  const [runes, setRunes] = useState<DieTrend>(dieTrends.RUNE2);
-  const [cClass, setCClass] = useState<typeof classes[number]>(classes[6]);
-  const [activity, setActivity] =
-    useState<typeof strikeActivities[number]>("Strike");
-  const [spell, setSpell] = useState<typeof attackSpells[number]>(
-    attackSpells[0]
-  );
-  const [classOption, setClassOption] = useState<string>("");
-  const [attackScore, setAttackScore] = useState<StatTrend>(statTrends.AS18a);
-  const [damageScore, setDamageScore] = useState<StatTrend>(statTrends.AS18a);
-  const [cantripScore, setCantripScore] = useState<StatTrend>(
-    statTrends.AS16pp
-  );
-  const [dieSize, setDieSize] = useState<number>(diceSizes[8]);
-  const [numStrikes, setNumStrikes] = useState<number>(1);
-  const [numPrevStrikes, setNumPrevStrikes] = useState<number>(0);
-  const [traits, setTraits] = useState(
-    // Array.from(weaponTraits, () => false)
-    Object.fromEntries(weaponTraits.map((trait) => [trait, false]))
-  );
-  const [deadlySize, setDeadlySize] = useState<number>(diceSizes[8]);
-  const [fatalSize, setFatalSize] = useState<number>(diceSizes[10]);
-  const [critSpec, setCritSpec] = useState<boolean>(false);
-  const [critSpecLevel, setCritSpecLevel] = useState<number>(5);
-  const [critSpecType, setCritSpecType] = useState<string>(critSpecs[0]);
+  const [strikeInfo, setStrikeInfo] = useState<StrikeInfo>({
+    cClass: classes[6],
+    classOption: "",
+    activity: "Strike",
+    spell: attackSpells[0],
+    attackScore: statTrends.AS18a,
+    damageScore: statTrends.AS18a,
+    cantripScore: statTrends.AS16pp,
 
-  const strikeInfo: StrikeInfo = {
-    runes,
-    cClass,
-    classOption,
-    activity,
-    spell,
-    attackScore,
-    damageScore,
-    cantripScore,
-    dieSize,
-    numPrevStrikes,
-    numStrikes,
-    traits,
-    deadlySize,
-    fatalSize,
-    critSpec,
-    critSpecLevel,
-    critSpecType,
-  };
+    numPrevStrikes: 0,
+    numStrikes: 1,
+    twf: false,
+    isStrikeSecondaryWeapon: [false],
+    previousHits: 0,
+
+    weapon1: {
+      dieSize: 8,
+      traits: Object.fromEntries(weaponTraits.map((trait) => [trait, false])),
+      deadlySize: 8,
+      fatalSize: 10,
+      critSpec: false,
+      critSpecLevel: 5,
+      critSpecType: critSpecs[0],
+      runes: dieTrends.RUNE2,
+
+      numPrevStrikes: 0,
+    },
+    weapon2: {
+      dieSize: 8,
+      traits: Object.fromEntries(weaponTraits.map((trait) => [trait, false])),
+      deadlySize: 8,
+      fatalSize: 10,
+      critSpec: false,
+      critSpecLevel: 5,
+      critSpecType: critSpecs[0],
+      runes: dieTrends.RUNE2,
+
+      numPrevStrikes: 0,
+    },
+  });
+  // const [cClass, setCClass] = useState<typeof classes[number]>(classes[6]);
+  // const [classOption, setClassOption] = useState<string>("");
+  // const [activity, setActivity] =
+  //   useState<typeof strikeActivities[number]>("Strike");
+  // const [spell, setSpell] = useState<typeof attackSpells[number]>(
+  //   attackSpells[0]
+  // );
+  // const [attackScore, setAttackScore] = useState<StatTrend>(statTrends.AS18a);
+  // const [damageScore, setDamageScore] = useState<StatTrend>(statTrends.AS18a);
+  // const [cantripScore, setCantripScore] = useState<StatTrend>(
+  //   statTrends.AS16pp
+  // );
+
+  // const [numStrikes, setNumStrikes] = useState<number>(1);
+  // const [numPrevStrikes, setNumPrevStrikes] = useState<number>(0);
+  // const [twf, setTwf] = useState<boolean>(false);
+  // const [isStrikeSecondaryWeapon, setIsStrikeSecondaryWeapon] = useState<
+  //   boolean[]
+  // >([false]);
+  // const [previousHits, setPreviousHits] = useState<number>(0);
+
+  // const [dieSize, setDieSize] = useState<number>(diceSizes[8]);
+  // const [traits, setTraits] = useState(
+  //   // Array.from(weaponTraits, () => false)
+  //   Object.fromEntries(weaponTraits.map((trait) => [trait, false]))
+  // );
+  // const [deadlySize, setDeadlySize] = useState<number>(diceSizes[8]);
+  // const [fatalSize, setFatalSize] = useState<number>(diceSizes[10]);
+  // const [critSpec, setCritSpec] = useState<boolean>(false);
+  // const [critSpecLevel, setCritSpecLevel] = useState<number>(5);
+  // const [critSpecType, setCritSpecType] = useState<string>(critSpecs[0]);
+  // const [runes, setRunes] = useState<DieTrend>(dieTrends.RUNE2);
+
+  // const [dieSize2, setDieSize2] = useState<number>(diceSizes[8]);
+  // const [traits2, setTraits2] = useState(
+  //   // Array.from(weaponTraits, () => false)
+  //   Object.fromEntries(weaponTraits.map((trait) => [trait, false]))
+  // );
+  // const [deadlySize2, setDeadlySize2] = useState<number>(diceSizes[8]);
+  // const [fatalSize2, setFatalSize2] = useState<number>(diceSizes[10]);
+  // const [critSpec2, setCritSpec2] = useState<boolean>(false);
+  // const [critSpecLevel2, setCritSpecLevel2] = useState<number>(5);
+  // const [critSpecType2, setCritSpecType2] = useState<string>(critSpecs[0]);
+  // const [runes2, setRunes2] = useState<DieTrend>(dieTrends.RUNE2);
+
+  // const strikeInfo: StrikeInfo = {
+  //   cClass,
+  //   classOption,
+  //   activity,
+  //   spell,
+  //   attackScore,
+  //   damageScore,
+  //   cantripScore,
+
+  //   numPrevStrikes,
+  //   numStrikes,
+  //   twf,
+  //   isStrikeSecondaryWeapon,
+  //   previousHits,
+
+  //   dieSize,
+  //   traits,
+  //   deadlySize,
+  //   fatalSize,
+  //   critSpec,
+  //   critSpecLevel,
+  //   critSpecType,
+  //   runes,
+
+  //   dieSize2,
+  //   traits2,
+  //   deadlySize2,
+  //   fatalSize2,
+  //   critSpec2,
+  //   critSpecLevel2,
+  //   critSpecType2,
+  //   runes2,
+  // };
 
   const dispatch = useAppDispatch();
 
   const setClass = (className: typeof classes[number]) => {
-    setCClass(className);
+    const newStrikeInfo = { ...strikeInfo };
+    newStrikeInfo.cClass = className;
     if (classOptions[className].length > 0) {
-      setClassOption(classOptions[className][0]);
+      newStrikeInfo.classOption = classOptions[className][0];
     } else {
-      setClassOption("");
+      newStrikeInfo.classOption = "";
     }
+    setStrikeInfo(newStrikeInfo);
   };
   const showClassOptions = (): boolean => {
-    return classOptions[cClass].length > 0;
+    return classOptions[strikeInfo.cClass].length > 0;
   };
   const showCantrip = (): boolean => {
-    if (activity === "Spell Strike") {
+    if (strikeInfo.activity === "Spell Strike") {
       return true;
     }
     return false;
   };
   const showCantripScore = (): boolean => {
-    if (cClass === "Inventor") {
+    if (strikeInfo.cClass === "Inventor") {
       if (
-        classOption === "Overdrive Success" ||
-        classOption === "Overdrive Critical"
+        strikeInfo.classOption === "Overdrive Success" ||
+        strikeInfo.classOption === "Overdrive Critical"
       ) {
         return true;
       }
     }
-    if (activity === "Spell Strike") {
+    if (strikeInfo.activity === "Spell Strike") {
       return true;
     }
 
@@ -192,130 +267,321 @@ function StrikeSelection() {
   };
 
   return (
-    <Grid container spacing={{ xs: 1, sm: 2 }} id="create-new-activity">
-      <Grid item>
-        <TooltipSelect
-          title="Which class's proficiency and weapon specialization to use."
-          value={cClass}
-          label="Class"
-          onChange={(e) => {
-            setClass(e.target.value as typeof classes[number]);
-          }}
-        >
-          {makeOptions(classes)}
-        </TooltipSelect>
-      </Grid>
-
-      {showClassOptions() ? (
+    <React.Fragment>
+      <Grid
+        container
+        spacing={{ xs: 1, sm: 2 }}
+        sx={{ py: 2 }}
+        id="create-new-activity"
+      >
         <Grid item>
           <TooltipSelect
-            title="Which abilities are applied"
-            value={classOption}
-            label="Class Option"
+            title="Which class's proficiency and weapon specialization to use."
+            value={strikeInfo.cClass}
+            label="Class"
             onChange={(e) => {
-              setClassOption(e.target.value);
+              setClass(e.target.value as typeof classes[number]);
             }}
           >
-            {makeOptions(classOptions[cClass])}
+            {makeOptions(classes)}
           </TooltipSelect>
         </Grid>
-      ) : (
-        ""
-      )}
 
-      <Grid item>
-        <TooltipSelect
-          title="Which activity to use"
-          value={activity}
-          label="Activity"
-          onChange={(e) => {
-            setActivity(e.target.value as typeof strikeActivities[number]);
-          }}
-        >
-          {
-            // @ts-ignore
-            makeOptions(strikeActivities)
-          }
-        </TooltipSelect>
-      </Grid>
-      {showCantrip() ? (
+        {showClassOptions() ? (
+          <Grid item>
+            <TooltipSelect
+              title="Which abilities are applied"
+              value={strikeInfo.classOption}
+              label="Class Option"
+              onChange={(e) => {
+                setStrikeInfo({ ...strikeInfo, classOption: e.target.value });
+              }}
+            >
+              {makeOptions(classOptions[strikeInfo.cClass])}
+            </TooltipSelect>
+          </Grid>
+        ) : (
+          ""
+        )}
+
         <Grid item>
           <TooltipSelect
-            title="Which spell to add to the strike"
-            value={spell}
-            label="Spell"
+            title="Which activity to use"
+            value={strikeInfo.activity}
+            label="Activity"
             onChange={(e) => {
-              setSpell(e.target.value as typeof attackSpells[number]);
+              const newStrikeInfo = { ...strikeInfo };
+              newStrikeInfo.activity = e.target
+                .value as typeof strikeActivities[number];
+              if (e.target.value === "Double Slice") {
+                newStrikeInfo.numStrikes = 2;
+              }
+              setStrikeInfo(newStrikeInfo);
             }}
           >
-            {makeOptions(attackSpells)}
+            {makeOptions(strikeActivities)}
           </TooltipSelect>
         </Grid>
-      ) : (
-        ""
-      )}
-      <Grid item>
-        <TooltipSelect
-          title="What ability score bonus progression to add to the attack roll."
-          value={attackScore}
-          label="Attack Abilitiy Score"
-          onChange={(e) => {
-            setAttackScore(e.target.value as StatTrend);
-          }}
-        >
-          {
-            // @ts-ignore
-            makeOptions(statTrends)
-          }
-        </TooltipSelect>
-      </Grid>
-      <Grid item>
-        <TooltipSelect
-          title="What ability score bonus progression to add to the damage roll. Not applied to ranged attacks."
-          value={damageScore}
-          label="Damage Abilitiy Score"
-          onChange={(e) => {
-            setDamageScore(e.target.value as StatTrend);
-          }}
-        >
-          {
-            // @ts-ignore
-            makeOptions(statTrends)
-          }
-        </TooltipSelect>
-      </Grid>
-      {showCantripScore() ? (
+        {showCantrip() ? (
+          <Grid item>
+            <TooltipSelect
+              title="Which spell to add to the strike"
+              value={strikeInfo.spell}
+              label="Spell"
+              onChange={(e) => {
+                setStrikeInfo({
+                  ...strikeInfo,
+                  spell: e.target.value as typeof attackSpells[number],
+                });
+              }}
+            >
+              {makeOptions(attackSpells)}
+            </TooltipSelect>
+          </Grid>
+        ) : (
+          ""
+        )}
         <Grid item>
           <TooltipSelect
-            title="What ability score bonus progression to add to the damage roll."
-            value={cantripScore}
-            label="Mental Abilitiy Score"
+            title="What ability score bonus progression to add to the attack roll."
+            value={strikeInfo.attackScore}
+            label="Attack Abilitiy Score"
             onChange={(e) => {
-              setCantripScore(e.target.value as StatTrend);
+              setStrikeInfo({
+                ...strikeInfo,
+                attackScore: e.target.value as StatTrend,
+              });
             }}
           >
-            {
-              // @ts-ignore
-              makeOptions(statTrends)
+            {makeOptions(statTrends)}
+          </TooltipSelect>
+        </Grid>
+        <Grid item>
+          <TooltipSelect
+            title="What ability score bonus progression to add to the damage roll.
+            Not applied to ranged attacks."
+            value={strikeInfo.damageScore}
+            label="Damage Abilitiy Score"
+            onChange={(e) => {
+              setStrikeInfo({
+                ...strikeInfo,
+                damageScore: e.target.value as StatTrend,
+              });
+            }}
+          >
+            {makeOptions(statTrends)}
+          </TooltipSelect>
+        </Grid>
+        {showCantripScore() ? (
+          <Grid item>
+            <TooltipSelect
+              title="What ability score bonus progression to add to the damage roll."
+              value={strikeInfo.cantripScore}
+              label="Mental Abilitiy Score"
+              onChange={(e) => {
+                setStrikeInfo({
+                  ...strikeInfo,
+                  cantripScore: e.target.value as StatTrend,
+                });
+              }}
+            >
+              {makeOptions(statTrends)}
+            </TooltipSelect>
+          </Grid>
+        ) : (
+          ""
+        )}
+      </Grid>
+
+      <WeaponInput
+        weapon={strikeInfo.weapon1}
+        setWeapon={(weapon) =>
+          setStrikeInfo({ ...strikeInfo, weapon1: weapon })
+        }
+      />
+
+      {/* <Grid
+        container
+        columnSpacing={{ xs: 1, sm: 2 }}
+        sx={{ my: 2 }}
+        alignItems="center"
+      > */}
+      {/* <Grid item xs="auto"> */}
+      <FormControlLabel
+        control={
+          <Switch
+            checked={strikeInfo.twf}
+            onChange={(e) =>
+              setStrikeInfo({ ...strikeInfo, twf: e.target.checked })
             }
-          </TooltipSelect>
-        </Grid>
+          />
+        }
+        label="Use Two Weapons"
+        sx={{ py: 2 }}
+      />
+      {/* </Grid> */}
+      {strikeInfo.twf ? (
+        <WeaponInput
+          weapon={strikeInfo.weapon2}
+          setWeapon={(weapon) =>
+            setStrikeInfo({ ...strikeInfo, weapon2: weapon })
+          }
+        />
       ) : (
         ""
       )}
+      {/* </Grid> */}
+
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ py: 2 }}>
+        <Grid item xs="auto">
+          <TooltipSelect
+            title="Select the number of previous attacks."
+            value={strikeInfo.numPrevStrikes}
+            label="Previous Attacks"
+            onChange={(e) => {
+              setStrikeInfo({
+                ...strikeInfo,
+                numPrevStrikes: Number(e.target.value),
+              });
+            }}
+          >
+            {makeOptions([0, 1, 2])}
+          </TooltipSelect>
+        </Grid>
+        {strikeInfo.activity !== "Double Slice" ? (
+          <Grid item xs="auto">
+            <TooltipSelect
+              title="Select the number of attacks to make with the selected options."
+              value={strikeInfo.numStrikes}
+              label="Number of Strikes"
+              onChange={(e) => {
+                setStrikeInfo({
+                  ...strikeInfo,
+                  numStrikes: Number(e.target.value),
+                });
+              }}
+            >
+              {makeOptions([1, 2, 3, 4, 5, 6])}
+            </TooltipSelect>
+          </Grid>
+        ) : (
+          ""
+        )}
+        {strikeInfo.cClass === "Ranger" &&
+        strikeInfo.classOption === "Precision Edge" ? (
+          <Grid item xs="auto">
+            <TooltipSelect
+              title="Select the number of previous hits."
+              value={strikeInfo.previousHits}
+              label="Previous Hits"
+              onChange={(e) => {
+                setStrikeInfo({
+                  ...strikeInfo,
+                  previousHits: Number(e.target.value),
+                });
+              }}
+            >
+              {makeOptions([0, 1, 2, 3])}
+            </TooltipSelect>
+          </Grid>
+        ) : (
+          ""
+        )}
+
+        {/* Add Strike button */}
+        <Grid item xs="auto">
+          <Button
+            variant="contained"
+            onClick={() => dispatch(activityPathCreated({ strikeInfo }))}
+          >
+            Create New Activity
+          </Button>
+        </Grid>
+      </Grid>
+    </React.Fragment>
+  );
+}
+
+function WeaponInput({
+  weapon,
+  setWeapon,
+}: {
+  weapon: WeaponInfo;
+  setWeapon: (weapon: WeaponInfo) => void;
+}) {
+  return (
+    <Grid
+      container
+      columnSpacing={{ xs: 1, sm: 2 }}
+      sx={{ py: 2 }}
+      alignItems="center"
+    >
+      <Grid item xs="auto">
+        <Typography variant="h6">Weapon</Typography>
+      </Grid>
+
       <Grid item>
         <TooltipSelect
           title="Weapon damage die"
-          value={dieSize}
+          value={weapon.dieSize}
           label="Damage Die"
           onChange={(e) => {
-            setDieSize(Number(e.target.value));
+            setWeapon({ ...weapon, dieSize: Number(e.target.value) });
           }}
         >
           {diceSizeOptions}
         </TooltipSelect>
       </Grid>
 
+      <Grid item>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={weapon.critSpec}
+              onChange={(e) =>
+                setWeapon({ ...weapon, critSpec: e.target.checked })
+              }
+            />
+          }
+          label="Critical Specialization"
+        />
+      </Grid>
+      {/* crit spec level slider */}
+      {weapon.critSpec ? (
+        <Grid item>
+          <Typography align="center" id="crit-spec-level">
+            At Level {weapon.critSpecLevel}
+          </Typography>
+          <Slider
+            aria-labelledby="crit-spec-level"
+            value={weapon.critSpecLevel}
+            min={1}
+            max={20}
+            marks
+            onChange={(e, nv) =>
+              setWeapon({ ...weapon, critSpecLevel: Number(nv) })
+            }
+          />
+        </Grid>
+      ) : (
+        ""
+      )}
+      {weapon.critSpec ? (
+        <Grid item>
+          <TooltipSelect
+            title="What weapon group's effect to apply on a critical hit."
+            value={weapon.critSpecType}
+            label="Weapon Group"
+            onChange={(e) =>
+              setWeapon({ ...weapon, critSpecType: e.target.value })
+            }
+          >
+            {makeOptions(critSpecs)}
+          </TooltipSelect>
+        </Grid>
+      ) : (
+        ""
+      )}
       {/* Weapon Traits */}
       <Grid item>
         <Paper
@@ -336,28 +602,28 @@ function StrikeSelection() {
                 label={traitName}
                 size="small"
                 color="secondary"
-                variant={traits[traitName] ? "filled" : "outlined"}
+                variant={weapon.traits[traitName] ? "filled" : "outlined"}
                 onClick={() => {
                   const newTraits = {
-                    ...traits,
-                    [traitName]: !traits[traitName],
+                    ...weapon.traits,
+                    [traitName]: !weapon.traits[traitName],
                   };
                   // newTraits[traitName] = !traits[traitName];
-                  setTraits(newTraits);
+                  setWeapon({ ...weapon, traits: newTraits });
                 }}
               />
             </Box>
           ))}
         </Paper>
       </Grid>
-      {traits["deadly"] ? (
+      {weapon.traits["deadly"] ? (
         <Grid item>
           <TooltipSelect
             title="Deadly damage die."
-            value={deadlySize}
+            value={weapon.deadlySize}
             label="Deadly Die"
             onChange={(e) => {
-              setDeadlySize(Number(e.target.value));
+              setWeapon({ ...weapon, deadlySize: Number(e.target.value) });
             }}
           >
             {diceSizeOptions}
@@ -366,61 +632,17 @@ function StrikeSelection() {
       ) : (
         ""
       )}
-      {traits["fatal"] ? (
+      {weapon.traits["fatal"] ? (
         <Grid item>
           <TooltipSelect
             title="Fatal damage die."
-            value={fatalSize}
+            value={weapon.fatalSize}
             label="Fatal Die"
             onChange={(e) => {
-              setFatalSize(Number(e.target.value));
+              setWeapon({ ...weapon, fatalSize: Number(e.target.value) });
             }}
           >
             {diceSizeOptions}
-          </TooltipSelect>
-        </Grid>
-      ) : (
-        ""
-      )}
-
-      <Grid item>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={critSpec}
-              onChange={(e) => setCritSpec(e.target.checked)}
-            />
-          }
-          label="Critical Specialization"
-        />
-      </Grid>
-      {/* crit spec level slider */}
-      {critSpec ? (
-        <Grid item>
-          <Typography align="center" id="crit-spec-level">
-            At Level {critSpecLevel}
-          </Typography>
-          <Slider
-            aria-labelledby="crit-spec-level"
-            value={critSpecLevel}
-            min={1}
-            max={20}
-            marks
-            onChange={(e, nv) => setCritSpecLevel(Number(nv))}
-          />
-        </Grid>
-      ) : (
-        ""
-      )}
-      {critSpec ? (
-        <Grid item>
-          <TooltipSelect
-            title="What weapon group's effect to apply on a critical hit."
-            value={critSpecType}
-            label="Weapon Group"
-            onChange={(e) => setCritSpecType(e.target.value)}
-          >
-            {makeOptions(critSpecs)}
           </TooltipSelect>
         </Grid>
       ) : (
@@ -430,49 +652,14 @@ function StrikeSelection() {
       <Grid item>
         <TooltipSelect
           title="What levels the damages from property runes such as 'flaming' are applied."
-          value={runes}
+          value={weapon.runes}
           label="Damage Rune Levels"
           onChange={(e) => {
-            setRunes(e.target.value as DieTrend);
+            setWeapon({ ...weapon, runes: e.target.value as DieTrend });
           }}
         >
           {makeOptions(runeTrends)}
         </TooltipSelect>
-      </Grid>
-
-      <Grid item xs="auto">
-        <TooltipSelect
-          title="Select the number of previous attacks."
-          value={numPrevStrikes}
-          label="Previous Attacks"
-          onChange={(e) => {
-            setNumPrevStrikes(Number(e.target.value));
-          }}
-        >
-          {makeOptions([0, 1, 2])}
-        </TooltipSelect>
-      </Grid>
-      <Grid item xs="auto">
-        <TooltipSelect
-          title="Select the number of attacks to make with the selected options."
-          value={numStrikes}
-          label="Number of Strikes"
-          onChange={(e) => {
-            setNumStrikes(Number(e.target.value));
-          }}
-        >
-          {makeOptions([1, 2, 3, 4, 5, 6])}
-        </TooltipSelect>
-      </Grid>
-
-      {/* Add Strike button */}
-      <Grid item xs="auto">
-        <Button
-          variant="contained"
-          onClick={() => dispatch(activityPathCreated({ strikeInfo }))}
-        >
-          Create New Activity
-        </Button>
       </Grid>
     </Grid>
   );
