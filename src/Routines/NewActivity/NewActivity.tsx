@@ -14,6 +14,10 @@ import {
   Switch,
   Slider,
   Button,
+  Stack,
+  FormLabel,
+  RadioGroup,
+  Radio,
 } from "@mui/material";
 import { diceSizeOptions, makeOptions } from "../../Model/options";
 import {
@@ -315,6 +319,7 @@ function StrikeSelection() {
                 .value as typeof strikeActivities[number];
               if (e.target.value === "Double Slice") {
                 newStrikeInfo.numStrikes = 2;
+                newStrikeInfo.isStrikeSecondaryWeapon = [false, true];
               }
               setStrikeInfo(newStrikeInfo);
             }}
@@ -455,10 +460,21 @@ function StrikeSelection() {
               value={strikeInfo.numStrikes}
               label="Number of Strikes"
               onChange={(e) => {
-                setStrikeInfo({
-                  ...strikeInfo,
-                  numStrikes: Number(e.target.value),
-                });
+                const newNumStrikes = Number(e.target.value);
+                const newStrikeInfo = { ...strikeInfo };
+                const isStrikeSecondaryWeapon = [];
+                for (let i = 0; i < newNumStrikes; i++) {
+                  if (i < strikeInfo.numStrikes) {
+                    isStrikeSecondaryWeapon.push(
+                      strikeInfo.isStrikeSecondaryWeapon[i]
+                    );
+                  } else {
+                    isStrikeSecondaryWeapon.push(false);
+                  }
+                }
+                newStrikeInfo.numStrikes = newNumStrikes;
+                newStrikeInfo.isStrikeSecondaryWeapon = isStrikeSecondaryWeapon;
+                setStrikeInfo(newStrikeInfo);
               }}
             >
               {makeOptions([1, 2, 3, 4, 5, 6])}
@@ -498,6 +514,43 @@ function StrikeSelection() {
           </Button>
         </Grid>
       </Grid>
+
+      {strikeInfo.twf && strikeInfo.activity !== "Double Slice" ? (
+        <Stack spacing={{ xs: 1, sm: 2 }}>
+          {strikeInfo.isStrikeSecondaryWeapon.map((isSecondary, index) => (
+            <FormControl component="fieldset" key={index}>
+              <FormLabel component="legend">Strike {index + 1}</FormLabel>
+              <RadioGroup
+                row
+                aria-label={"strike-" + (index + 1)}
+                value={isSecondary ? 2 : 1}
+                onClick={(e) => {
+                  const newStrikeInfo = { ...strikeInfo };
+                  const newIsSecondary =
+                    strikeInfo.isStrikeSecondaryWeapon.slice();
+                  newIsSecondary[index] =
+                    (e.target as HTMLInputElement).value === "2";
+                  newStrikeInfo.isStrikeSecondaryWeapon = newIsSecondary;
+                  setStrikeInfo(newStrikeInfo);
+                }}
+              >
+                <FormControlLabel
+                  value={1}
+                  control={<Radio />}
+                  label="Weapon 1"
+                />
+                <FormControlLabel
+                  value={2}
+                  control={<Radio />}
+                  label="Weapon 2"
+                />
+              </RadioGroup>
+            </FormControl>
+          ))}
+        </Stack>
+      ) : (
+        ""
+      )}
     </React.Fragment>
   );
 }

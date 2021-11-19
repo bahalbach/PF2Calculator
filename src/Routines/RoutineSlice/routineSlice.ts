@@ -678,9 +678,13 @@ const createStrikeActivity = (
   previousHits: number = 0,
   condition: Condition = conditions.ALWAYS
 ) => {
-  let useWeapon2 = false;
-  if (strikeInfo.activity === "Double Slice" && strikeNumber === 1)
-    useWeapon2 = true;
+  let useWeapon2 =
+    strikeInfo.twf && strikeInfo.isStrikeSecondaryWeapon[strikeNumber];
+  if (strikeInfo.twf && strikeInfo.activity === "Double Slice") {
+    if (strikeNumber === 0) useWeapon2 = false;
+    else useWeapon2 = true;
+  }
+  console.log(`using weapon2: ${useWeapon2}`);
 
   const id = ++activityPathId;
   let apIds: number[] = [];
@@ -773,8 +777,13 @@ const createStrikeActivity = (
       previousHits
     );
   }
-  let effects = createStrikeEffects(state, strikeInfo, strikeNumber);
-  let MAP: MAP = classWeaponMAP(strikeInfo);
+  let effects = createStrikeEffects(
+    state,
+    strikeInfo,
+    strikeNumber,
+    useWeapon2
+  );
+  let MAP: MAP = classWeaponMAP(strikeInfo, useWeapon2);
 
   if (strikeNumber + strikeInfo.numPrevStrikes === 1) {
     if (strikeInfo.activity !== "Double Slice") MAP = nextMAPs[MAP];
