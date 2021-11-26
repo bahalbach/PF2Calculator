@@ -52,6 +52,8 @@ import {
   WeaponInfo,
 } from "../../Model/newActivityInfo";
 import { TooltipSelect } from "../../TooltipSelect";
+import ReactGA from "react-ga4";
+ReactGA.initialize("G-JR2YK097BG");
 
 /*
   get activity type: strike, skill, cantrip, spell
@@ -508,7 +510,13 @@ function StrikeSelection() {
         <Grid item xs="auto">
           <Button
             variant="contained"
-            onClick={() => dispatch(activityPathCreated({ strikeInfo }))}
+            onClick={() => {
+              ReactGA.event("select_content", {
+                content_type: "create-new-strike",
+                item_id: strikeInfo.cClass,
+              });
+              dispatch(activityPathCreated({ strikeInfo }));
+            }}
           >
             Create New Activity
           </Button>
@@ -790,7 +798,13 @@ function SkillSelection() {
       <Grid item>
         <Button
           variant="contained"
-          onClick={() => dispatch(activityPathCreated({ skillInfo }))}
+          onClick={() => {
+            ReactGA.event("select_content", {
+              content_type: "create-new-skill",
+              item_id: skillActivity,
+            });
+            dispatch(activityPathCreated({ skillInfo }));
+          }}
         >
           Create New Activity
         </Button>
@@ -855,7 +869,13 @@ function CantripSelection() {
       <Grid item>
         <Button
           variant="contained"
-          onClick={() => dispatch(activityPathCreated({ cantripInfo }))}
+          onClick={() => {
+            ReactGA.event("select_content", {
+              content_type: "create-new-cantrip",
+              item_id: cantrip,
+            });
+            dispatch(activityPathCreated({ cantripInfo }));
+          }}
         >
           Create New Activity
         </Button>
@@ -920,7 +940,13 @@ function SpellSelection() {
       <Grid item>
         <Button
           variant="contained"
-          onClick={() => dispatch(activityPathCreated({ spellInfo }))}
+          onClick={() => {
+            ReactGA.event("select_content", {
+              content_type: "create-new-spell",
+              item_id: spell,
+            });
+            dispatch(activityPathCreated({ spellInfo }));
+          }}
         >
           Create New Activity
         </Button>

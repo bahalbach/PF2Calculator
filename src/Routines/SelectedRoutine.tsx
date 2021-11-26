@@ -24,6 +24,8 @@ import {
 import { activityTypes } from "../Model/types";
 import { Box } from "@mui/system";
 import { ActivityPath } from "./Activity/ActivityPath";
+import ReactGA from "react-ga4";
+ReactGA.initialize("G-JR2YK097BG");
 
 function SelectedRoutine({ routineId }: { routineId: number }) {
   // const selectedRoutine = useSelector(selectSelectedRoutine);
@@ -160,7 +162,13 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               size="small"
               fullWidth
               variant="outlined"
-              onClick={() => dispatch(emptyActivityPathCreated({ routineId }))}
+              onClick={() => {
+                ReactGA.event("select_content", {
+                  content_type: "new-activity",
+                  item_id: "empty-activity",
+                });
+                dispatch(emptyActivityPathCreated({ routineId }));
+              }}
             >
               New Empty Activity
             </Button>
@@ -178,14 +186,18 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               size="small"
               fullWidth
               variant="outlined"
-              onClick={() =>
+              onClick={() => {
+                ReactGA.event("select_content", {
+                  content_type: "new-activity",
+                  item_id: "strike-activity",
+                });
                 dispatch(
                   emptyActivityPathCreated({
                     routineId,
                     activityType: activityTypes.STRIKE,
                   })
-                )
-              }
+                );
+              }}
             >
               New Martial Strike
             </Button>
@@ -203,14 +215,18 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               size="small"
               fullWidth
               variant="outlined"
-              onClick={() =>
+              onClick={() => {
+                ReactGA.event("select_content", {
+                  content_type: "new-activity",
+                  item_id: "save-activity",
+                });
                 dispatch(
                   emptyActivityPathCreated({
                     routineId,
                     activityType: activityTypes.SAVE,
                   })
-                )
-              }
+                );
+              }}
             >
               New Caster Save
             </Button>

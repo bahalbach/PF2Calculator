@@ -684,7 +684,6 @@ const createStrikeActivity = (
     if (strikeNumber === 0) useWeapon2 = false;
     else useWeapon2 = true;
   }
-  console.log(`using weapon2: ${useWeapon2}`);
 
   const id = ++activityPathId;
   let apIds: number[] = [];

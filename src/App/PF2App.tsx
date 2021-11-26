@@ -84,7 +84,10 @@ const Controls = () => {
   useEffect(() => {
     if (createNewActivity) {
       window.location.href = "#create-new-activity";
-      ReactGA.send("create new activity");
+      ReactGA.event("select_content", {
+        content_type: "new-activity",
+        item_id: "create-new-activity",
+      });
     }
   }, [createNewActivity]);
 
@@ -126,7 +129,11 @@ const Donate = () => {
   return (
     <Box
       sx={{ height: 60, width: 217 }}
-      onClick={() => ReactGA.send("click buy me a coffee")}
+      onClick={() =>
+        ReactGA.event("select_content", {
+          content_type: "buy-me-a-coffee",
+        })
+      }
     >
       <a
         href="https://www.buymeacoffee.com/bahalbach"

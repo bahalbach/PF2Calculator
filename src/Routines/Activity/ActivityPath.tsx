@@ -61,6 +61,8 @@ import {
 } from "../../Model/defaults";
 import { Adjustment } from "../RoutineSlice/RoutineTypes";
 import { Box } from "@mui/system";
+import ReactGA from "react-ga4";
+ReactGA.initialize("G-JR2YK097BG");
 
 export const ActivityPath = ({
   id,
@@ -209,6 +211,10 @@ export const ActivityPath = ({
                 variant="contained"
                 onClick={() => {
                   window.location.href = "#routine-activity-list";
+                  ReactGA.event("select_content", {
+                    content_type: "new-activity",
+                    item_id: "continue-activity",
+                  });
                   dispatch(
                     activityPathContinued({
                       parentId: id,

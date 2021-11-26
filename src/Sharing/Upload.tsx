@@ -6,6 +6,8 @@ import { saveImgLink, selectGraphUrl } from "../Display/sharingSlice";
 import { useAppDispatch, useAppSelector } from "../App/hooks";
 import { selectRoutineDescriptions } from "../Routines/RoutineSlice/routineSlice";
 import { RootState } from "../App/store";
+import ReactGA from "react-ga4";
+ReactGA.initialize("G-JR2YK097BG");
 
 const url = "https://api.imgur.com/3/image";
 const auth = "Client-ID 9f68ffe6050491a";
@@ -42,6 +44,7 @@ export const Upload = ({ byLevel = true }: { byLevel?: boolean }) => {
   const uploadImage = () => {
     // console.log(description);
     // console.log(routineDescriptions);
+    ReactGA.event("share");
 
     const tab = window.open("about:blank");
     fetch(url, requestOptions)
