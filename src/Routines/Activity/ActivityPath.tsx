@@ -117,7 +117,7 @@ export const ActivityPath = ({
               <Typography variant="h6">Activity</Typography>
             </ListItemButton>
           </Grid>
-          <Grid item xs="auto">
+          <Grid item>
             <Typography>
               {parentId !== undefined ? condition + ": " : ""}
               {name}

@@ -36,7 +36,7 @@ const Routines = () => {
       </MenuItem>
     );
     routineDisplays.push(
-      <Box component="li" key={routine.id} sx={{ margin: 0.5 }}>
+      <Box component="li" key={routine.id} sx={{ margin: 0.5, maxWidth: 1 }}>
         <Chip
           label={routine.name}
           variant={routine.display ? "filled" : "outlined"}
@@ -52,6 +52,7 @@ const Routines = () => {
             dispatch(setRoutine(routine.id));
           }}
           onDelete={() => dispatch(routineRemoved(routine.id))}
+          sx={{ maxWidth: 1 }}
         />
       </Box>
     );

@@ -49,9 +49,7 @@ function PF2App() {
               md={6}
               sx={{ height: "100%", overflow: "auto" }}
             >
-              <Box sx={{}}>
-                <Controls />
-              </Box>
+              <Controls />
             </Grid>
             <Grid
               item
@@ -92,7 +90,7 @@ const Controls = () => {
   }, [createNewActivity]);
 
   return (
-    <React.Fragment>
+    <Box sx={{}}>
       <Routines />
       {selectedRoutine !== undefined ? (
         <SelectedRoutine routineId={selectedRoutine} />
@@ -121,7 +119,7 @@ const Controls = () => {
           <Contact />
         </Grid>
       </Grid>
-    </React.Fragment>
+    </Box>
   );
 };
 
