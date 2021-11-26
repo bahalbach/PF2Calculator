@@ -41,6 +41,12 @@ const Display = () => {
     return theme.breakpoints.up("sm");
   });
 
+  let height = 500 + expectedDamages.length * 19;
+  let singleLevelHeight = height;
+  if (graphType === graphTypes.DISTRIBUTION) {
+    singleLevelHeight += expectedDamages.length * 19;
+  }
+
   return (
     <React.Fragment>
       <Paper sx={{ p: 1, my: 2 }}>
@@ -64,7 +70,7 @@ const Display = () => {
         <Collapse in={showByLevel}>
           <ByLevelInput />
           <JointInput />
-          <Box>{byLevelDamageChart}</Box>
+          <Box sx={{ height }}>{byLevelDamageChart}</Box>
         </Collapse>
       </Paper>
 
@@ -101,7 +107,7 @@ const Display = () => {
             {makeOptions(graphTypes)}
           </Select>
 
-          <Box>{damageChart}</Box>
+          <Box sx={{ height: singleLevelHeight }}>{damageChart}</Box>
         </Collapse>
       </Paper>
       {/* <div className="box">

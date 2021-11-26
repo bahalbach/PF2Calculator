@@ -93,10 +93,9 @@ const useGenerateGraphs = (graphType: string) => {
         evaluatePM(routines, evaluator, true));
       break;
     case graphTypes.PMRES:
+    default:
       ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
         evaluatePM(routines, evaluator, false));
-      break;
-    default:
       break;
   }
   let { datasets: byLeveldatasets, perDatasets: byLevelperDatasets } =
@@ -125,9 +124,10 @@ const useGenerateGraphs = (graphType: string) => {
         xaxis: { title: xtitle },
         yaxis: { title: ytitle },
         legend: {
-          x: 1,
-          y: 1,
-          xanchor: "right",
+          x: 0,
+          y: -0.2,
+          xanchor: "left",
+          yanchor: "top",
         },
         margin: {
           l: 40,
@@ -175,8 +175,9 @@ const useGenerateGraphs = (graphType: string) => {
         yaxis: { title: "Expected Damage" },
         legend: {
           x: 0,
-          y: 1,
+          y: -0.2,
           xanchor: "left",
+          yanchor: "top",
         },
         margin: {
           l: 40,
