@@ -268,6 +268,14 @@ export type TargetState = {
   [key in EffectValueType]: number;
 } & {
   [key in EffectStateType]: boolean;
+} & {
+  persistentDamages: {
+    [key in DamageType]?: {
+      material: Material;
+      staticDamage: number;
+      damageDist: number[];
+    };
+  };
 };
 
 export const diceNums = {

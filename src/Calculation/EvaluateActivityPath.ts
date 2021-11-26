@@ -120,6 +120,7 @@ class ActivityPathEvaluator {
       // grappled: false,
       // frightened: 0,
       // clumsy: 0,
+      persistentDamages: {},
     } as TargetState;
     for (let effectState of Object.values(effectStateTypes)) {
       initialTargetState[effectState] = false;
@@ -131,16 +132,16 @@ class ActivityPathEvaluator {
 
     const dataArray = [];
     const cumulative = [];
-    const PdataArray = [];
-    const Pcumulative = [];
+    // const PdataArray = [];
+    // const Pcumulative = [];
 
     let expD = 0;
-    let expP = 0;
+    // let expP = 0;
     let routineDDist = [1];
-    let routinePDDist = [1];
+    // let routinePDDist = [1];
     for (let i = 0; i < routine.apIds.length; i++) {
       let activityPath = this.activityPaths[routine.apIds[i]]!;
-      let [damageDist, PdamageDist] = this.evalPath(
+      let damageDist = this.evalPath(
         activityPath,
         initialTargetState,
         ACBonus,
@@ -148,7 +149,6 @@ class ActivityPathEvaluator {
         level
       );
       routineDDist = convolve(routineDDist, damageDist);
-      routinePDDist = convolve(routinePDDist, PdamageDist);
     }
     let currentSum = 1;
     for (let i = 0; i < routineDDist.length; i++) {
@@ -159,22 +159,18 @@ class ActivityPathEvaluator {
       expD += routineDDist[i] * i;
     }
     currentSum = 1;
-    for (let i = 0; i < routinePDDist.length; i++) {
-      PdataArray.push(i);
-      Pcumulative.push(currentSum);
-      currentSum -= routinePDDist[i];
+    // for (let i = 0; i < routinePDDist.length; i++) {
+    //   PdataArray.push(i);
+    //   Pcumulative.push(currentSum);
+    //   currentSum -= routinePDDist[i];
 
-      expP += routinePDDist[i] * i;
-    }
+    //   expP += routinePDDist[i] * i;
+    // }
     return {
       expD,
-      expP,
       dataArray,
       routineDDist,
       cumulative,
-      PdataArray,
-      routinePDDist,
-      Pcumulative,
     };
   }
 
@@ -207,8 +203,10 @@ class ActivityPathEvaluator {
       currentWeaknesses,
       defenseBonus,
       resistanceBonus,
+      activityPath.apIds.length === 0,
       level
     );
+    // console.log("damage trees: ", damageTrees);
 
     const targetStates = [targetState, targetState, targetState, targetState];
     // go through each degree of success
@@ -307,17 +305,19 @@ class ActivityPathEvaluator {
                   ...targetStates[i],
                   "Cicumstance Bonus to next attack": effectValue,
                 };
+
               break;
 
             case effectTypes.BONUSSA:
               if (
                 effectValue &&
                 targetStates[i]["Status Bonus to all attacks"] < effectValue
-              )
+              ) {
                 targetStates[i] = {
                   ...targetStates[i],
                   "Status Bonus to all attacks": effectValue,
                 };
+              }
               break;
 
             default:
@@ -325,6 +325,19 @@ class ActivityPathEvaluator {
           }
         }
       });
+      // add persistent damage to target state in immutable way
+      if (
+        damageTrees[i].persistent &&
+        JSON.stringify(damageTrees[i].persistent) !==
+          JSON.stringify(targetStates[i].persistentDamages)
+      ) {
+        // console.log("new P: ", damageTrees[i].persistent);
+        // console.log("old p: ", targetStates[i].persistentDamages);
+        targetStates[i] = {
+          ...targetStates[i],
+          persistentDamages: damageTrees[i].persistent,
+        };
+      }
     }
 
     // go through each activity path, depending on its condition add its damage distributions to this activities appropriately
@@ -334,28 +347,32 @@ class ActivityPathEvaluator {
       const evaluations = new Map();
       // go through each degree of success
       for (let i = 0; i < 4; i++) {
-        // evaluate if necessary and add distribution to damageTrees
+        // evaluate if necessary and add distribution to damageTrees, or take max for persistent damage
         if (validateCondition(ap.condition, i)) {
           if (evaluations.has(targetStates[i])) {
             // already evaluated
+            // console.log("skip target state: ", targetStates[i]);
           } else {
-            let [pathDist, pathPDist] = this.evalPath(
+            let pathDist = this.evalPath(
               ap,
               targetStates[i],
               defenseBonus,
               resistanceBonus,
               level
             );
-            evaluations.set(targetStates[i], { pathDist, pathPDist });
+            // console.log("add target state: ", targetStates[i]);
+            evaluations.set(targetStates[i], pathDist);
           }
           damageTrees[i].normal.damageDist = convolve(
             damageTrees[i].normal.damageDist,
-            evaluations.get(targetStates[i]).pathDist
+            evaluations.get(targetStates[i])
           );
-          damageTrees[i].persistent.damageDist = convolve(
-            damageTrees[i].persistent.damageDist,
-            evaluations.get(targetStates[i]).pathPDist
-          );
+
+          // damageTrees[i].persistent.damageDist = convolve(
+          //   damageTrees[i].persistent.damageDist,
+          //   evaluations.get(targetStates[i]).pathPDist
+          // );
+          // don't add persistent damage like normal damage
         }
       }
     });
@@ -366,15 +383,16 @@ class ActivityPathEvaluator {
       { distribution: damageTrees[2].normal, chance: chances[2] },
       { distribution: damageTrees[3].normal, chance: chances[3] }
     );
-    let PdamageDist = consolidateDists(
-      { distribution: damageTrees[0].persistent, chance: chances[0] },
-      { distribution: damageTrees[1].persistent, chance: chances[1] },
-      { distribution: damageTrees[2].persistent, chance: chances[2] },
-      { distribution: damageTrees[3].persistent, chance: chances[3] }
-    );
+
+    // consolidateDists(
+    //   { distribution: damageTrees[0].persistent, chance: chances[0] },
+    //   { distribution: damageTrees[1].persistent, chance: chances[1] },
+    //   { distribution: damageTrees[2].persistent, chance: chances[2] },
+    //   { distribution: damageTrees[3].persistent, chance: chances[3] }
+    // );
     // console.log(damageDist);
 
-    return [damageDist, PdamageDist];
+    return damageDist;
   }
 }
 

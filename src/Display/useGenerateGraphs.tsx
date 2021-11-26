@@ -80,26 +80,25 @@ const useGenerateGraphs = (graphType: string) => {
   // byLevelTile += " Per: " + currentTarget.PerTrend;
 
   let datasets: Plotly.Data[] = [];
-  let perDatasets: Plotly.Data[] = [];
+  // let perDatasets: Plotly.Data[] = [];
   let expectedDamages;
-  let expectedPersistentDamages;
+  // let expectedPersistentDamages;
   switch (graphType) {
     case graphTypes.DISTRIBUTION:
-      ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
-        evaluateDistribution(routines, evaluator));
+      ({ expectedDamages, datasets } = evaluateDistribution(
+        routines,
+        evaluator
+      ));
       break;
     case graphTypes.PMDEFENSE:
-      ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
-        evaluatePM(routines, evaluator, true));
+      ({ expectedDamages, datasets } = evaluatePM(routines, evaluator, true));
       break;
     case graphTypes.PMRES:
     default:
-      ({ expectedDamages, expectedPersistentDamages, datasets, perDatasets } =
-        evaluatePM(routines, evaluator, false));
+      ({ expectedDamages, datasets } = evaluatePM(routines, evaluator, false));
       break;
   }
-  let { datasets: byLeveldatasets, perDatasets: byLevelperDatasets } =
-    evaluateByLevel(routines, evaluator);
+  let { datasets: byLeveldatasets } = evaluateByLevel(routines, evaluator);
 
   let xtitle;
   let ytitle;
@@ -141,29 +140,29 @@ const useGenerateGraphs = (graphType: string) => {
     />
   );
 
-  let persistentDamageChart = (
-    <Plot
-      className="plot"
-      data={perDatasets}
-      layout={{
-        title: "Expected Persistent Damage",
-        autosize: true,
-        xaxis: { title: "persistent damage" },
-        yaxis: { title: "chance" },
-        legend: {
-          x: 1,
-          y: 1,
-          xanchor: "right",
-        },
-        margin: {
-          l: 40,
-          r: 40,
-        },
-      }}
-      useResizeHandler={true}
-      style={{ width: "100%", height: "100%" }}
-    />
-  );
+  // let persistentDamageChart = (
+  //   <Plot
+  //     className="plot"
+  //     data={perDatasets}
+  //     layout={{
+  //       title: "Expected Persistent Damage",
+  //       autosize: true,
+  //       xaxis: { title: "persistent damage" },
+  //       yaxis: { title: "chance" },
+  //       legend: {
+  //         x: 1,
+  //         y: 1,
+  //         xanchor: "right",
+  //       },
+  //       margin: {
+  //         l: 40,
+  //         r: 40,
+  //       },
+  //     }}
+  //     useResizeHandler={true}
+  //     style={{ width: "100%", height: "100%" }}
+  //   />
+  // );
   let byLevelDamageChart = (
     <Plot
       className="plot"
@@ -190,36 +189,33 @@ const useGenerateGraphs = (graphType: string) => {
       onUpdate={saveSingleLevelGraph}
     />
   );
-  let byLevelPerDamageChart = (
-    <Plot
-      className="plot"
-      data={byLevelperDatasets}
-      layout={{
-        title: byLevelTile,
-        autosize: true,
-        xaxis: { title: "Level" },
-        yaxis: { title: "Expected Persistent Damage" },
-        legend: {
-          x: 1,
-          y: 1,
-          xanchor: "right",
-        },
-        margin: {
-          l: 40,
-          r: 40,
-        },
-      }}
-      useResizeHandler={true}
-      style={{ width: "100%", height: "100%" }}
-    />
-  );
+  // let byLevelPerDamageChart = (
+  //   <Plot
+  //     className="plot"
+  //     data={byLevelperDatasets}
+  //     layout={{
+  //       title: byLevelTile,
+  //       autosize: true,
+  //       xaxis: { title: "Level" },
+  //       yaxis: { title: "Expected Persistent Damage" },
+  //       legend: {
+  //         x: 1,
+  //         y: 1,
+  //         xanchor: "right",
+  //       },
+  //       margin: {
+  //         l: 40,
+  //         r: 40,
+  //       },
+  //     }}
+  //     useResizeHandler={true}
+  //     style={{ width: "100%", height: "100%" }}
+  //   />
+  // );
   return {
     expectedDamages,
-    expectedPersistentDamages,
     damageChart,
-    persistentDamageChart,
     byLevelDamageChart,
-    byLevelPerDamageChart,
   };
 };
 
@@ -228,11 +224,11 @@ const evaluateByLevel = (
   evaluator: ActivityPathEvaluator
 ) => {
   let datasets = [];
-  let perDatasets = [];
+  // let perDatasets = [];
 
   // Evaluate the selected routine first so we can display other routines as a % of that
   const selectedRoutineDamage: { [key: number]: number } = {};
-  const selectedRoutinePDamage: { [key: number]: number } = {};
+  // const selectedRoutinePDamage: { [key: number]: number } = {};
   if (
     evaluator.target.percentSelectedRoutine &&
     evaluator.selectedRoutine !== undefined
@@ -240,9 +236,9 @@ const evaluateByLevel = (
     let routine = routines[evaluator.selectedRoutine]!;
     for (let level = 1; level <= 20; level++) {
       if (!evaluator.canEvaluate(level, routine)) continue;
-      let { expD, expP } = evaluator.evalRoutine(routine, 0, 0, level);
+      let { expD } = evaluator.evalRoutine(routine, 0, 0, level);
       selectedRoutineDamage[level] = expD;
-      selectedRoutinePDamage[level] = expP;
+      // selectedRoutinePDamage[level] = expP;
     }
   }
 
@@ -252,21 +248,21 @@ const evaluateByLevel = (
 
     const levelArray = [];
     const expDbyLevel = [];
-    const expPDbyLevel = [];
+    // const expPDbyLevel = [];
     for (let level = 1; level <= 20; level++) {
       if (!evaluator.canEvaluate(level, routine)) continue;
 
-      let { expD, expP } = evaluator.evalRoutine(routine, 0, 0, level);
+      let { expD } = evaluator.evalRoutine(routine, 0, 0, level);
       if (evaluator.target.percentSelectedRoutine) {
         if (level in selectedRoutineDamage) {
           levelArray.push(level);
           expDbyLevel.push(expD / selectedRoutineDamage[level]);
-          expPDbyLevel.push(expP / selectedRoutinePDamage[level]);
+          // expPDbyLevel.push(expP / selectedRoutinePDamage[level]);
         }
       } else {
         levelArray.push(level);
         expDbyLevel.push(expD);
-        expPDbyLevel.push(expP);
+        // expPDbyLevel.push(expP);
       }
     }
     datasets.push({
@@ -276,16 +272,16 @@ const evaluateByLevel = (
       y: expDbyLevel,
       yaxis: "y",
     } as const);
-    perDatasets.push({
-      type: "scatter",
-      name: routine.name,
-      x: levelArray,
-      y: expPDbyLevel,
-      yaxis: "y",
-    } as const);
+    // perDatasets.push({
+    //   type: "scatter",
+    //   name: routine.name,
+    //   x: levelArray,
+    //   y: expPDbyLevel,
+    //   yaxis: "y",
+    // } as const);
   }
 
-  return { datasets, perDatasets };
+  return { datasets };
 };
 
 const evaluatePM = (
@@ -294,9 +290,9 @@ const evaluatePM = (
   defense = true
 ) => {
   let datasets = [];
-  let perDatasets = [];
+  // let perDatasets = [];
   let expectedDamages = [];
-  let expectedPersistentDamages = [];
+  // let expectedPersistentDamages = [];
 
   // return {
   //   expectedDamages,
@@ -312,11 +308,10 @@ const evaluatePM = (
 
     const bonusArray = [];
     const expDbyBonus = [];
-    const expPDbyBonus = [];
 
     for (let bonus = -5; bonus <= 5; bonus++) {
       bonusArray.push(bonus);
-      let { expD, expP } = evaluator.evalRoutine(
+      let { expD } = evaluator.evalRoutine(
         routine,
         defense ? bonus : 0,
         defense ? 0 : bonus
@@ -330,17 +325,17 @@ const evaluatePM = (
             {expD.toFixed(2)}
           </div>
         );
-        expectedPersistentDamages.push(
-          <div key={routine.id}>
-            {routine.name}
-            {": "}
-            {expP.toFixed(2)}
-          </div>
-        );
+        // expectedPersistentDamages.push(
+        //   <div key={routine.id}>
+        //     {routine.name}
+        //     {": "}
+        //     {expP.toFixed(2)}
+        //   </div>
+        // );
       }
 
       expDbyBonus.push(expD);
-      expPDbyBonus.push(expP);
+      // expPDbyBonus.push(expP);
     }
 
     datasets.push({
@@ -350,15 +345,15 @@ const evaluatePM = (
       y: expDbyBonus,
       yaxis: "y",
     } as const);
-    perDatasets.push({
-      type: "scatter",
-      name: routine.name,
-      x: bonusArray,
-      y: expPDbyBonus,
-      yaxis: "y",
-    } as const);
+    // perDatasets.push({
+    //   type: "scatter",
+    //   name: routine.name,
+    //   x: bonusArray,
+    //   y: expPDbyBonus,
+    //   yaxis: "y",
+    // } as const);
   }
-  return { expectedDamages, expectedPersistentDamages, datasets, perDatasets };
+  return { expectedDamages, datasets };
 };
 
 const evaluateDistribution = (
@@ -366,9 +361,9 @@ const evaluateDistribution = (
   evaluator: ActivityPathEvaluator
 ) => {
   let datasets = [];
-  let perDatasets = [];
+  // let perDatasets = [];
   let expectedDamages = [];
-  let expectedPersistentDamages = [];
+  // let expectedPersistentDamages = [];
 
   // if (!evaluator.canEvaluate(displayLevel))
   //   return {
@@ -382,16 +377,11 @@ const evaluateDistribution = (
     let routine = routines[id]!;
     if (!routine.display) continue;
     if (!evaluator.canEvaluateSingleLevel(routine)) continue;
-    let {
-      expD,
-      expP,
-      dataArray,
-      routineDDist,
-      cumulative,
-      PdataArray,
-      routinePDDist,
-      Pcumulative,
-    } = evaluator.evalRoutine(routine, 0, 0);
+    let { expD, dataArray, routineDDist, cumulative } = evaluator.evalRoutine(
+      routine,
+      0,
+      0
+    );
     expectedDamages.push(
       <div key={routine.id}>
         {routine.name}
@@ -399,13 +389,13 @@ const evaluateDistribution = (
         {expD.toFixed(2)}
       </div>
     );
-    expectedPersistentDamages.push(
-      <div key={routine.id}>
-        {routine.name}
-        {": "}
-        {expP.toFixed(2)}
-      </div>
-    );
+    // expectedPersistentDamages.push(
+    //   <div key={routine.id}>
+    //     {routine.name}
+    //     {": "}
+    //     {expP.toFixed(2)}
+    //   </div>
+    // );
     datasets.push({
       type: "scatter",
       name: routine.name,
@@ -419,20 +409,20 @@ const evaluateDistribution = (
       x: dataArray,
       y: routineDDist,
     } as const);
-    perDatasets.push({
-      type: "scatter",
-      name: routine.name,
-      x: PdataArray,
-      y: Pcumulative,
-    } as const);
-    perDatasets.push({
-      type: "bar",
-      name: expP.toFixed(2),
-      x: PdataArray,
-      y: routinePDDist,
-    } as const);
+    // perDatasets.push({
+    //   type: "scatter",
+    //   name: routine.name,
+    //   x: PdataArray,
+    //   y: Pcumulative,
+    // } as const);
+    // perDatasets.push({
+    //   type: "bar",
+    //   name: expP.toFixed(2),
+    //   x: PdataArray,
+    //   y: routinePDDist,
+    // } as const);
   }
-  return { expectedDamages, expectedPersistentDamages, datasets, perDatasets };
+  return { expectedDamages, datasets };
 };
 
 export default useGenerateGraphs;

@@ -121,12 +121,13 @@ type BaseContext = {
 };
 type FinalContext = {
   normal: DamageContext;
-  persistent: DamageContext;
+  persistent: PartialContext;
 };
 const damageQualities = { normal: "normal", persistent: "persistent" } as const;
 type DamageQuality = keyof typeof damageQualities;
 
 // combine the probability distributions of the given damages into context
+// for persistent damage just take highest
 const addDamage = (
   baseContext: BaseContext,
   type: DamageType,
@@ -151,9 +152,26 @@ const addDamage = (
   if (!(type in context)) {
     context[type] = { material, staticDamage, damageDist };
   } else {
-    context[type]!.staticDamage += staticDamage;
-    context[type]!.damageDist = convolve(context[type]!.damageDist, damageDist);
-    if (material !== materials.NONE) context[type]!.material = material;
+    if (persistent) {
+      let oldAveDamage = context[type]!.staticDamage;
+      for (let i = 0; i < context[type]!.damageDist.length; i++) {
+        oldAveDamage += i * context[type]!.damageDist[i];
+      }
+      let newAveDamage = staticDamage;
+      for (let i = 0; i < damageDist.length; i++) {
+        newAveDamage += i * damageDist[i];
+      }
+      if (newAveDamage > oldAveDamage) {
+        context[type] = { material, staticDamage, damageDist };
+      }
+    } else {
+      context[type]!.staticDamage += staticDamage;
+      context[type]!.damageDist = convolve(
+        context[type]!.damageDist,
+        damageDist
+      );
+      if (material !== materials.NONE) context[type]!.material = material;
+    }
   }
 };
 
@@ -179,6 +197,7 @@ function calculateExpectedDamage(
   weaknesses: Weakness[],
   defenseBonus: number,
   resistanceBonus: number,
+  isLeaf: boolean,
   level?: number
 ) {
   /**
@@ -187,6 +206,7 @@ function calculateExpectedDamage(
    * Go through each damage and evaluate it, put damage types together
    * Go through each damage type and apply weakness/resistance
    * Return damage trees and chances
+   * add persistent damage to normal damage if this activity is a leaf
    */
   let bonus = 0;
   let DC = 10;
@@ -326,38 +346,38 @@ function calculateExpectedDamage(
   ];
   const critDamagesByType: BaseContext = {
     normal: {},
-    persistent: {},
+    persistent: { ...targetState.persistentDamages },
   };
   const succDamagesByType: BaseContext = {
     normal: {},
-    persistent: {},
+    persistent: { ...targetState.persistentDamages },
   };
   const failDamagesByType: BaseContext = {
     normal: {},
-    persistent: {},
+    persistent: { ...targetState.persistentDamages },
   };
   const crfaDamagesByType: BaseContext = {
     normal: {},
-    persistent: {},
+    persistent: { ...targetState.persistentDamages },
   };
   const critDamages: FinalContext = {
     normal: { staticDamage: 0, damageDist: [1] },
-    persistent: { staticDamage: 0, damageDist: [1] },
+    persistent: critDamagesByType.persistent,
+    // persistent: { staticDamage: 0, damageDist: [1] },
   };
   const succDamages: FinalContext = {
     normal: { staticDamage: 0, damageDist: [1] },
-    persistent: { staticDamage: 0, damageDist: [1] },
+    persistent: succDamagesByType.persistent,
   };
   const failDamages: FinalContext = {
     normal: { staticDamage: 0, damageDist: [1] },
-    persistent: { staticDamage: 0, damageDist: [1] },
+    persistent: failDamagesByType.persistent,
   };
   const crfaDamages: FinalContext = {
     normal: { staticDamage: 0, damageDist: [1] },
-    persistent: { staticDamage: 0, damageDist: [1] },
+    persistent: crfaDamagesByType.persistent,
   };
-  // can't have dist here, need just damage types...
-  // need to make new objects for dists... TODO
+
   const damageTreesByType: BaseContext[] = [
     critDamagesByType,
     succDamagesByType,
@@ -693,8 +713,50 @@ function calculateExpectedDamage(
   for (let damageTreeIndex = 0; damageTreeIndex < 4; damageTreeIndex++) {
     let damageTree = damageTreesByType[damageTreeIndex];
     let finalTree = damageTrees[damageTreeIndex];
-    let damageQuality: DamageQuality;
-    for (damageQuality in damageQualities) {
+    let damageQuality: DamageQuality = "normal";
+    // for (damageQuality in damageQualities) {
+    // only consolidate noramal damage
+    let totalStaticDamage = 0;
+    let totalDamageDist = [1];
+    let type: DamageType;
+    for (type in damageTree[damageQuality]) {
+      let { material, staticDamage, damageDist } =
+        damageTree[damageQuality][type]!;
+
+      // ignore if there's 0 damage
+      if (damageDist.length === 1 && staticDamage <= 0) continue;
+
+      // make min damage 1 before resistances
+      ({ staticDamage, damageDist } = applyMin(staticDamage, damageDist, 1));
+
+      // find max weakness and resistance, weaknesses are negative numbers
+      let maxW = 0;
+      let maxR = 0;
+      for (let weakness of weaknesses) {
+        if (weakness.type === type || weakness.type === material) {
+          if (weakness.value + resistanceBonus < 0) {
+            maxW = Math.min(maxW, weakness.value + resistanceBonus);
+          } else if (weakness.value + resistanceBonus > 0) {
+            maxR = Math.max(maxR, weakness.value + resistanceBonus);
+          }
+        }
+      }
+      staticDamage = staticDamage - (maxR + maxW);
+
+      // make min damage 0 after resistances
+      ({ staticDamage, damageDist } = applyMin(staticDamage, damageDist, 0));
+
+      totalStaticDamage += staticDamage;
+      totalDamageDist = convolve(totalDamageDist, damageDist);
+    }
+    finalTree[damageQuality].staticDamage = totalStaticDamage;
+    finalTree[damageQuality].damageDist = totalDamageDist;
+
+    if (isLeaf) {
+      // need to apply weakness/resistance to persistent damage
+      // then add persistent damage to normal damage
+      let damageQuality: DamageQuality = "persistent";
+
       let totalStaticDamage = 0;
       let totalDamageDist = [1];
       let type: DamageType;
@@ -728,24 +790,21 @@ function calculateExpectedDamage(
         totalStaticDamage += staticDamage;
         totalDamageDist = convolve(totalDamageDist, damageDist);
       }
-      finalTree[damageQuality].staticDamage = totalStaticDamage;
-      finalTree[damageQuality].damageDist = totalDamageDist;
+      let { staticDamage, damageDist } = multiplyDist(
+        totalStaticDamage,
+        totalDamageDist,
+        target.persistentMultiplier
+      );
+      finalTree["normal"].staticDamage += staticDamage;
+      finalTree["normal"].damageDist = convolve(
+        finalTree["normal"].damageDist,
+        damageDist
+      );
     }
-    // Add persistent damage to normal damage with a multiplier
-    let { staticDamage, damageDist } = multiplyDist(
-      finalTree["persistent"].staticDamage,
-      finalTree["persistent"].damageDist,
-      target.persistentMultiplier
-    );
-    finalTree["normal"].staticDamage += staticDamage;
-    finalTree["normal"].damageDist = convolve(
-      finalTree["normal"].damageDist,
-      damageDist
-    );
+    // Don't persistent damage to normal damage with a multiplier until the end
   }
   // End going through each damage type and apply weakness/resistance
 
   return { damageTrees, chances };
 }
-
 export { calculateExpectedDamage };
