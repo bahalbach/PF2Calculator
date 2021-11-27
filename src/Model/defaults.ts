@@ -25,6 +25,20 @@ export const valuesFromBonusLevels = (levels: number[], addLevel = false) => {
   }
   return values;
 };
+export const valuesFromBonuses = (bonuses: [number, number][]) => {
+  let currentValue = 0;
+  let values: defaultValue = {};
+  for (let i = 1; i <= 20; i++) {
+    for (let bonus of bonuses) {
+      if (bonus[0] === i) {
+        currentValue += bonus[1];
+      }
+    }
+    values[i] = currentValue;
+  }
+  return values;
+};
+
 const zero: defaultValue = {};
 const level: defaultValue = {};
 const halfLevel: defaultValue = {};

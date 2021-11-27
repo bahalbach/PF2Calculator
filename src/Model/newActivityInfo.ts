@@ -1,4 +1,8 @@
-import { statTrendValues, valuesFromBonusLevels } from "./defaults";
+import {
+  statTrendValues,
+  valuesFromBonuses,
+  valuesFromBonusLevels,
+} from "./defaults";
 import {
   conditions,
   DamageTrend,
@@ -112,6 +116,13 @@ export const classes = [
 //   );
 // }
 const noOptions = [] as const;
+const alchemistOptions = [
+  "Normal",
+  "Bomb Strike",
+  "Bomb w/ feats",
+  "Perpetual Bomb",
+  "Perpetual Bomb w/ feats",
+] as const;
 const barbarianOptions = [
   "Normal",
   "animal rage",
@@ -145,7 +156,7 @@ export const strikeActivities = [
 ] as const;
 type ClassOptions = { [key in typeof classes[number]]: readonly string[] };
 export const classOptions: ClassOptions = {
-  Alchemist: noOptions,
+  Alchemist: alchemistOptions,
   Barbarian: barbarianOptions,
   Bard: noOptions,
   Champion: noOptions,
@@ -365,6 +376,13 @@ export const classAdjustments = (
     currentValue = 0;
 
     if (
+      strikeInfo.classOption === "Perpetual Bomb" ||
+      strikeInfo.classOption === "Perpetual Bomb w/ feats"
+    ) {
+      currentValue -= 1;
+    }
+
+    if (
       strikeInfo.cClass === "Ranger" &&
       strikeInfo.classOption === "Flurry Edge" &&
       i >= 17
@@ -392,10 +410,16 @@ export const activityWeaponDiceAdjustments = (strikeInfo: StrikeInfo) => {
   const adjustments: { [key: number]: number } = {};
   let currentValue = 0;
   for (let i = 1; i <= 20; i++) {
-    if (strikeInfo.activity === "Power Attack" && i === 1) currentValue = 1;
-    if (strikeInfo.activity === "Power Attack" && i === 10) currentValue = 2;
-    if (strikeInfo.activity === "Power Attack" && i === 18) currentValue = 3;
-
+    currentValue = 0;
+    if (strikeInfo.activity === "Power Attack" && i >= 1) currentValue += 1;
+    if (strikeInfo.activity === "Power Attack" && i >= 10) currentValue += 1;
+    if (strikeInfo.activity === "Power Attack" && i >= 18) currentValue += 1;
+    if (
+      strikeInfo.classOption === "Perpetual Bomb" ||
+      strikeInfo.classOption === "Perpetual Bomb w/ feats"
+    ) {
+      currentValue -= 1;
+    }
     adjustments[i] = currentValue;
   }
   return adjustments;
@@ -535,6 +559,46 @@ export const activityDamageDice = (strikeInfo: StrikeInfo) => {
     diceSize: diceSizes[6],
     damageType: damageTypes.NONE,
   };
+};
+
+export const hasSplashDamage = (strikeInfo: StrikeInfo) => {
+  if (
+    strikeInfo.classOption === "Bomb Strike" ||
+    strikeInfo.classOption === "Bomb w/ feats"
+  ) {
+    return true;
+  }
+  if (
+    strikeInfo.classOption === "Perpetual Bomb" ||
+    strikeInfo.classOption === "Perpetual Bomb w/ feats"
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const getSplashDamage = (strikeInfo: StrikeInfo) => {
+  if (strikeInfo.classOption === "Bomb Strike") {
+    return { damageTrend: [damageTrends.BOMB] };
+  } else if (strikeInfo.classOption === "Bomb w/ feats") {
+    return { damageTrend: [damageTrends.BOMBPLUS] };
+  } else if (strikeInfo.classOption === "Perpetual Bomb") {
+    return {
+      damageTrend: [damageTrends.BOMB],
+      damageAdjustments: valuesFromBonuses([[1, -1]]),
+    };
+  } else if (strikeInfo.classOption === "Perpetual Bomb w/ feats") {
+    return {
+      damageTrend: [damageTrends.BOMBPLUS],
+      damageAdjustments: valuesFromBonuses([
+        [1, -1],
+        [4, 1],
+        [10, -1],
+      ]),
+    };
+  }
+
+  return {};
 };
 
 const getSpellDamage = (

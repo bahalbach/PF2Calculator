@@ -44,6 +44,8 @@ import {
   getSkillRoutineName,
   getCantripRoutineName,
   getSpellRoutineName,
+  hasSplashDamage,
+  getSplashDamage,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -69,6 +71,8 @@ import {
   ActivityType,
   Condition,
   MAP,
+  ItemTrend,
+  DieTrend,
 } from "../../Model/types";
 import { RootState } from "../../App/store";
 import {
@@ -797,6 +801,19 @@ const createStrikeActivity = (
     }
   }
 
+  let itemTrend: ItemTrend = itemTrends.WEAPON;
+  if (
+    strikeInfo.classOption === "Bomb Strike" ||
+    strikeInfo.classOption === "Bomb w/ feats"
+  ) {
+    itemTrend = itemTrends.BOMB;
+  }
+  if (
+    strikeInfo.classOption === "Perpetual Bomb" ||
+    strikeInfo.classOption === "Perpetual Bomb w/ feats"
+  ) {
+    itemTrend = itemTrends.BOMB;
+  }
   activityPathAdapter.addOne(state.activityPaths, {
     ...defaultActivity,
     id,
@@ -807,7 +824,7 @@ const createStrikeActivity = (
     type: activityTypes.STRIKE,
     profTrend: classWeaponProf(strikeInfo.cClass, strikeInfo.classOption),
     statTrend: strikeInfo.attackScore,
-    itemTrend: itemTrends.WEAPON,
+    itemTrend,
     bonusAdjustments: classAdjustments(strikeInfo, strikeNumber),
     MAP,
 
@@ -835,12 +852,25 @@ const createStrikeDamages = (
     if (doubleSliceCondition === conditions.CRIT) {
       // add all damage as if crit... always
       let id = ++damageId;
+      let dieTrend: DieTrend = dieTrends.WEAPON;
+      if (
+        strikeInfo.classOption === "Bomb Strike" ||
+        strikeInfo.classOption === "Bomb w/ feats"
+      ) {
+        dieTrend = dieTrends.BOMB;
+      }
+      if (
+        strikeInfo.classOption === "Perpetual Bomb" ||
+        strikeInfo.classOption === "Perpetual Bomb w/ feats"
+      ) {
+        dieTrend = dieTrends.BOMB;
+      }
       const weaponDamage: Damage = {
         ...defaultDamage,
         damageCondition: dCond.ALWAYS,
         multiplier: 2,
         id,
-        dieTrend: dieTrends.WEAPON,
+        dieTrend,
         dieAdjustments: activityWeaponDiceAdjustments(strikeInfo),
         diceSize: hasFatal(strikeInfo) ? weapon.fatalSize : weapon.dieSize,
         fatal: hasFatal(strikeInfo),
@@ -851,18 +881,25 @@ const createStrikeDamages = (
       damageAdapter.addOne(state.damages, weaponDamage);
       newDamages.push(id);
 
-      id = ++damageId;
-      const runeDamage: Damage = {
-        ...defaultDamage,
-        damageCondition: dCond.ALWAYS,
-        multiplier: 2,
-        id,
-        dieTrend: weapon.runes,
-        diceSize: diceSizes[6],
-        damageType: damageTypes.FIRE,
-      };
-      damageAdapter.addOne(state.damages, runeDamage);
-      newDamages.push(id);
+      if (
+        !(
+          strikeInfo.cClass === "Alchemist" &&
+          strikeInfo.classOption !== "Normal"
+        )
+      ) {
+        id = ++damageId;
+        const runeDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.ALWAYS,
+          multiplier: 2,
+          id,
+          dieTrend: weapon.runes,
+          diceSize: diceSizes[6],
+          damageType: damageTypes.FIRE,
+        };
+        damageAdapter.addOne(state.damages, runeDamage);
+        newDamages.push(id);
+      }
 
       if (hasClassPrecisionDamage(strikeInfo, previousHits)) {
         let { dieTrend, diceSize, damageWhen, damageTrend } =
@@ -950,11 +987,24 @@ const createStrikeDamages = (
     } else if (doubleSliceCondition === conditions.SUCC) {
       // add hit damage always, add precision damage only on miss so we don't add it twice with the second attack
       let id = ++damageId;
+      let dieTrend: DieTrend = dieTrends.WEAPON;
+      if (
+        strikeInfo.classOption === "Bomb Strike" ||
+        strikeInfo.classOption === "Bomb w/ feats"
+      ) {
+        dieTrend = dieTrends.BOMB;
+      }
+      if (
+        strikeInfo.classOption === "Perpetual Bomb" ||
+        strikeInfo.classOption === "Perpetual Bomb w/ feats"
+      ) {
+        dieTrend = dieTrends.BOMB;
+      }
       const weaponDamage: Damage = {
         ...defaultDamage,
         damageCondition: dCond.ALWAYS,
         id,
-        dieTrend: dieTrends.WEAPON,
+        dieTrend,
         dieAdjustments: activityWeaponDiceAdjustments(strikeInfo),
         diceSize: weapon.dieSize,
         fatal: false,
@@ -965,17 +1015,24 @@ const createStrikeDamages = (
       damageAdapter.addOne(state.damages, weaponDamage);
       newDamages.push(id);
 
-      id = ++damageId;
-      const runeDamage: Damage = {
-        ...defaultDamage,
-        damageCondition: dCond.ALWAYS,
-        id,
-        dieTrend: weapon.runes,
-        diceSize: diceSizes[6],
-        damageType: damageTypes.FIRE,
-      };
-      damageAdapter.addOne(state.damages, runeDamage);
-      newDamages.push(id);
+      if (
+        !(
+          strikeInfo.cClass === "Alchemist" &&
+          strikeInfo.classOption !== "Normal"
+        )
+      ) {
+        id = ++damageId;
+        const runeDamage: Damage = {
+          ...defaultDamage,
+          damageCondition: dCond.ALWAYS,
+          id,
+          dieTrend: weapon.runes,
+          diceSize: diceSizes[6],
+          damageType: damageTypes.FIRE,
+        };
+        damageAdapter.addOne(state.damages, runeDamage);
+        newDamages.push(id);
+      }
 
       if (hasClassPrecisionDamage(strikeInfo, previousHits)) {
         let { dieTrend, diceSize, damageWhen, damageTrend } =
@@ -998,10 +1055,23 @@ const createStrikeDamages = (
   }
 
   let id = ++damageId;
+  let dieTrend: DieTrend = dieTrends.WEAPON;
+  if (
+    strikeInfo.classOption === "Bomb Strike" ||
+    strikeInfo.classOption === "Bomb w/ feats"
+  ) {
+    dieTrend = dieTrends.BOMB;
+  }
+  if (
+    strikeInfo.classOption === "Perpetual Bomb" ||
+    strikeInfo.classOption === "Perpetual Bomb w/ feats"
+  ) {
+    dieTrend = dieTrends.BOMB;
+  }
   const weaponDamage: Damage = {
     ...defaultDamage,
     id,
-    dieTrend: dieTrends.WEAPON,
+    dieTrend,
     dieAdjustments: activityWeaponDiceAdjustments(strikeInfo),
     diceSize: weapon.dieSize,
     fatal: hasFatal(strikeInfo, useWeapon2),
@@ -1012,16 +1082,20 @@ const createStrikeDamages = (
   damageAdapter.addOne(state.damages, weaponDamage);
   newDamages.push(id);
 
-  id = ++damageId;
-  const runeDamage: Damage = {
-    ...defaultDamage,
-    id,
-    dieTrend: weapon.runes,
-    diceSize: diceSizes[6],
-    damageType: damageTypes.FIRE,
-  };
-  damageAdapter.addOne(state.damages, runeDamage);
-  newDamages.push(id);
+  if (
+    !(strikeInfo.cClass === "Alchemist" && strikeInfo.classOption !== "Normal")
+  ) {
+    id = ++damageId;
+    const runeDamage: Damage = {
+      ...defaultDamage,
+      id,
+      dieTrend: weapon.runes,
+      diceSize: diceSizes[6],
+      damageType: damageTypes.FIRE,
+    };
+    damageAdapter.addOne(state.damages, runeDamage);
+    newDamages.push(id);
+  }
 
   if (
     !(addDoubleSliceDamage && doubleSliceCondition === conditions.CRIT) &&
@@ -1064,6 +1138,17 @@ const createStrikeDamages = (
       ...activityCritDamage(strikeInfo),
     };
     damageAdapter.addOne(state.damages, activityDamage);
+    newDamages.push(id);
+  }
+  if (hasSplashDamage(strikeInfo)) {
+    id = ++damageId;
+    const splashDamage: Damage = {
+      ...defaultDamage,
+      id,
+      damageCondition: dCond.AT_LEAST_FAIL,
+      ...getSplashDamage(strikeInfo),
+    };
+    damageAdapter.addOne(state.damages, splashDamage);
     newDamages.push(id);
   }
 
