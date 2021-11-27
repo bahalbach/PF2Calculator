@@ -40,7 +40,7 @@ function PF2App() {
           <Grid
             container
             columnSpacing={{ xs: 2, md: 2, lg: 3, xl: 4 }}
-            sx={{ height: "100vh" }} // "calc(100vh - 40px)"
+            sx={{ height: "100vh" }}
           >
             <Grid
               id="container"
@@ -57,9 +57,7 @@ function PF2App() {
               md={6}
               sx={{ mt: 0, height: 1, overflow: "hidden auto" }}
             >
-              {/* <Box sx={{ height: 1 }}> */}
               <Display />
-              {/* </Box> */}
             </Grid>
           </Grid>
         ) : (

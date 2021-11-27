@@ -115,11 +115,6 @@ class ActivityPathEvaluator {
     level?: number
   ) {
     const initialTargetState = {
-      // flatfooted: this.target.flatfooted,
-      // prone: false,
-      // grappled: false,
-      // frightened: 0,
-      // clumsy: 0,
       persistentDamages: {},
     } as TargetState;
     for (let effectState of Object.values(effectStateTypes)) {
@@ -132,8 +127,6 @@ class ActivityPathEvaluator {
 
     const dataArray = [];
     const cumulative = [];
-    // const PdataArray = [];
-    // const Pcumulative = [];
 
     let expD = 0;
     // let expP = 0;
@@ -158,14 +151,7 @@ class ActivityPathEvaluator {
 
       expD += routineDDist[i] * i;
     }
-    currentSum = 1;
-    // for (let i = 0; i < routinePDDist.length; i++) {
-    //   PdataArray.push(i);
-    //   Pcumulative.push(currentSum);
-    //   currentSum -= routinePDDist[i];
 
-    //   expP += routinePDDist[i] * i;
-    // }
     return {
       expD,
       dataArray,
@@ -325,14 +311,12 @@ class ActivityPathEvaluator {
           }
         }
       });
-      // add persistent damage to target state in immutable way
+      // add persistent damage to target state if necessary
       if (
         damageTrees[i].persistent &&
         JSON.stringify(damageTrees[i].persistent) !==
           JSON.stringify(targetStates[i].persistentDamages)
       ) {
-        // console.log("new P: ", damageTrees[i].persistent);
-        // console.log("old p: ", targetStates[i].persistentDamages);
         targetStates[i] = {
           ...targetStates[i],
           persistentDamages: damageTrees[i].persistent,
@@ -367,12 +351,6 @@ class ActivityPathEvaluator {
             damageTrees[i].normal.damageDist,
             evaluations.get(targetStates[i])
           );
-
-          // damageTrees[i].persistent.damageDist = convolve(
-          //   damageTrees[i].persistent.damageDist,
-          //   evaluations.get(targetStates[i]).pathPDist
-          // );
-          // don't add persistent damage like normal damage
         }
       }
     });
@@ -383,14 +361,6 @@ class ActivityPathEvaluator {
       { distribution: damageTrees[2].normal, chance: chances[2] },
       { distribution: damageTrees[3].normal, chance: chances[3] }
     );
-
-    // consolidateDists(
-    //   { distribution: damageTrees[0].persistent, chance: chances[0] },
-    //   { distribution: damageTrees[1].persistent, chance: chances[1] },
-    //   { distribution: damageTrees[2].persistent, chance: chances[2] },
-    //   { distribution: damageTrees[3].persistent, chance: chances[3] }
-    // );
-    // console.log(damageDist);
 
     return damageDist;
   }

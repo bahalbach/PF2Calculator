@@ -12,6 +12,10 @@ interface defaultValue {
   [x: number]: number;
 }
 
+export const proficiencyValues = (levels: number[]) => {
+  return valuesFromBonusLevels(levels.concat(levels), true);
+};
+
 export const valuesFromBonusLevels = (levels: number[], addLevel = false) => {
   let currentValue = 0;
   let values: defaultValue = {};
@@ -426,46 +430,34 @@ for (let i = 1; i <= 20; i++) {
 }
 export const profTrendValues = {
   [profTrends.UNTRAINED]: valuesFromBonusLevels([]),
-  [profTrends.TRAINED]: valuesFromBonusLevels([1, 1], true),
-  [profTrends.FIGHTERWEAPON]: valuesFromBonusLevels(
-    [1, 1, 1, 1, 5, 5, 13, 13],
-    true
-  ),
-  [profTrends.MARTIALWEAPON]: valuesFromBonusLevels([1, 1, 5, 5, 13, 13], true),
-  [profTrends.CASTERWEAPON]: valuesFromBonusLevels([1, 1, 11, 11], true),
-  [profTrends.ALCHWEAPON]: valuesFromBonusLevels([1, 1, 7, 7], true),
-  [profTrends.CASTERSPELL]: valuesFromBonusLevels(
-    [1, 1, 7, 7, 15, 15, 19, 19],
-    true
-  ),
-  [profTrends.CLASSDC1]: valuesFromBonusLevels([1, 1, 9, 9, 17, 17], true),
-  [profTrends.CLASSDC2]: valuesFromBonusLevels([1, 1, 11, 11, 19, 19], true),
-  [profTrends.MCSPELL]: valuesFromBonusLevels([1, 1, 12, 12, 18, 18], true),
-  [profTrends.MAXSKILL]: valuesFromBonusLevels(
-    [1, 1, 3, 3, 7, 7, 15, 15],
-    true
-  ),
-  [profTrends.ANIMALCOMPANION]: valuesFromBonusLevels([1, 1, 14, 14], true),
-  [profTrends.SAVAGEACATHLETICS]: valuesFromBonusLevels(
-    [1, 1, 4, 4, 14, 14],
-    true
-  ),
+  [profTrends.TRAINED]: proficiencyValues([1]),
+  [profTrends.FIGHTERWEAPON]: proficiencyValues([1, 1, 5, 13]),
+  [profTrends.MARTIALWEAPON]: proficiencyValues([1, 5, 13]),
+  [profTrends.CASTERWEAPON]: proficiencyValues([1, 11]),
+  [profTrends.ALCHWEAPON]: proficiencyValues([1, 7]),
+  [profTrends.CASTERSPELL]: proficiencyValues([1, 7, 15, 19]),
+  [profTrends.CLASSDC1]: proficiencyValues([1, 9, 17]),
+  [profTrends.CLASSDC2]: proficiencyValues([1, 11, 19]),
+  [profTrends.MCSPELL]: proficiencyValues([1, 12, 18]),
+  [profTrends.MAXSKILL]: proficiencyValues([1, 3, 7, 15]),
+  [profTrends.ANIMALCOMPANION]: proficiencyValues([1, 14]),
+  [profTrends.SAVAGEACATHLETICS]: proficiencyValues([1, 4, 14]),
 };
 export const statTrendValues = {
   [statTrends.AS10]: valuesFromBonusLevels([]),
   [statTrends.AS18a]: valuesFromBonusLevels([1, 1, 1, 1, 10, 17, 20]),
-  [statTrends.AS16a]: score16pp,
-  [statTrends.AS16pp]: score16p,
-  [statTrends.AS16p]: score16,
-  [statTrends.AS14pp]: score14p,
-  [statTrends.AS14p]: score14,
-  [statTrends.AS12p]: score12,
-  [statTrends.AS10p]: score10,
+  [statTrends.AS16a]: valuesFromBonusLevels([1, 1, 1, 5, 15, 17]),
+  [statTrends.AS16pp]: valuesFromBonusLevels([1, 1, 1, 5, 15]),
+  [statTrends.AS16p]: valuesFromBonusLevels([1, 1, 1, 5]),
+  [statTrends.AS14pp]: valuesFromBonusLevels([1, 1, 5, 10, 20]),
+  [statTrends.AS14p]: valuesFromBonusLevels([1, 1, 5, 10]),
+  [statTrends.AS12p]: valuesFromBonusLevels([1, 5, 10, 15]),
+  [statTrends.AS10p]: valuesFromBonusLevels([5, 10, 15, 20]),
   [statTrends.NIMBLEAC]: DexNimbleAC,
   [statTrends.SAVAGEAC]: StrSavageAC,
 };
 export const itemTrendValues = {
-  [itemTrends.NONE]: zero,
+  [itemTrends.NONE]: valuesFromBonusLevels([]),
   [itemTrends.WEAPON]: weaponItem,
   [itemTrends.SKILL]: skillItem,
   [itemTrends.BOMB]: bomb,

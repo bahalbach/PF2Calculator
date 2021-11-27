@@ -25,39 +25,9 @@ import {
 import { exampleRoutines } from "../Model/exampleRoutines";
 
 const empty: { [key: number]: number } = {};
-const pickCritSpec: { [key: number]: number } = {};
-const one: { [key: number]: number } = {};
 for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
-  one[i] = 1;
-  pickCritSpec[i] = 0;
-  if (i >= 5) {
-    pickCritSpec[i] = 4;
-  }
-  if (i >= 12) {
-    pickCritSpec[i] = 6;
-  }
-  if (i >= 19) {
-    pickCritSpec[i] = 8;
-  }
 }
-
-// const activityPathRemoved = createAction(
-//   "RemoveActivityPath",
-//   (id, parentId) => ({ payload: { id, parentId } })
-// );
-// const globalReducer = createReducer(, (builder) => {
-//   builder.addCase(activityPathRemoved, (state, action) => {
-//     const { id, parentId } = action.payload;
-//     // activityPathAdapter.removeMany(state, state.entities[id].apIds);
-//     activityPathAdapter.removeOne(state, id);
-//     if (parentId !== undefined) {
-//       state.entities[parentId].apIds = state.entities[parentId].apIds.filter(
-//         (apId) => apId !== id
-//       );
-//     }
-//   });
-// });
 
 export const store = configureStore({
   reducer: {
@@ -72,6 +42,7 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
+
 // default damages and effects
 store.dispatch(
   damageAdded({
@@ -193,19 +164,5 @@ for (let r of exampleRoutines) {
 }
 
 store.dispatch(routineCreated({}));
-// window.location.href = "#create-new-activity";
-// store.dispatch(weaknessAdded({ id: 0, type: damageTypes.FIRE, value: 10 }));
-// store.dispatch(
-//   damageAdded({
-//     id: 0,
-//     damageCondition: dCond.STRIKE,
-//     diceNum: 1,
-//     diceSize: 8,
-//     staticDamage: 4,
-//     damageType: damageTypes.B,
-//     material: materials.COLD_IRON,
-//     persistent: false,
-//   })
-// );
 
 export default store;

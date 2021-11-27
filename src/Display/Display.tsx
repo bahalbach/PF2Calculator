@@ -110,52 +110,6 @@ const Display = () => {
           <Box sx={{ height: singleLevelHeight }}>{damageChart}</Box>
         </Collapse>
       </Paper>
-      {/* <div className="box">
-        {"Graph Type: "}
-        <select
-          value={graphType}
-          onChange={(e) => setGraphType(e.target.value)}
-        >
-          {graphTypeOptions}
-        </select>
-        (
-        <select
-          value={displayLevel}
-          onChange={(e) => setDisplayLevel(parseInt(e.target.value))}
-        >
-          {levelOptions}
-        </select>
-        ){" Show persistent damage: "}
-        <input
-          type="checkbox"
-          checked={addPersistent}
-          onChange={(e) => setAddPersistent(e.target.checked)}
-        />
-        {/* , persistent damage multiplier:
-      <input
-        type="number"
-        value={perMulti ? perMulti : 0}
-        onChange={(e) => setPerMulti(e.target.valueAsNumber)}
-      /> */}
-      {/* <div>
-          Expected Damage:
-          {expectedDamages}
-        </div>
-        {damageChart}
-        {byLevelDamageChart}
-        {!addPersistent ? (
-          ""
-        ) : (
-          <div>
-            <div>
-              Expected Persistent Damage:
-              {expectedPersistentDamages}
-            </div>
-            {persistentDamageChart}
-            {byLevelPerDamageChart}
-          </div>
-        )}
-      </div> */}
     </React.Fragment>
   );
 };

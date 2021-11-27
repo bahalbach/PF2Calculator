@@ -106,15 +106,6 @@ export const classes = [
   "Wizard",
 ] as const;
 
-// const classOptions: JSX.Element[] = [];
-// let cls: keyof typeof classes;
-// for (cls in classes) {
-//   classOptions.push(
-//     <MenuItem key={cls} value={classes[cls]}>
-//       {classes[cls]}
-//     </MenuItem>
-//   );
-// }
 const noOptions = [] as const;
 const alchemistOptions = [
   "Normal",
@@ -735,18 +726,6 @@ export const classWeaponDamageTrends = (
       default:
     }
   }
-
-  // if (strikeInfo.cClass === "Inventor") {
-  //   switch (strikeInfo.classOption) {
-  //     case "Overdrive Success":
-  //       trends.push(damageTrends.OVERDRIVES);
-  //       break;
-  //     case "Overdrive Critical":
-  //       trends.push(damageTrends.OVERDRIVEC);
-  //       break;
-  //     default:
-  //   }
-  // }
 
   return trends;
 };
