@@ -4,7 +4,6 @@ import routineReducer, {
   effectAdded,
   importRoutine,
   routineAdded,
-  routineCreated,
 } from "../Routines/RoutineSlice/routineSlice";
 import targetReducer, { targetAdded } from "../Display/targetSlice";
 import sharingReducer from "../Display/sharingSlice";
@@ -43,79 +42,6 @@ export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
 
-// default damages and effects
-store.dispatch(
-  damageAdded({
-    id: 0,
-    damageCondition: dCond.STRIKE,
-
-    dieTrend: dieTrends.WEAPON,
-    dieAdjustments: { ...empty },
-    diceSize: 8,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [damageTrends.AS18a, damageTrends.MARTIALWEAPONSPEC],
-    damageAdjustments: { ...empty },
-
-    damageType: damageTypes.S,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-    damageWhen: [whenConditions.Always],
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 1,
-    damageCondition: dCond.STRIKE,
-
-    dieTrend: dieTrends.RUNE2,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...empty },
-
-    damageType: damageTypes.FIRE,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-    damageWhen: [whenConditions.Always],
-  })
-);
-store.dispatch(
-  damageAdded({
-    id: 2,
-    damageCondition: dCond.BASIC,
-
-    dieTrend: dieTrends.SPELLLEVEL2,
-    dieAdjustments: { ...empty },
-    diceSize: 6,
-    fatal: false,
-    fatalDie: 10,
-    damageTrend: [],
-    damageAdjustments: { ...empty },
-
-    damageType: damageTypes.FIRE,
-    material: materials.NONE,
-    persistent: false,
-    multiplier: 1,
-    damageWhen: [whenConditions.Always],
-  })
-);
-store.dispatch(
-  effectAdded({
-    id: 0,
-    effectCondition: conditions.CRIT,
-    effectType: effectTypes.FLATFOOT,
-    effectValue: 1,
-    startLevel: 5,
-    endLevel: 20,
-    damageWhen: [whenConditions.Always],
-  })
-);
-
 store.dispatch(
   targetAdded({
     id: 0,
@@ -145,24 +71,101 @@ store.dispatch(
   })
 );
 
-// add in some example routines
-store.dispatch(
-  routineAdded({
-    id: 0,
-    name: "Baseline",
-    display: true,
-    apIds: [],
-    levelDiff: 0,
-    description: "No damage. Just so graphs display 0 with autoscalling.",
-    startLevel: 1,
-    endLevel: 20,
-  })
-);
+// default damages and effects
+try {
+  if (localStorage.getItem("routineState") === null) {
+    store.dispatch(
+      damageAdded({
+        id: 0,
+        damageCondition: dCond.STRIKE,
 
-for (let r of exampleRoutines) {
-  store.dispatch(importRoutine(r));
+        dieTrend: dieTrends.WEAPON,
+        dieAdjustments: { ...empty },
+        diceSize: 8,
+        fatal: false,
+        fatalDie: 10,
+        damageTrend: [damageTrends.AS18a, damageTrends.MARTIALWEAPONSPEC],
+        damageAdjustments: { ...empty },
+
+        damageType: damageTypes.S,
+        material: materials.NONE,
+        persistent: false,
+        multiplier: 1,
+        damageWhen: [whenConditions.Always],
+      })
+    );
+    store.dispatch(
+      damageAdded({
+        id: 1,
+        damageCondition: dCond.STRIKE,
+
+        dieTrend: dieTrends.RUNE2,
+        dieAdjustments: { ...empty },
+        diceSize: 6,
+        fatal: false,
+        fatalDie: 10,
+        damageTrend: [],
+        damageAdjustments: { ...empty },
+
+        damageType: damageTypes.FIRE,
+        material: materials.NONE,
+        persistent: false,
+        multiplier: 1,
+        damageWhen: [whenConditions.Always],
+      })
+    );
+    store.dispatch(
+      damageAdded({
+        id: 2,
+        damageCondition: dCond.BASIC,
+
+        dieTrend: dieTrends.SPELLLEVEL2,
+        dieAdjustments: { ...empty },
+        diceSize: 6,
+        fatal: false,
+        fatalDie: 10,
+        damageTrend: [],
+        damageAdjustments: { ...empty },
+
+        damageType: damageTypes.FIRE,
+        material: materials.NONE,
+        persistent: false,
+        multiplier: 1,
+        damageWhen: [whenConditions.Always],
+      })
+    );
+    store.dispatch(
+      effectAdded({
+        id: 0,
+        effectCondition: conditions.CRIT,
+        effectType: effectTypes.FLATFOOT,
+        effectValue: 1,
+        startLevel: 5,
+        endLevel: 20,
+        damageWhen: [whenConditions.Always],
+      })
+    );
+
+    // add in some example routines
+    store.dispatch(
+      routineAdded({
+        id: 0,
+        name: "Baseline",
+        display: true,
+        apIds: [],
+        levelDiff: 0,
+        description: "No damage. Just so graphs display 0 with autoscalling.",
+        startLevel: 1,
+        endLevel: 20,
+      })
+    );
+
+    for (let r of exampleRoutines) {
+      store.dispatch(importRoutine(r));
+    }
+  }
+} catch {
+  // ignore errors
 }
-
-store.dispatch(routineCreated({}));
 
 export default store;

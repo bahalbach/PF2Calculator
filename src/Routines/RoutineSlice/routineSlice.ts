@@ -103,17 +103,44 @@ for (let i = 1; i <= 20; i++) {
   one[i] = 1;
 }
 
-const initialState: State = {
-  selectedRoutine: 0,
-  selectedActivityPath: undefined,
-  parentRoutine: 0,
-  parentActivity: undefined,
-  routines: routinesAdapter.getInitialState(),
-  activityPaths: activityPathAdapter.getInitialState(),
-  damages: damageAdapter.getInitialState(),
-  effects: effectAdapter.getInitialState(),
-  importRoutine: importStates.MessageSeen,
+const saveState = (state: State) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem("routineState", serializedState);
+  } catch {
+    // ignore errors
+  }
 };
+
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem("routineState");
+    if (serializedState !== null) {
+      return JSON.parse(serializedState);
+    }
+    return undefined;
+  } catch (err) {
+    // ignore errors
+    return undefined;
+  }
+};
+
+// try to load initial state
+const savedState = loadState();
+
+const initialState: State = savedState
+  ? savedState
+  : {
+      selectedRoutine: 0,
+      selectedActivityPath: undefined,
+      parentRoutine: 0,
+      parentActivity: undefined,
+      routines: routinesAdapter.getInitialState(),
+      activityPaths: activityPathAdapter.getInitialState(),
+      damages: damageAdapter.getInitialState(),
+      effects: effectAdapter.getInitialState(),
+      importRoutine: importStates.MessageSeen,
+    };
 
 const defaultActivity = {
   name: "",
@@ -179,6 +206,8 @@ export const routinesSlice = createSlice({
       state.selectedActivityPath = undefined;
       state.parentActivity = undefined;
       state.parentRoutine = undefined;
+      // also save data
+      saveState(state);
     },
     setActivityPath: (state, action) => {
       if (state.selectedActivityPath === action.payload) {
