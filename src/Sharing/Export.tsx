@@ -19,19 +19,26 @@ import {
 const ImportExport = () => {
   const routine = useAppSelector(selectSelectedRoutineObject);
   const importState = useAppSelector(selectImportState);
-  // const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
+  const [messageSeen, setMessageSeen] = useState(false);
   const [textValue, setTextValue] = useState("");
+
   const dispatch = useAppDispatch();
+
   useEffect(() => {
-    if (importState === importStates.Failure) {
-      setTextValue("Import failed");
-    } else if (importState === importStates.Successful) {
-      setTextValue("Import successful");
+    if (!messageSeen) {
+      if (importState === importStates.Failure) {
+        setTextValue("Import failed");
+        setMessageSeen(true);
+      } else if (importState === importStates.Successful) {
+        setTextValue("Import successful");
+        setMessageSeen(true);
+      }
     }
-  }, [importState]);
+  }, [importState, messageSeen]);
 
   const tryToAddRoutine = () => {
     dispatch(importRoutine(textValue));
+    setMessageSeen(false);
   };
   const paste = () => {
     setTextValue(JSON.stringify(routine));

@@ -91,10 +91,10 @@ export const activityPathAdapter = createEntityAdapter<ActivityPath>();
 export const damageAdapter = createEntityAdapter<Damage>();
 export const effectAdapter = createEntityAdapter<Effect>();
 
-let routineId = 100;
-let activityPathId = 1000;
-let damageId = 1000;
-let effectId = 1000;
+let routineId = 1;
+let activityPathId = 1;
+let damageId = 1;
+let effectId = 1;
 
 const empty: { [key: number]: number } = {};
 const one: { [key: number]: number } = {};
@@ -113,14 +113,23 @@ const saveState = (state: State) => {
 };
 
 const loadState = () => {
+  // console.log("Loading state from local storage");
   try {
     const serializedState = localStorage.getItem("routineState");
     if (serializedState !== null) {
-      return JSON.parse(serializedState);
+      const state = JSON.parse(serializedState);
+      console.log(state);
+      routineId = Math.max(...state.routines.ids);
+      activityPathId = Math.max(...state.activityPaths.ids);
+      damageId = Math.max(...state.damages.ids);
+      effectId = Math.max(...state.effects.ids);
+      return state;
     }
+    // console.log("Not loaded");
     return undefined;
   } catch (err) {
     // ignore errors
+    console.log(err);
     return undefined;
   }
 };
@@ -1657,6 +1666,7 @@ const getEffects = (state: WritableDraft<State>, effects: number[]) => {
 
 const insertRoutine = (state: WritableDraft<State>, routine: RoutineObject) => {
   const id = ++routineId;
+
   const apIds = insertActivityPaths(state, routine.apIds, undefined, id);
 
   routinesAdapter.addOne(state.routines, { ...routine, id, apIds });
