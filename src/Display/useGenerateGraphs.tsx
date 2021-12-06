@@ -127,8 +127,8 @@ const useGenerateGraphs = (graphType: string) => {
       }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
-      onInitialized={saveGraph}
-      onUpdate={saveGraph}
+      onInitialized={saveSingleLevelGraph}
+      onUpdate={saveSingleLevelGraph}
     />
   );
 
@@ -154,8 +154,8 @@ const useGenerateGraphs = (graphType: string) => {
       }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
-      onInitialized={saveSingleLevelGraph}
-      onUpdate={saveSingleLevelGraph}
+      onInitialized={saveGraph}
+      onUpdate={saveGraph}
     />
   );
   return {

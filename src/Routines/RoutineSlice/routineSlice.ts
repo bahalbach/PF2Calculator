@@ -118,7 +118,7 @@ const loadState = () => {
     const serializedState = localStorage.getItem("routineState");
     if (serializedState !== null) {
       const state = JSON.parse(serializedState);
-      console.log(state);
+      // console.log(state);
       routineId = Math.max(...state.routines.ids);
       activityPathId = Math.max(...state.activityPaths.ids);
       damageId = Math.max(...state.damages.ids);
