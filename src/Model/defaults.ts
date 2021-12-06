@@ -445,6 +445,7 @@ export const profTrendValues = {
 };
 export const statTrendValues = {
   [statTrends.AS10]: valuesFromBonusLevels([]),
+  [statTrends.AS18]: valuesFromBonusLevels([1, 1, 1, 1, 10, 20]),
   [statTrends.AS18a]: valuesFromBonusLevels([1, 1, 1, 1, 10, 17, 20]),
   [statTrends.AS16a]: valuesFromBonusLevels([1, 1, 1, 5, 15, 17]),
   [statTrends.AS16pp]: valuesFromBonusLevels([1, 1, 1, 5, 15]),

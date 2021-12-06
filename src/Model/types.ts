@@ -78,6 +78,7 @@ export type ProfTrend = typeof profTrends[keyof typeof profTrends];
 export const statTrends = {
   AS10: "10",
   AS18a: "18 to 24 apex(17)",
+  AS18: "18 to 22",
   AS16a: "16 to 22 apex(17)",
   AS16pp: "16 to 20",
   AS16p: "16 to 18",
