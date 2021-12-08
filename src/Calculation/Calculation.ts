@@ -177,17 +177,21 @@ const addDamage = (
 
 /**
  * Calculate the chance of each result and the appropriate damage
- * distributions for a given activity at level vs target with targetState
- * adds defenseBonus or resistanceBonus to target if given
- * @param {Number} level
- * @param {*} activity
- * @param {*} damages
- * @param {*} target
- * @param {*} targetState
- * @param {*} weaknesses
- * @param {*} defenseBonus
- * @param {*} resistanceBonus
- * @returns [damageTrees, chances];
+ * distributions for a given activity at level vs target with targetState.
+ * Adds defenseBonus or resistanceBonus to target if given.
+ * Add persistent damage to normal damage if this activity is a leaf.
+ * Level is undefined for single level graphs, get appropriate levels from target.
+ *
+ * @param {ActivityPath} activity
+ * @param {Damage[]} damages
+ * @param {Target} target
+ * @param {TargetState} targetState
+ * @param {Weakness[]} weaknesses
+ * @param {number} defenseBonus
+ * @param {number} resistanceBonus
+ * @param {boolean} isLeaf
+ * @param {number | undefined} level
+ * @returns {[damageTrees, chances]} ;
  */
 function calculateExpectedDamage(
   activity: ActivityPath,
@@ -206,7 +210,6 @@ function calculateExpectedDamage(
    * Go through each damage and evaluate it, put damage types together
    * Go through each damage type and apply weakness/resistance
    * Return damage trees and chances
-   * add persistent damage to normal damage if this activity is a leaf
    */
   let bonus = 0;
   let DC = 10;

@@ -64,7 +64,7 @@ type Dist = {
 /**
  * Combine multiple distributions with their chances into one distribution starting from 0
  * @param  {...[{staticDamage, distribution}, chance]} dists
- * @returns
+ * @returns {[number]} new distribution
  */
 export const consolidateDists = (...dists: Dist[]) => {
   let maxDamage = 0;
@@ -93,7 +93,7 @@ export const consolidateDists = (...dists: Dist[]) => {
  * @param {number} staticDamage
  * @param {[number]} damageDist
  * @param {number} min
- * @returns
+ * @returns { distribution: {staticDamage: number, damageDist: [number]}}
  */
 export const applyMin = (
   staticDamage: number,
