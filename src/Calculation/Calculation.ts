@@ -213,11 +213,12 @@ function calculateExpectedDamage(
    */
   let bonus = 0;
   let DC = 10;
-  let targetValue;
-  let targetLevel;
+  let targetValue: number;
+  let targetLevel: number;
   if (level === undefined) {
     level = target.routineLevel;
     targetLevel = target.targetLevel;
+
     switch (activity.targetType) {
       case defenses.AC:
         targetValue = target.overrideAC;
@@ -241,29 +242,30 @@ function calculateExpectedDamage(
     }
   } else {
     targetLevel = level + target.levelDiff;
+    let targetDefault;
     switch (activity.targetType) {
       case defenses.AC:
-        targetValue = defaultACs[target.ACTrend];
+        targetDefault = defaultACs[target.ACTrend];
         break;
       case defenses.FORT:
-        targetValue = defaultSaves[target.FortTrend];
+        targetDefault = defaultSaves[target.FortTrend];
         break;
       case defenses.REF:
-        targetValue = defaultSaves[target.RefTrend];
+        targetDefault = defaultSaves[target.RefTrend];
         break;
       case defenses.WILL:
-        targetValue = defaultSaves[target.WillTrend];
+        targetDefault = defaultSaves[target.WillTrend];
         break;
       case defenses.PER:
-        targetValue = defaultSaves[target.PerTrend];
+        targetDefault = defaultSaves[target.PerTrend];
         break;
 
       default:
-        targetValue = defaultACs[target.ACTrend];
+        targetDefault = defaultACs[target.ACTrend];
         break;
     }
 
-    targetValue = targetValue[targetLevel];
+    targetValue = targetDefault[targetLevel];
   }
 
   let targetPenalty = targetState.Frightened;
@@ -804,7 +806,6 @@ function calculateExpectedDamage(
         damageDist
       );
     }
-    // Don't persistent damage to normal damage with a multiplier until the end
   }
   // End going through each damage type and apply weakness/resistance
 

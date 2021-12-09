@@ -1,5 +1,6 @@
 import {
   applyMin,
+  applyMax,
   consolidateDists,
   convolve,
   multiplyDist,
@@ -54,6 +55,20 @@ describe("Distribution", () => {
     ({ staticDamage, damageDist } = applyMin(-4, [0.25, 0.25, 0.25, 0.25], 0));
     expect(staticDamage).toBe(0);
     expectToBeCloseToArray(damageDist, [1]);
+  });
+
+  test("applyMax works", () => {
+    let { staticDamage, damageDist } = applyMax(1, [0.25, 0.25, 0.25, 0.25], 5);
+    expect(staticDamage).toBe(1);
+    expectToBeCloseToArray(damageDist, [0.25, 0.25, 0.25, 0.25]);
+
+    ({ staticDamage, damageDist } = applyMax(3, [0.25, 0.25, 0.25, 0.25], 2));
+    expect(staticDamage).toBe(2);
+    expectToBeCloseToArray(damageDist, [1]);
+
+    ({ staticDamage, damageDist } = applyMax(3, [0.25, 0.25, 0.25, 0.25], 5));
+    expect(staticDamage).toBe(3);
+    expectToBeCloseToArray(damageDist, [0.25, 0.25, 0.5]);
   });
 
   test("multiplyDist works correctly", () => {

@@ -18,6 +18,7 @@ import {
   dieTrends,
   effectTypes,
   graphTypes,
+  HPTrends,
   materials,
   SaveTrends,
   whenConditions,
@@ -52,6 +53,8 @@ const makeStore = () => {
       RefTrend: SaveTrends.MODERATE,
       WillTrend: SaveTrends.MODERATE,
       PerTrend: SaveTrends.MODERATE,
+      HPTrend: HPTrends.MODERATE,
+      percentHP: 100,
 
       flatfooted: false,
       percentSelectedRoutine: false,
@@ -65,6 +68,8 @@ const makeStore = () => {
       overrideRef: 7,
       overrideWill: 7,
       overridePer: 7,
+      overrideHP: 20,
+      currentHP: 20,
     })
   );
 

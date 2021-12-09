@@ -9,6 +9,7 @@ import {
   dCond,
   defenses,
   dieTrends,
+  HPTrends,
   itemTrends,
   MAPs,
   materials,
@@ -26,6 +27,14 @@ import {
 } from "../Routines/RoutineSlice/RoutineTypes";
 
 import { expectedValue, expectToBeCloseToArray } from "./test-utils";
+
+// TODO:
+// need to test:
+// clumsy, frightend alone and stacking
+// flatfooted from target and target state
+// basic saves and crit/ failure damage
+// damageWhen
+// persistent damage
 
 const zero: Adjustment = {};
 for (let i = 1; i <= 20; i++) {
@@ -107,6 +116,8 @@ let target: Target = {
   RefTrend: SaveTrends.MODERATE,
   WillTrend: SaveTrends.MODERATE,
   PerTrend: SaveTrends.MODERATE,
+  HPTrend: HPTrends.MODERATE,
+  percentHP: 100,
   flatfooted: false,
   percentSelectedRoutine: false,
   weaknesses: [],
@@ -118,6 +129,8 @@ let target: Target = {
   overrideRef: 0,
   overrideWill: 0,
   overridePer: 0,
+  overrideHP: 0,
+  currentHP: 0,
 };
 let targetState: TargetState = {
   Flatfooted: false,
@@ -169,7 +182,8 @@ describe("Calculation", () => {
     );
     expect(damageTrees.length).toBe(4);
     expect(damageTrees[0].normal.staticDamage).toBe(10);
-    expect(expectedValue(damageTrees[0].normal.damageDist)).toBeCloseTo(7);
+    expect(expectedValue(damageTrees[0].normal.damageDist)).toBeCloseTo(6.25);
+    // not 7, because moderate hp for level 1 is 20
     expect(damageTrees[1].normal.staticDamage).toBe(5);
     expect(expectedValue(damageTrees[1].normal.damageDist)).toBeCloseTo(3.5);
     expect(damageTrees[2].normal.staticDamage).toBe(0);

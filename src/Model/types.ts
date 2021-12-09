@@ -30,6 +30,13 @@ export const SaveTrends = {
 } as const;
 export type SaveTrend = typeof SaveTrends[keyof typeof SaveTrends];
 
+export const HPTrends = {
+  LOW: "Low",
+  MODERATE: "Moderate",
+  HIGH: "High",
+} as const;
+export type HPTrend = typeof HPTrends[keyof typeof HPTrends];
+
 export const conditions = {
   ALWAYS: "Always",
   CRIT: "On Crit",

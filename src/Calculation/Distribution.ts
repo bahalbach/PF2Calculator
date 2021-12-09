@@ -109,3 +109,23 @@ export const applyMin = (
   }
   return { staticDamage, damageDist };
 };
+
+export const applyMax = (
+  staticDamage: number,
+  damageDist: number[],
+  max: number
+) => {
+  let newDamageDist: number[];
+  if (staticDamage >= max) {
+    staticDamage = max;
+    newDamageDist = [1];
+  } else if (staticDamage + damageDist.length - 1 > max) {
+    // cut off the distribution at max and add the remaining chance there
+    newDamageDist = damageDist.slice(0, max - staticDamage + 1);
+    const remainingChance = 1 - newDamageDist.reduce((pv, cv) => pv + cv);
+    newDamageDist[max - staticDamage] += remainingChance;
+  } else {
+    newDamageDist = damageDist;
+  }
+  return { staticDamage, damageDist: newDamageDist };
+};

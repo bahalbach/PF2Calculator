@@ -4,12 +4,12 @@ import {
   EntityId,
   EntityState,
 } from "@reduxjs/toolkit";
-import { ACTrends, GraphType, SaveTrends } from "../Model/types";
+import { ACTrends, GraphType, HPTrends, SaveTrends } from "../Model/types";
 import type { RootState } from "../App/store";
 // import { defaultACs, defaultSaves } from "../defaults";
 // import { defenses } from "../types";
 import { weaknessCreated, weaknessRemoved } from "./weaknessSlice";
-import { defaultACs, defaultSaves } from "../Model/defaults";
+import { defaultACs, defaultHP, defaultSaves } from "../Model/defaults";
 
 // interface limited<Type> { typeof Type[keyof typeof Type] }
 // Define a type for the slice state
@@ -25,6 +25,9 @@ export interface Target {
   RefTrend: typeof SaveTrends[keyof typeof SaveTrends];
   WillTrend: typeof SaveTrends[keyof typeof SaveTrends];
   PerTrend: typeof SaveTrends[keyof typeof SaveTrends];
+  HPTrend: typeof HPTrends[keyof typeof HPTrends];
+  percentHP: number;
+
   flatfooted: boolean;
   percentSelectedRoutine: boolean;
   weaknesses: number[];
@@ -32,11 +35,14 @@ export interface Target {
   graphType: GraphType;
   routineLevel: number;
   targetLevel: number;
+
   overrideAC: number;
   overrideFort: number;
   overrideRef: number;
   overrideWill: number;
   overridePer: number;
+  overrideHP: number;
+  currentHP: number;
 }
 
 export const targetAdapter = createEntityAdapter<Target>();
@@ -95,4 +101,11 @@ const updateTargetLevel = (state: EntityState<Target>, targetLevel: number) => {
     defaultSaves[state.entities[id]!.WillTrend][targetLevel];
   state.entities[id]!.overridePer =
     defaultSaves[state.entities[id]!.PerTrend][targetLevel];
+  state.entities[id]!.currentHP = Math.round(
+    (state.entities[id]!.currentHP *
+      defaultHP[state.entities[id]!.HPTrend][targetLevel]) /
+      state.entities[id]!.overrideHP
+  );
+  state.entities[id]!.overrideHP =
+    defaultHP[state.entities[id]!.HPTrend][targetLevel];
 };
