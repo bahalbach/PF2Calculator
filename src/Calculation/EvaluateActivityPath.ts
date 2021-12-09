@@ -119,7 +119,9 @@ class ActivityPathEvaluator {
     if (level === undefined) {
       maxDamage = this.target.currentHP;
     } else {
-      maxDamage = defaultHP[this.target.HPTrend][level];
+      maxDamage = Math.round(
+        defaultHP[this.target.HPTrend][level] * (this.target.percentHP / 100)
+      );
     }
     const initialTargetState = {
       persistentDamages: {},

@@ -182,8 +182,8 @@ describe("Calculation", () => {
     );
     expect(damageTrees.length).toBe(4);
     expect(damageTrees[0].normal.staticDamage).toBe(10);
-    expect(expectedValue(damageTrees[0].normal.damageDist)).toBeCloseTo(6.25);
-    // not 7, because moderate hp for level 1 is 20
+    expect(expectedValue(damageTrees[0].normal.damageDist)).toBeCloseTo(7);
+    // max health not applied
     expect(damageTrees[1].normal.staticDamage).toBe(5);
     expect(expectedValue(damageTrees[1].normal.damageDist)).toBeCloseTo(3.5);
     expect(damageTrees[2].normal.staticDamage).toBe(0);
