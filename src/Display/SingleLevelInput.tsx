@@ -2,15 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../App/hooks";
 import { selecttargetById, targetUpdated } from "./targetSlice";
-// import { damageTypes } from "../Model/types";
-// import {
-//   selectweaknessById,
-//   Weakness,
-//   weaknessCreated,
-//   weaknessRemoved,
-//   weaknessUpdated,
-// } from "./weaknessSlice";
-// import { EntityId } from "@reduxjs/toolkit";
 import { RootState } from "../App/store";
 import { weaknessOptions } from "../Model/options";
 import {
@@ -44,6 +35,8 @@ const SingleLevelInput = () => {
     overrideRef,
     overrideWill,
     overridePer,
+    overrideHP,
+    currentHP,
 
     weaknesses,
   } = useAppSelector((state: RootState) => selecttargetById(state, id)!);
@@ -53,6 +46,7 @@ const SingleLevelInput = () => {
   const [Ref, setRef] = useState(overrideRef.toString());
   const [Will, setWill] = useState(overrideWill.toString());
   const [Per, setPer] = useState(overridePer.toString());
+  const [HP, setHP] = useState(overrideHP.toString());
 
   useEffect(() => {
     setAC(overrideAC.toString());
@@ -60,11 +54,17 @@ const SingleLevelInput = () => {
     setRef(overrideRef.toString());
     setWill(overrideWill.toString());
     setPer(overridePer.toString());
-  }, [overrideAC, overrideFort, overrideRef, overrideWill, overridePer]);
+    setHP(overrideHP.toString());
+  }, [
+    overrideAC,
+    overrideFort,
+    overrideRef,
+    overrideWill,
+    overridePer,
+    overrideHP,
+  ]);
 
   const dispatch = useAppDispatch();
-
-  // const [showContent, setShowContent] = useState(false);
 
   return (
     <React.Fragment>
@@ -127,17 +127,7 @@ const SingleLevelInput = () => {
             />
           </Box>
         </Grid>
-
-        {/* <Grid item xs="auto">
-          <ListItemButton onClick={() => setShowContent(!showContent)}>
-            <Typography variant="h6">Target</Typography>
-          </ListItemButton>
-        </Grid>
-        <Grid item xs container justifyContent="center">
-          <Typography>{`${AC}/${Fort}/${Ref}/${Will}/${Per}`}</Typography>
-        </Grid> */}
       </Grid>
-      {/* <Collapse in={showContent}> */}
       <Grid container spacing={{ xs: 1, sm: 2 }} justifyContent="center">
         <Grid item xs={4} sm={2}>
           <TextField
@@ -286,6 +276,64 @@ const SingleLevelInput = () => {
         </Grid>
       </Grid>
       <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 1, p: 1 }}>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            label="Max Hit Points"
+            value={HP}
+            onChange={(e) => {
+              setHP(e.target.value);
+              e.target.focus();
+            }}
+            onBlur={() => {
+              let newVal = parseInt(HP);
+              setHP(newVal.toString());
+              dispatch(
+                targetUpdated({
+                  id,
+                  changes: {
+                    overrideHP: newVal,
+                  },
+                })
+              );
+            }}
+            inputProps={{
+              step: 1,
+              min: 1,
+              max: 1000,
+              type: "number",
+            }}
+          />
+        </Grid>
+        <Grid item xs={6} container justifyContent="center">
+          <Typography id="current-HP">
+            HP: {currentHP}/{overrideHP}
+          </Typography>
+
+          <Box sx={{ px: 2, width: 1 }}>
+            <Slider
+              aria-labelledby="current-HP"
+              valueLabelDisplay="auto"
+              value={currentHP}
+              min={0}
+              max={overrideHP}
+              step={1}
+              onChange={(_, nv) => {
+                let newCurrentHP = Number(nv);
+                dispatch(
+                  targetUpdated({
+                    id,
+                    changes: {
+                      currentHP: newCurrentHP,
+                    },
+                  })
+                );
+              }}
+            />
+          </Box>
+        </Grid>
+      </Grid>
+      <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 1, p: 1 }}>
         <Grid item container alignItems="center" xs="auto">
           <Typography>Resistance/Weakness: </Typography>
         </Grid>
@@ -294,7 +342,6 @@ const SingleLevelInput = () => {
         ))}
         <AddWeakness parentId={id} />
       </Grid>
-      {/* </Collapse> */}
     </React.Fragment>
   );
 };
@@ -385,7 +432,6 @@ const AddWeakness = ({ parentId }: { parentId: number }) => {
           sx={{ width: "9ch" }}
           onChange={(e) => {
             setTempVal(e.target.value);
-            // e.target.focus();
           }}
           inputProps={{
             step: 1,

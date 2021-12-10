@@ -1,4 +1,4 @@
-import { convolve, consolidateDists } from "./Distribution";
+import { convolve, consolidateDists, applyMax } from "./Distribution";
 import { calculateExpectedDamage } from "./Calculation";
 import {
   Condition,
@@ -18,6 +18,7 @@ import {
 import { Dictionary } from "@reduxjs/toolkit";
 import { Target } from "../Display/targetSlice";
 import { Weakness } from "../Display/weaknessSlice";
+import { defaultHP } from "../Model/defaults";
 
 /**
  * Checks given degreeOfSuccess is in the condition
@@ -114,6 +115,14 @@ class ActivityPathEvaluator {
     resBonus: number,
     level?: number
   ) {
+    let maxDamage: number;
+    if (level === undefined) {
+      maxDamage = this.target.currentHP;
+    } else {
+      maxDamage = Math.round(
+        defaultHP[this.target.HPTrend][level] * (this.target.percentHP / 100)
+      );
+    }
     const initialTargetState = {
       persistentDamages: {},
     } as TargetState;
@@ -143,6 +152,11 @@ class ActivityPathEvaluator {
       );
       routineDDist = convolve(routineDDist, damageDist);
     }
+    // make sure damage not more than HP
+    // static damage is 0, so can ignore it
+    const { damageDist } = applyMax(0, routineDDist, maxDamage);
+    routineDDist = damageDist;
+
     let currentSum = 1;
     for (let i = 0; i < routineDDist.length; i++) {
       dataArray.push(i);

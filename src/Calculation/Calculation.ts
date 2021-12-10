@@ -177,17 +177,21 @@ const addDamage = (
 
 /**
  * Calculate the chance of each result and the appropriate damage
- * distributions for a given activity at level vs target with targetState
- * adds defenseBonus or resistanceBonus to target if given
- * @param {Number} level
- * @param {*} activity
- * @param {*} damages
- * @param {*} target
- * @param {*} targetState
- * @param {*} weaknesses
- * @param {*} defenseBonus
- * @param {*} resistanceBonus
- * @returns [damageTrees, chances];
+ * distributions for a given activity at level vs target with targetState.
+ * Adds defenseBonus or resistanceBonus to target if given.
+ * Add persistent damage to normal damage if this activity is a leaf.
+ * Level is undefined for single level graphs, get appropriate levels from target.
+ *
+ * @param {ActivityPath} activity
+ * @param {Damage[]} damages
+ * @param {Target} target
+ * @param {TargetState} targetState
+ * @param {Weakness[]} weaknesses
+ * @param {number} defenseBonus
+ * @param {number} resistanceBonus
+ * @param {boolean} isLeaf
+ * @param {number | undefined} level
+ * @returns {[damageTrees, chances]} ;
  */
 function calculateExpectedDamage(
   activity: ActivityPath,
@@ -206,15 +210,15 @@ function calculateExpectedDamage(
    * Go through each damage and evaluate it, put damage types together
    * Go through each damage type and apply weakness/resistance
    * Return damage trees and chances
-   * add persistent damage to normal damage if this activity is a leaf
    */
   let bonus = 0;
   let DC = 10;
-  let targetValue;
-  let targetLevel;
+  let targetValue: number;
+  let targetLevel: number;
   if (level === undefined) {
     level = target.routineLevel;
     targetLevel = target.targetLevel;
+
     switch (activity.targetType) {
       case defenses.AC:
         targetValue = target.overrideAC;
@@ -238,29 +242,30 @@ function calculateExpectedDamage(
     }
   } else {
     targetLevel = level + target.levelDiff;
+    let targetDefault;
     switch (activity.targetType) {
       case defenses.AC:
-        targetValue = defaultACs[target.ACTrend];
+        targetDefault = defaultACs[target.ACTrend];
         break;
       case defenses.FORT:
-        targetValue = defaultSaves[target.FortTrend];
+        targetDefault = defaultSaves[target.FortTrend];
         break;
       case defenses.REF:
-        targetValue = defaultSaves[target.RefTrend];
+        targetDefault = defaultSaves[target.RefTrend];
         break;
       case defenses.WILL:
-        targetValue = defaultSaves[target.WillTrend];
+        targetDefault = defaultSaves[target.WillTrend];
         break;
       case defenses.PER:
-        targetValue = defaultSaves[target.PerTrend];
+        targetDefault = defaultSaves[target.PerTrend];
         break;
 
       default:
-        targetValue = defaultACs[target.ACTrend];
+        targetDefault = defaultACs[target.ACTrend];
         break;
     }
 
-    targetValue = targetValue[targetLevel];
+    targetValue = targetDefault[targetLevel];
   }
 
   let targetPenalty = targetState.Frightened;
@@ -801,7 +806,6 @@ function calculateExpectedDamage(
         damageDist
       );
     }
-    // Don't persistent damage to normal damage with a multiplier until the end
   }
   // End going through each damage type and apply weakness/resistance
 

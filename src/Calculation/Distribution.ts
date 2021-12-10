@@ -64,7 +64,7 @@ type Dist = {
 /**
  * Combine multiple distributions with their chances into one distribution starting from 0
  * @param  {...[{staticDamage, distribution}, chance]} dists
- * @returns
+ * @returns {[number]} new distribution
  */
 export const consolidateDists = (...dists: Dist[]) => {
   let maxDamage = 0;
@@ -93,7 +93,7 @@ export const consolidateDists = (...dists: Dist[]) => {
  * @param {number} staticDamage
  * @param {[number]} damageDist
  * @param {number} min
- * @returns
+ * @returns { distribution: {staticDamage: number, damageDist: [number]}}
  */
 export const applyMin = (
   staticDamage: number,
@@ -108,4 +108,24 @@ export const applyMin = (
     staticDamage++;
   }
   return { staticDamage, damageDist };
+};
+
+export const applyMax = (
+  staticDamage: number,
+  damageDist: number[],
+  max: number
+) => {
+  let newDamageDist: number[];
+  if (staticDamage >= max) {
+    staticDamage = max;
+    newDamageDist = [1];
+  } else if (staticDamage + damageDist.length - 1 > max) {
+    // cut off the distribution at max and add the remaining chance there
+    newDamageDist = damageDist.slice(0, max - staticDamage + 1);
+    const remainingChance = 1 - newDamageDist.reduce((pv, cv) => pv + cv);
+    newDamageDist[max - staticDamage] += remainingChance;
+  } else {
+    newDamageDist = damageDist;
+  }
+  return { staticDamage, damageDist: newDamageDist };
 };

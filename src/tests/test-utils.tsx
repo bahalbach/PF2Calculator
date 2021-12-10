@@ -23,3 +23,18 @@ const customRender = (
 
 export * from "@testing-library/react";
 export { customRender as render };
+
+function expectToBeCloseToArray(actual: number[], expected: number[]) {
+  expect(actual.length).toBe(expected.length);
+  actual.forEach((x: number, i: number) => expect(x).toBeCloseTo(expected[i]));
+}
+
+function expectedValue(dist: number[]) {
+  let total = 0;
+  for (let i = 0; i < dist.length; i++) {
+    total += i * dist[i];
+  }
+  return total;
+}
+
+export { expectToBeCloseToArray, expectedValue };
