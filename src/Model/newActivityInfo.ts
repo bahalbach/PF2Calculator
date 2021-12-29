@@ -601,14 +601,14 @@ const getSpellDamage = (
   let dieTrend = dieTrends.SPELLLEVEL1;
   let damageTrend = [abilityScore];
 
-  if (spell === "Telekinetic Projectile") {
+  if (spell === "Telekinetic Projectile" || spell === "Gouging Claw") {
     diceSize = diceSizes[6];
   }
   if (spell === "Produce Flame") {
     damageType = damageTypes.FIRE;
   }
   if (spell === "Gouging Claw") {
-    damageType = damageTypes.BLEED;
+    damageType = damageTypes.S;
   }
   if (spell === "Ray of Frost") {
     damageType = damageTypes.COLD;
