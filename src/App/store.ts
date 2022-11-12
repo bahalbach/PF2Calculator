@@ -76,79 +76,6 @@ const makeStore = () => {
   // default damages and effects
   try {
     if (localStorage.getItem("routineState") === null) {
-      // console.log("Adding content");
-      store.dispatch(
-        damageAdded({
-          id: 0,
-          damageCondition: dCond.STRIKE,
-
-          dieTrend: dieTrends.WEAPON,
-          dieAdjustments: { ...empty },
-          diceSize: 8,
-          fatal: false,
-          fatalDie: 10,
-          damageTrend: [damageTrends.AS18a, damageTrends.MARTIALWEAPONSPEC],
-          damageAdjustments: { ...empty },
-
-          damageType: damageTypes.S,
-          material: materials.NONE,
-          persistent: false,
-          multiplier: 1,
-          damageWhen: [whenConditions.Always],
-        })
-      );
-      store.dispatch(
-        damageAdded({
-          id: 1,
-          damageCondition: dCond.STRIKE,
-
-          dieTrend: dieTrends.RUNE2,
-          dieAdjustments: { ...empty },
-          diceSize: 6,
-          fatal: false,
-          fatalDie: 10,
-          damageTrend: [],
-          damageAdjustments: { ...empty },
-
-          damageType: damageTypes.FIRE,
-          material: materials.NONE,
-          persistent: false,
-          multiplier: 1,
-          damageWhen: [whenConditions.Always],
-        })
-      );
-      store.dispatch(
-        damageAdded({
-          id: 2,
-          damageCondition: dCond.BASIC,
-
-          dieTrend: dieTrends.SPELLLEVEL2,
-          dieAdjustments: { ...empty },
-          diceSize: 6,
-          fatal: false,
-          fatalDie: 10,
-          damageTrend: [],
-          damageAdjustments: { ...empty },
-
-          damageType: damageTypes.FIRE,
-          material: materials.NONE,
-          persistent: false,
-          multiplier: 1,
-          damageWhen: [whenConditions.Always],
-        })
-      );
-      store.dispatch(
-        effectAdded({
-          id: 0,
-          effectCondition: conditions.CRIT,
-          effectType: effectTypes.FLATFOOT,
-          effectValue: 1,
-          startLevel: 5,
-          endLevel: 20,
-          damageWhen: [whenConditions.Always],
-        })
-      );
-
       // add in some example routines
       store.dispatch(
         routineAdded({
@@ -167,7 +94,7 @@ const makeStore = () => {
         store.dispatch(importRoutine(r));
       }
 
-      store.dispatch(setRoutine(3));
+      store.dispatch(setRoutine(2));
       // set the first routine you see to be Fighter - 2 Strike - d12 Sword
     }
   } catch {
