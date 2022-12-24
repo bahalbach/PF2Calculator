@@ -825,18 +825,13 @@ const createStrikeActivity = (
     useWeapon2
   );
   let MAP: MAP = classWeaponMAP(strikeInfo, useWeapon2);
-
-  if (strikeNumber + strikeInfo.numPrevStrikes === 1) {
-    if (strikeInfo.activity !== "Double Slice") MAP = nextMAPs[MAP];
-  } else if (strikeNumber + strikeInfo.numPrevStrikes >= 2) {
-    if (
-      strikeInfo.activity === "Double Slice" &&
-      strikeNumber + strikeInfo.numPrevStrikes === 2
-    ) {
-      MAP = nextMAPs[MAP];
-    } else {
-      MAP = nextMAPs[nextMAPs[MAP]];
-    }
+  const effectiveStrikeNumber =
+    strikeInfo.numPrevStrikes +
+    (strikeInfo.activity === "Double Slice" ? 0 : strikeNumber);
+  if (effectiveStrikeNumber === 1) {
+    MAP = nextMAPs[MAP];
+  } else if (effectiveStrikeNumber >= 2) {
+    MAP = nextMAPs[nextMAPs[MAP]];
   }
 
   let itemTrend: ItemTrend = itemTrends.WEAPON;
