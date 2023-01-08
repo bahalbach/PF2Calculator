@@ -1427,6 +1427,7 @@ const createCantripDamages = (
       ...defaultDamage,
       id,
       damageCondition: dCond.CRIT,
+      diceSize: diceSizes[4],
       dieTrend: dieTrends.SPELLLEVEL1,
       persistent: true,
     };
