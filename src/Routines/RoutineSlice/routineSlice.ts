@@ -46,6 +46,10 @@ import {
   getSpellRoutineName,
   hasSplashDamage,
   getSplashDamage,
+  ImpulseInfo,
+  getImpulseRoutineName,
+  getImpulseDamage,
+  getImpulseTarget,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -409,11 +413,12 @@ export const routinesSlice = createSlice({
         skillInfo?: SkillInfo;
         cantripInfo?: CantripInfo;
         spellInfo?: SpellInfo;
+        impulseInfo?: ImpulseInfo;
       }>
     ) => {
       const { parentActivity: parentId, parentRoutine: routineId } = state;
 
-      const { strikeInfo, skillInfo, cantripInfo, spellInfo } = action.payload;
+      const { strikeInfo, skillInfo, cantripInfo, spellInfo, impulseInfo } = action.payload;
       let id: number = 0;
       let name = "";
       let description = "";
@@ -433,6 +438,10 @@ export const routinesSlice = createSlice({
       if (spellInfo !== undefined) {
         [name, description] = getSpellRoutineName(spellInfo);
         id = createSpellActivity(state, parentId, routineId, spellInfo);
+      }
+      if (impulseInfo !== undefined) {
+        [name, description] = getImpulseRoutineName(impulseInfo);
+        id = createImpulseActivity(state, parentId, routineId, impulseInfo);
       }
 
       if (routineId !== undefined) {
@@ -1581,6 +1590,52 @@ const createSpellEffects = (
   //   effectAdapter.addOne(state.effects, skillEffect);
   // }
 };
+
+const createImpulseActivity = (
+  state: WritableDraft<State>,
+  parentId: number | undefined,
+  routineId: number | undefined,
+  impulseInfo: ImpulseInfo
+) => {
+  const id = ++activityPathId;
+
+  let damages = createImpulseDamages(state, impulseInfo);
+
+  activityPathAdapter.addOne(state.activityPaths, {
+    ...defaultActivity,
+    id,
+    parentId,
+    routineId,
+    name: impulseInfo.impulse,
+    profTrend: impulseInfo.proficiency,
+    statTrend: impulseInfo.abilityScore,
+    itemTrend: itemTrends.Gate_Attenuator,
+    MAP: impulseInfo.weaponInfo.traits["agile"] ? MAPs.A1 : MAPs.N1,
+    ...getImpulseTarget(impulseInfo),
+
+    damages,
+  });
+  return id;
+};
+
+const createImpulseDamages = (
+  state: WritableDraft<State>,
+  impulseInfo: ImpulseInfo
+) => {
+  const newDamages: number[] = [];
+
+  let id = ++damageId;
+  const impulseDamage: Damage = {
+    ...defaultDamage,
+    id,
+    ...getImpulseDamage(impulseInfo),
+  };
+  newDamages.push(id);
+  damageAdapter.addOne(state.damages, impulseDamage);
+
+  return newDamages;
+};
+
 
 const copyActivityPaths = (
   state: WritableDraft<State>,

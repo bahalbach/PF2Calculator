@@ -5,6 +5,7 @@ import {
 } from "./defaults";
 import {
   conditions,
+  activityTypes as activityTargetTypes,
   DamageTrend,
   damageTrends,
   DamageType,
@@ -73,12 +74,21 @@ export type SpellInfo = {
   abilityScore: StatTrend;
   spell: typeof spells[number];
 };
+export type ImpulseInfo = {
+  proficiency: ProfTrend;
+  abilityScore: StatTrend;
+  impulse: typeof impulses[number];
+  isTwoAction: boolean;
+  strScore: StatTrend;
+  weaponInfo: WeaponInfo;
+};
 
 export const activityTypes = {
   Strike: "Strike",
   Skill: "Skill Action",
   Cantrip: "Cantrip",
   Spell: "Spell",
+  Impulse: "Kineticist Impulse",
 } as const;
 
 export const runeTrends = [dieTrends.NONE, dieTrends.RUNE, dieTrends.RUNE2];
@@ -94,6 +104,7 @@ export const classes = [
   "Gunslinger",
   "Inventor",
   "Investigator",
+  "Kineticist",
   "Magus",
   "Monk",
   "Oracle",
@@ -157,6 +168,7 @@ export const classOptions: ClassOptions = {
   Gunslinger: noOptions,
   Inventor: inventorOptions,
   Investigator: investigatorOptions,
+  Kineticist: noOptions,
   Magus: magusOptions,
   Monk: noOptions,
   Oracle: noOptions,
@@ -179,6 +191,12 @@ export const weaponTraits = [
   "propulsive",
 ] as const;
 
+export const blastTraits = [
+  "agile",
+  "ranged",
+  "propulsive",
+] as const;
+
 export const critSpecs = [
   "Sword",
   "Hammer",
@@ -196,6 +214,7 @@ export const spellProfTrends = [
   profTrends.CLASSDC1,
   profTrends.CLASSDC2,
 ];
+export const impulseProfTrends = [profTrends.TRAINED, profTrends.CASTERSPELL];
 
 export const skillActivities = ["Trip", "Grapple", "Demoralize"] as const;
 export const cantrips = [
@@ -207,6 +226,7 @@ export const cantrips = [
   "Telekinetic Projectile",
 ] as const;
 export const spells = ["Fear", "Fireball", "Heroism"] as const;
+export const impulses = ["Elemental Blast"] as const;
 
 export const attackSpells = [
   "Gouging Claw",
@@ -297,6 +317,14 @@ export const getSpellRoutineName = (spellInfo: SpellInfo) => {
   let name = spellInfo.spell;
 
   let description = `Cast spell ${spellInfo.spell} with proficiency (${spellInfo.proficiency}) and ability score (${spellInfo.abilityScore}).`;
+
+  return [name, description];
+};
+
+export const getImpulseRoutineName = (impulseInfo: ImpulseInfo) => {
+  let name = impulseInfo.impulse;
+
+  let description = `Use ${impulseInfo.impulse} with proficiency (${impulseInfo.proficiency}) and ability score (${impulseInfo.abilityScore}).`;
 
   return [name, description];
 };
@@ -978,5 +1006,55 @@ export const getSpellTarget = (spellInfo: SpellInfo) => {
 
     default:
       return { targetType: defenses.REF };
+  }
+};
+export const getImpulseTarget = (impulseInfo: ImpulseInfo) => {
+  switch (impulseInfo.impulse) {
+    case "Elemental Blast":
+      return { type: activityTargetTypes.SPELLATTACK, targetType: defenses.AC } as const;
+    // case "Daze":
+    //   return { type: "Save", targetType: defenses.REF } as const;
+    default:
+      return { targetType: defenses.AC };
+  }
+};
+export const getImpulseDamage = (impulseInfo: ImpulseInfo) => {
+  switch (impulseInfo.impulse) {
+    case "Elemental Blast":
+      let damageAdjustments = undefined;
+      const damageTrend: DamageTrend[] = [];
+      if (impulseInfo.isTwoAction) {
+        damageTrend.push(impulseInfo.abilityScore);
+      }
+      const isRanged = impulseInfo.weaponInfo.traits["ranged"];
+      const isPropulsive = impulseInfo.weaponInfo.traits["propulsive"];
+      if (!isRanged && !isPropulsive) {
+        damageTrend.push(impulseInfo.strScore);
+      }
+      if (isPropulsive) {
+        const adjustments: { [key: number]: number } = {};
+        for (let i = 1; i <= 20; i++) {
+          adjustments[i] = Math.floor(
+            statTrendValues[impulseInfo.strScore][i] / 2
+          );
+        }
+        damageAdjustments = adjustments;
+      }
+      return { 
+        dieTrend: dieTrends.ELEMENTALBLAST,
+        diceSize: impulseInfo.weaponInfo.dieSize,
+        damageTrend,
+        ...(damageAdjustments ? { damageAdjustments } : {}),
+      };
+    // case "Daze":
+    //   return {
+    //     damageCondition: dCond.BASIC,
+    //     dieTrend: dieTrends.NONE,
+    //     dieAdjustments: valuesFromBonusLevels([5, 9, 13, 17]),
+    //   };
+    // case "Telekinetic Projectile":
+    //   return {};
+    default:
+      return { diceSize: diceSizes[4] };
   }
 };

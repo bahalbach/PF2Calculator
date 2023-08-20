@@ -50,6 +50,10 @@ import {
   spellProfTrends,
   attackSpells,
   WeaponInfo,
+  impulses,
+  impulseProfTrends,
+  ImpulseInfo,
+  blastTraits,
 } from "../../Model/newActivityInfo";
 import { TooltipSelect } from "../../TooltipSelect";
 import ReactGA from "react-ga4";
@@ -106,6 +110,8 @@ export default function NewActivity({
         <CantripSelection />
       ) : activityTypes.Spell === activityType ? (
         <SpellSelection />
+      ) : activityTypes.Impulse === activityType ? (
+        <ImpulseSelection />
       ) : (
         ""
       )}
@@ -237,7 +243,7 @@ function StrikeSelection() {
 
   const dispatch = useAppDispatch();
 
-  const setClass = (className: typeof classes[number]) => {
+  const setClass = (className: (typeof classes)[number]) => {
     const newStrikeInfo = { ...strikeInfo };
     newStrikeInfo.cClass = className;
     if (classOptions[className].length > 0) {
@@ -286,7 +292,7 @@ function StrikeSelection() {
             value={strikeInfo.cClass}
             label="Class"
             onChange={(e) => {
-              setClass(e.target.value as typeof classes[number]);
+              setClass(e.target.value as (typeof classes)[number]);
             }}
           >
             {makeOptions(classes)}
@@ -318,7 +324,7 @@ function StrikeSelection() {
             onChange={(e) => {
               const newStrikeInfo = { ...strikeInfo };
               newStrikeInfo.activity = e.target
-                .value as typeof strikeActivities[number];
+                .value as (typeof strikeActivities)[number];
               if (e.target.value === "Double Slice") {
                 newStrikeInfo.numStrikes = 2;
                 newStrikeInfo.isStrikeSecondaryWeapon = [false, true];
@@ -338,7 +344,7 @@ function StrikeSelection() {
               onChange={(e) => {
                 setStrikeInfo({
                   ...strikeInfo,
-                  spell: e.target.value as typeof attackSpells[number],
+                  spell: e.target.value as (typeof attackSpells)[number],
                 });
               }}
             >
@@ -566,9 +572,11 @@ function StrikeSelection() {
 function WeaponInput({
   weapon,
   setWeapon,
+  isElementalBlast = false,
 }: {
   weapon: WeaponInfo;
   setWeapon: (weapon: WeaponInfo) => void;
+  isElementalBlast?: boolean;
 }) {
   return (
     <Grid
@@ -578,7 +586,7 @@ function WeaponInput({
       alignItems="center"
     >
       <Grid item xs="auto">
-        <Typography variant="h6">Weapon</Typography>
+        <Typography variant="h6">{isElementalBlast ? "Blast details" : "Weapon"}</Typography>
       </Grid>
 
       <Grid item>
@@ -594,6 +602,7 @@ function WeaponInput({
         </TooltipSelect>
       </Grid>
 
+      {!isElementalBlast ? (
       <Grid item>
         <FormControlLabel
           control={
@@ -607,6 +616,7 @@ function WeaponInput({
           label="Critical Specialization"
         />
       </Grid>
+      ) : null}
       {/* crit spec level slider */}
       {weapon.critSpec ? (
         <Grid item>
@@ -657,7 +667,7 @@ function WeaponInput({
           }}
           component="ul"
         >
-          {weaponTraits.map((traitName, index) => (
+          {(isElementalBlast ? blastTraits : weaponTraits).map((traitName, index) => (
             <Box component="li" key={traitName} sx={{ margin: 0.5 }}>
               <Chip
                 label={traitName}
@@ -710,7 +720,8 @@ function WeaponInput({
         ""
       )}
 
-      <Grid item>
+      {!isElementalBlast ? (
+        <Grid item>
         <TooltipSelect
           title="What levels the damages from property runes such as 'flaming' are applied."
           value={weapon.runes}
@@ -722,6 +733,10 @@ function WeaponInput({
           {makeOptions(runeTrends)}
         </TooltipSelect>
       </Grid>
+      ) : (
+        null
+      )}
+      
     </Grid>
   );
 }
@@ -733,7 +748,7 @@ function SkillSelection() {
   const [abilityScore, setAbilityScore] = useState<StatTrend>(statTrends.AS18a);
   const [itemBonus, setItemBonus] = useState<ItemTrend>(itemTrends.SKILL);
   const [skillActivity, setSkillActivity] = useState<
-    typeof skillActivities[number]
+    (typeof skillActivities)[number]
   >(skillActivities[0]);
 
   const skillInfo: SkillInfo = {
@@ -789,7 +804,9 @@ function SkillSelection() {
           label="Activity"
           value={skillActivity}
           onChange={(e) => {
-            setSkillActivity(e.target.value as typeof skillActivities[number]);
+            setSkillActivity(
+              e.target.value as (typeof skillActivities)[number]
+            );
           }}
         >
           {makeOptions(skillActivities)}
@@ -818,7 +835,9 @@ function CantripSelection() {
     profTrends.CASTERSPELL
   );
   const [abilityScore, setAbilityScore] = useState<StatTrend>(statTrends.AS18a);
-  const [cantrip, setCantrip] = useState<typeof cantrips[number]>(cantrips[0]);
+  const [cantrip, setCantrip] = useState<(typeof cantrips)[number]>(
+    cantrips[0]
+  );
 
   const cantripInfo: CantripInfo = {
     proficiency,
@@ -860,7 +879,7 @@ function CantripSelection() {
           label="Cantrip"
           value={cantrip}
           onChange={(e) => {
-            setCantrip(e.target.value as typeof cantrips[number]);
+            setCantrip(e.target.value as (typeof cantrips)[number]);
           }}
         >
           {makeOptions(cantrips)}
@@ -889,7 +908,7 @@ function SpellSelection() {
     profTrends.CASTERSPELL
   );
   const [abilityScore, setAbilityScore] = useState<StatTrend>(statTrends.AS18a);
-  const [spell, setSpell] = useState<typeof spells[number]>(spells[0]);
+  const [spell, setSpell] = useState<(typeof spells)[number]>(spells[0]);
 
   const spellInfo: SpellInfo = {
     proficiency,
@@ -931,7 +950,7 @@ function SpellSelection() {
           label="Spell"
           value={spell}
           onChange={(e) => {
-            setSpell(e.target.value as typeof spells[number]);
+            setSpell(e.target.value as (typeof spells)[number]);
           }}
         >
           {makeOptions(spells)}
@@ -952,5 +971,135 @@ function SpellSelection() {
         </Button>
       </Grid>
     </Grid>
+  );
+}
+
+function ImpulseSelection() {
+  const [proficiency, setProficiency] = useState<ProfTrend>(
+    profTrends.CASTERSPELL
+  );
+  const [abilityScore, setAbilityScore] = useState<StatTrend>(statTrends.AS18a);
+  const [impulse, setImpulse] = useState<(typeof impulses)[number]>(
+    impulses[0]
+  );
+
+  // for kinetic blast
+  const [isTwoAction, setIsTwoAction] = useState<boolean>(false);
+  const [strScore, setStrScore] = useState<StatTrend>(statTrends.AS16pp);
+  const [weapon, setWeapon] = useState({
+    dieSize: 8,
+    traits: Object.fromEntries(weaponTraits.map((trait) => [trait, false])),
+    deadlySize: 8,
+    fatalSize: 10,
+    critSpec: false,
+    critSpecLevel: 5,
+    critSpecType: critSpecs[1] as string,
+    runes: dieTrends.NONE as DieTrend,
+
+    numPrevStrikes: 0,
+  });
+
+  const impulseInfo: ImpulseInfo = {
+    proficiency,
+    abilityScore,
+    impulse,
+    isTwoAction,
+    strScore,
+    weaponInfo: weapon,
+  };
+
+  const dispatch = useAppDispatch();
+
+  return (
+    <>
+      <Grid container spacing={{ xs: 1, sm: 2 }}>
+        <Grid item>
+          <TooltipSelect
+            title="Select which proficiency progression to apply."
+            label="Proficiency"
+            value={proficiency}
+            onChange={(e) => {
+              setProficiency(e.target.value as ProfTrend);
+            }}
+          >
+            {makeOptions(impulseProfTrends)}
+          </TooltipSelect>
+        </Grid>
+        <Grid item>
+          <TooltipSelect
+            title="Select which ability score progression to apply."
+            label="Ability Score"
+            value={abilityScore}
+            onChange={(e) => {
+              setAbilityScore(e.target.value as StatTrend);
+            }}
+          >
+            {makeOptions(statTrends)}
+          </TooltipSelect>
+        </Grid>
+        <Grid item>
+          <TooltipSelect
+            title="Select which impulse to use."
+            label="Impulse"
+            value={impulse}
+            onChange={(e) => {
+              setImpulse(e.target.value as (typeof impulses)[number]);
+            }}
+          >
+            {makeOptions(impulses)}
+          </TooltipSelect>
+        </Grid>
+        {impulse === "Elemental Blast" ? (
+          <>
+          <Grid item>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isTwoAction}
+                  onChange={(e) =>
+                    setIsTwoAction(e.target.checked)
+                  }
+                />
+              }
+              label="Is two action blast"
+            />
+          </Grid>
+          <Grid item>
+            <TooltipSelect
+              title="Select which ability score progression to apply."
+              label="Strength Score"
+              value={strScore}
+              onChange={(e) => {
+                setStrScore(e.target.value as StatTrend);
+              }}
+            >
+              {makeOptions(statTrends)}
+            </TooltipSelect>
+          </Grid>
+          </>
+        ) : null}
+      </Grid>
+
+      {impulse === "Elemental Blast" ? (
+        <WeaponInput weapon={weapon} setWeapon={setWeapon} isElementalBlast={true} />
+      ) : null}
+
+      <Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            onClick={() => {
+              ReactGA.event("select_content", {
+                content_type: "create-new-impulse",
+                item_id: impulse,
+              });
+              dispatch(activityPathCreated({ impulseInfo }));
+            }}
+          >
+            Create New Activity
+          </Button>
+        </Grid>
+      </Grid>
+    </>
   );
 }

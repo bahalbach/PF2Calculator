@@ -69,6 +69,7 @@ const casterProf: defaultValue = {};
 const spellProf: defaultValue = {};
 
 const weaponItem: defaultValue = {};
+const gateAttenuator: defaultValue = {};
 const skillItem: defaultValue = {};
 const bomb: defaultValue = {};
 const mutagen: defaultValue = {};
@@ -170,6 +171,7 @@ for (let i = 1; i <= 20; i++) {
   ACathleticsProf[i] = i + 2;
 
   weaponItem[i] = 0;
+  gateAttenuator[i] = 0;
   skillItem[i] = 0;
   bomb[i] = 0;
   mutagen[i] = 1;
@@ -218,6 +220,7 @@ for (let i = 1; i <= 20; i++) {
   }
   if (i >= 3) {
     maxSkill[i] = i + 4;
+    gateAttenuator[i] = 1;
     skillItem[i] = 1;
     bomb[i] = 1;
     mutagen[i] = 2;
@@ -313,6 +316,7 @@ for (let i = 1; i <= 20; i++) {
     casterProf[i] = 4;
     classdc2[i] = i + 4;
 
+    gateAttenuator[i] = 2;
     bomb[i] = 2;
     mutagen[i] = 3;
 
@@ -461,6 +465,7 @@ export const statTrendValues = {
 export const itemTrendValues = {
   [itemTrends.NONE]: valuesFromBonusLevels([]),
   [itemTrends.WEAPON]: weaponItem,
+  [itemTrends.Gate_Attenuator]: gateAttenuator,
   [itemTrends.SKILL]: skillItem,
   [itemTrends.BOMB]: bomb,
   [itemTrends.MUTAGEN]: mutagen,
@@ -487,6 +492,7 @@ export const MAPvalues = {
 export const dieTrendValues = {
   [dieTrends.NONE]: zero,
   [dieTrends.WEAPON]: weaponDice,
+  [dieTrends.ELEMENTALBLAST]: valuesFromBonusLevels([1, 5, 9, 13, 17]),
   [dieTrends.SPELLLEVEL1]: spellDice,
   [dieTrends.SPELLLEVEL2]: spellDice2,
   [dieTrends.LEVEL]: level,

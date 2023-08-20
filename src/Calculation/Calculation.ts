@@ -418,7 +418,7 @@ function calculateExpectedDamage(
         break;
       }
       let val = targetState[state];
-      if (val && val > 0) {
+      if (val) {
         shouldAddThisDamage = true;
         break;
       }

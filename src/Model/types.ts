@@ -101,6 +101,7 @@ export type StatTrend = typeof statTrends[keyof typeof statTrends];
 export const itemTrends = {
   NONE: "None",
   WEAPON: "Weapon (2, 10, 16)",
+  Gate_Attenuator: "Gate Attenuator (3, 11)",
   SKILL: "Skill (3, 9, 17)",
   BOMB: "Bomb (3, 11, 17)",
   MUTAGEN: "Mutagen (1, 3, 11, 17)",
@@ -173,6 +174,7 @@ export type DamageCond = typeof dCond[keyof typeof dCond];
 export const dieTrends = {
   NONE: "None",
   WEAPON: "Weapon (1, 4, 12, 19)",
+  ELEMENTALBLAST: "Elemental Blast (1, 5, 9, 13, 17)",
   SPELLLEVEL1: "1 x Spell Level",
   SPELLLEVEL2: "2 x Spell Level",
   LEVEL: "Level",

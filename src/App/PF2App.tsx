@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 import ReactGA from "react-ga4";
-// import { Adsense } from "@ctrl/react-adsense";
 
 import Display from "../Display/Display";
 import SelectedRoutine from "../Routines/SelectedRoutine";
@@ -64,7 +63,6 @@ function PF2App() {
           <React.Fragment>
             <Display />
             <Controls />
-            {/* <Adsense client="ca-pub-8032326260699508" slot="3994991926" /> */}
           </React.Fragment>
         )}
       </Container>

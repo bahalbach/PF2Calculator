@@ -1,7 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import routineReducer, {
-  damageAdded,
-  effectAdded,
   importRoutine,
   routineAdded,
   setRoutine,
@@ -11,17 +9,9 @@ import sharingReducer from "../Display/sharingSlice";
 import weaknessReducer from "../Display/weaknessSlice";
 import {
   ACTrends,
-  conditions,
-  damageTrends,
-  damageTypes,
-  dCond,
-  dieTrends,
-  effectTypes,
   graphTypes,
   HPTrends,
-  materials,
   SaveTrends,
-  whenConditions,
 } from "../Model/types";
 import { exampleRoutines } from "../Model/exampleRoutines";
 
