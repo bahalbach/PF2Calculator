@@ -50,6 +50,8 @@ import {
   getImpulseRoutineName,
   getImpulseDamage,
   getImpulseTarget,
+  getImpulsePersistentDamage,
+  getImpulseEffects,
 } from "../../Model/newActivityInfo";
 import {
   activityTypes,
@@ -1600,6 +1602,9 @@ const createImpulseActivity = (
   const id = ++activityPathId;
 
   let damages = createImpulseDamages(state, impulseInfo);
+  let effects = createImpulseEffects(state, impulseInfo);
+  const target = getImpulseTarget(impulseInfo);
+  const itemTrend = target.type === activityTypes.SAVE ? itemTrends.NONE : itemTrends.Gate_Attenuator;
 
   activityPathAdapter.addOne(state.activityPaths, {
     ...defaultActivity,
@@ -1609,11 +1614,11 @@ const createImpulseActivity = (
     name: impulseInfo.impulse,
     profTrend: impulseInfo.proficiency,
     statTrend: impulseInfo.abilityScore,
-    itemTrend: itemTrends.Gate_Attenuator,
+    itemTrend,
     MAP: impulseInfo.weaponInfo.traits["agile"] ? MAPs.A1 : MAPs.N1,
-    ...getImpulseTarget(impulseInfo),
-
+    ...target,
     damages,
+    effects,
   });
   return id;
 };
@@ -1633,7 +1638,43 @@ const createImpulseDamages = (
   newDamages.push(id);
   damageAdapter.addOne(state.damages, impulseDamage);
 
+  const impulsePersistentDamage = getImpulsePersistentDamage(impulseInfo);
+  if (impulsePersistentDamage) {
+    id = ++damageId;
+    const persistentDamage: Damage = {
+      ...defaultDamage,
+      id,
+      ...impulsePersistentDamage,
+      persistent: true,
+    };
+    newDamages.push(id);
+    damageAdapter.addOne(state.damages, persistentDamage);
+  }
+
   return newDamages;
+};
+const createImpulseEffects = (
+  state: WritableDraft<State>,
+  impulseInfo: ImpulseInfo
+) => {
+  const newEffects: number[] = [];
+
+  for (let { effectCondition, effectType, effectValue } of getImpulseEffects(
+    impulseInfo
+  )) {
+    let id = ++effectId;
+    const skillEffect: Effect = {
+      ...defaultEffect,
+      id,
+      effectCondition,
+      effectType,
+      effectValue,
+    };
+    newEffects.push(id);
+    effectAdapter.addOne(state.effects, skillEffect);
+  }
+
+  return newEffects;
 };
 
 

@@ -40,11 +40,11 @@ export type WeaponInfo = {
 };
 
 export type StrikeInfo = {
-  cClass: typeof classes[number];
+  cClass: (typeof classes)[number];
   classOption: string;
 
-  activity: typeof strikeActivities[number];
-  spell: typeof attackSpells[number];
+  activity: (typeof strikeActivities)[number];
+  spell: (typeof attackSpells)[number];
   attackScore: StatTrend;
   damageScore: StatTrend;
   cantripScore: StatTrend;
@@ -62,22 +62,22 @@ export type SkillInfo = {
   proficiency: ProfTrend;
   abilityScore: StatTrend;
   itemBonus: ItemTrend;
-  skillActivity: typeof skillActivities[number];
+  skillActivity: (typeof skillActivities)[number];
 };
 export type CantripInfo = {
   proficiency: ProfTrend;
   abilityScore: StatTrend;
-  cantrip: typeof cantrips[number];
+  cantrip: (typeof cantrips)[number];
 };
 export type SpellInfo = {
   proficiency: ProfTrend;
   abilityScore: StatTrend;
-  spell: typeof spells[number];
+  spell: (typeof spells)[number];
 };
 export type ImpulseInfo = {
   proficiency: ProfTrend;
   abilityScore: StatTrend;
-  impulse: typeof impulses[number];
+  impulse: (typeof impulses)[number];
   isTwoAction: boolean;
   strScore: StatTrend;
   weaponInfo: WeaponInfo;
@@ -156,7 +156,7 @@ export const strikeActivities = [
   "Spell Strike",
   "Ki Strike",
 ] as const;
-type ClassOptions = { [key in typeof classes[number]]: readonly string[] };
+type ClassOptions = { [key in (typeof classes)[number]]: readonly string[] };
 export const classOptions: ClassOptions = {
   Alchemist: alchemistOptions,
   Barbarian: barbarianOptions,
@@ -191,11 +191,7 @@ export const weaponTraits = [
   "propulsive",
 ] as const;
 
-export const blastTraits = [
-  "agile",
-  "ranged",
-  "propulsive",
-] as const;
+export const blastTraits = ["agile", "ranged", "propulsive"] as const;
 
 export const critSpecs = [
   "Sword",
@@ -226,7 +222,20 @@ export const cantrips = [
   "Telekinetic Projectile",
 ] as const;
 export const spells = ["Fear", "Fireball", "Heroism"] as const;
-export const impulses = ["Elemental Blast"] as const;
+export const impulses = [
+  "Elemental Blast",
+  "Extract Elements",
+  "Aerial Boomerang",
+  "Flying Flame",
+  "Hail of Splinters",
+  "Magnetic Pinions (non-metal target)",
+  "Scorching Column (without hazard damage)",
+  "Shard Strike (no crit effect)",
+  "Tidal Hands",
+  "Tremor (1d8)",
+  "Tremor (1d10)",
+  "Winter's Clutch",
+] as const;
 
 export const attackSpells = [
   "Gouging Claw",
@@ -621,7 +630,7 @@ export const getSplashDamage = (strikeInfo: StrikeInfo) => {
 };
 
 const getSpellDamage = (
-  spell: typeof attackSpells[number],
+  spell: (typeof attackSpells)[number],
   abilityScore: StatTrend
 ) => {
   let damageType: DamageType = damageTypes.B;
@@ -1011,11 +1020,26 @@ export const getSpellTarget = (spellInfo: SpellInfo) => {
 export const getImpulseTarget = (impulseInfo: ImpulseInfo) => {
   switch (impulseInfo.impulse) {
     case "Elemental Blast":
-      return { type: activityTargetTypes.SPELLATTACK, targetType: defenses.AC } as const;
-    // case "Daze":
-    //   return { type: "Save", targetType: defenses.REF } as const;
+    case "Magnetic Pinions (non-metal target)":
+      return {
+        type: activityTargetTypes.SPELLATTACK,
+        targetType: defenses.AC,
+      } as const;
+    case "Extract Elements":
+    case "Tremor (1d8)":
+    case "Tremor (1d10)":
+      return {
+        type: activityTargetTypes.SAVE,
+        targetType: defenses.FORT,
+      } as const;
+    case "Aerial Boomerang":
+    case "Flying Flame":
+    case "Hail of Splinters":
     default:
-      return { targetType: defenses.AC };
+      return {
+        type: activityTargetTypes.SAVE,
+        targetType: defenses.REF,
+      } as const;
   }
 };
 export const getImpulseDamage = (impulseInfo: ImpulseInfo) => {
@@ -1040,11 +1064,56 @@ export const getImpulseDamage = (impulseInfo: ImpulseInfo) => {
         }
         damageAdjustments = adjustments;
       }
-      return { 
+      return {
         dieTrend: dieTrends.ELEMENTALBLAST,
         diceSize: impulseInfo.weaponInfo.dieSize,
         damageTrend,
         ...(damageAdjustments ? { damageAdjustments } : {}),
+      };
+    case "Magnetic Pinions (non-metal target)":
+      return {
+        dieTrend: dieTrends.SPELLLEVEL2,
+        diceSize: diceSizes[4],
+      };
+    case "Extract Elements":
+    case "Aerial Boomerang":
+    case "Winter's Clutch":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.Cantrip2,
+        diceSize: diceSizes[4],
+      };
+    case "Flying Flame":
+    case "Shard Strike (no crit effect)":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.SPELLLEVEL1,
+        diceSize: diceSizes[6],
+      };
+    case "Tidal Hands":
+    case "Tremor (1d8)":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.SPELLLEVEL1,
+        diceSize: diceSizes[8],
+      };
+    case "Tremor (1d10)":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.SPELLLEVEL1,
+        diceSize: diceSizes[10],
+      };
+    case "Hail of Splinters":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.SPELLLEVEL1,
+        diceSize: diceSizes[4],
+      };
+    case "Scorching Column (without hazard damage)":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.every3,
+        diceSize: diceSizes[6],
       };
     // case "Daze":
     //   return {
@@ -1056,5 +1125,37 @@ export const getImpulseDamage = (impulseInfo: ImpulseInfo) => {
     //   return {};
     default:
       return { diceSize: diceSizes[4] };
+  }
+};
+
+export const getImpulseEffects = (impulseInfo: ImpulseInfo) => {
+  switch (impulseInfo.impulse) {
+    case "Tremor (1d8)":
+    case "Tremor (1d10)":
+      return [
+        {
+          effectCondition: conditions.CRIF,
+          effectType: effectTypes.PRONE,
+          effectValue: 1,
+        },
+      ];
+    default:
+      return [];
+  }
+};
+
+      
+
+export const getImpulsePersistentDamage = (impulseInfo: ImpulseInfo) => {
+  switch (impulseInfo.impulse) {
+    case "Hail of Splinters":
+      return {
+        damageCondition: dCond.BASIC,
+        dieTrend: dieTrends.SPELLLEVEL1,
+        diceSize: diceSizes[4],
+        damageType: damageTypes.BLEED,
+      };
+    default:
+      return null;
   }
 };

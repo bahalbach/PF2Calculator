@@ -985,7 +985,7 @@ function ImpulseSelection() {
 
   // for kinetic blast
   const [isTwoAction, setIsTwoAction] = useState<boolean>(false);
-  const [strScore, setStrScore] = useState<StatTrend>(statTrends.AS16pp);
+  const [strScore, setStrScore] = useState<StatTrend>(statTrends.AS10);
   const [weapon, setWeapon] = useState({
     dieSize: 8,
     traits: Object.fromEntries(weaponTraits.map((trait) => [trait, false])),
