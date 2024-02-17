@@ -24,7 +24,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage --watch=false",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "eslintConfig": {
     "extends": "react-app"
