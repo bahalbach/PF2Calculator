@@ -1,12 +1,18 @@
-import React, { FC, ReactElement } from "react";
-import { render as rtlRender, RenderOptions } from "@testing-library/react";
+import React, { FC, ReactElement, ReactNode } from "react";
+import { render as rtlRender, RenderOptions, cleanup } from "@testing-library/react";
 import store from "../App/store";
 import { Provider } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../App/theme";
 import { CssBaseline } from "@mui/material";
 
-const WithProviders: FC = ({ children }) => {
+import { expect, afterEach } from 'vitest'
+
+afterEach(() => {
+  cleanup();
+});
+
+const WithProviders: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
@@ -22,6 +28,7 @@ const customRender = (
 ) => rtlRender(ui, { wrapper: WithProviders, ...options });
 
 export * from "@testing-library/react";
+export { default as userEvent } from '@testing-library/user-event'
 export { customRender as render };
 
 function expectToBeCloseToArray(actual: number[], expected: number[]) {

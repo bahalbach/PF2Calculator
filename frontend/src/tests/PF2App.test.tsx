@@ -1,3 +1,6 @@
+import { describe, expect, test } from 'vitest'
+
+import '@testing-library/jest-dom/vitest';
 import { getByText, screen } from "@testing-library/dom";
 import React from "react";
 import PF2App from "../App/PF2App";

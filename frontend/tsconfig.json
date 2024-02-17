@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "module": "esnext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -18,9 +18,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["vite/client", "vite-plugin-svgr/client"]
   },
-  "include": [
-    "src"
-, "config-overrides.js"  ]
+  "include": ["src"]
 }
