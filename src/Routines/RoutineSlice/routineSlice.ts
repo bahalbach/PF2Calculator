@@ -79,6 +79,7 @@ import {
   MAP,
   ItemTrend,
   DieTrend,
+  damageTrends,
 } from "../../Model/types";
 import { RootState } from "../../App/store";
 import {
@@ -172,20 +173,75 @@ const defaultActivity = {
   effects: [],
   apIds: [],
 };
+const defaultStrikeDamage = {
+  damageCondition: dCond.STRIKE,
+
+  dieTrend: dieTrends.WEAPON,
+  dieAdjustments: { ...empty },
+  diceSize: 8,
+  fatal: false,
+  fatalDie: 10,
+  damageTrend: [damageTrends.AS18a, damageTrends.MARTIALWEAPONSPEC],
+  damageAdjustments: { ...empty },
+
+  damageType: damageTypes.S,
+  material: materials.NONE,
+  persistent: false,
+  multiplier: 1,
+  damageWhen: [whenConditions.Always],
+};
+const defaultStrikeRuneDamage = {
+  damageCondition: dCond.STRIKE,
+
+  dieTrend: dieTrends.RUNE2,
+  dieAdjustments: { ...empty },
+  diceSize: 6,
+  fatal: false,
+  fatalDie: 10,
+  damageTrend: [],
+  damageAdjustments: { ...empty },
+
+  damageType: damageTypes.FIRE,
+  material: materials.NONE,
+  persistent: false,
+  multiplier: 1,
+  damageWhen: [whenConditions.Always],
+};
+const defaultSaveDamage = {
+  damageCondition: dCond.BASIC,
+
+  dieTrend: dieTrends.SPELLLEVEL2,
+  dieAdjustments: { ...empty },
+  diceSize: 6,
+  fatal: false,
+  fatalDie: 10,
+  damageTrend: [],
+  damageAdjustments: { ...empty },
+
+  damageType: damageTypes.FIRE,
+  material: materials.NONE,
+  persistent: false,
+  multiplier: 1,
+  damageWhen: [whenConditions.Always],
+};
+const defaultStrikeEffect = {
+  effectCondition: conditions.CRIT,
+  effectType: effectTypes.FLATFOOT,
+  effectValue: 1,
+  startLevel: 5,
+  endLevel: 20,
+  damageWhen: [whenConditions.Always],
+};
 const defaultStrikeParent = {
   profTrend: profTrends.MARTIALWEAPON,
   statTrend: statTrends.AS18a,
   itemTrend: itemTrends.WEAPON,
-  damages: [0, 1],
-  effects: [0],
 };
 const defaultSaveParent = {
   type: activityTypes.SAVE,
   profTrend: profTrends.CASTERSPELL,
   statTrend: statTrends.AS18a,
   targetType: defenses.REF,
-  damages: [2],
-  effects: [],
 };
 const defaultDamage = {
   damageCondition: dCond.STRIKE,
@@ -348,8 +404,13 @@ export const routinesSlice = createSlice({
         let description = "";
         if (activityType !== undefined) {
           if (activityType === activityTypes.STRIKE) {
-            let damages = copyDamages(state, defaultStrikeParent.damages);
-            let effects = copyEffects(state, defaultStrikeParent.effects);
+            const damages = [
+              createDamage(state, defaultStrikeDamage),
+              createDamage(state, defaultStrikeRuneDamage),
+            ];
+            const effects = [
+              createEffect(state, defaultStrikeEffect),
+            ];
             name = "Martial - Strike - d8 Sword";
             ap = {
               ...defaultActivity,
@@ -363,8 +424,9 @@ export const routinesSlice = createSlice({
             name = "Martial - 1 Strike - d8 Sword";
           }
           if (activityType === activityTypes.SAVE) {
-            let damages = copyDamages(state, defaultSaveParent.damages);
-            let effects = copyEffects(state, defaultSaveParent.effects);
+            const damages = [
+              createDamage(state, defaultSaveDamage),
+            ];
             name = "Caster - Fireball";
             ap = {
               ...defaultActivity,
@@ -373,7 +435,6 @@ export const routinesSlice = createSlice({
               routineId,
               name,
               damages,
-              effects,
             };
           }
         } else {
@@ -604,8 +665,6 @@ export const routinesSlice = createSlice({
           state.importRoutine = importStates.Failure;
         }
       } catch (error) {
-        console.log(error);
-        console.log("Parsing failed");
         state.importRoutine = importStates.Failure;
       }
     },
@@ -1705,24 +1764,32 @@ const copyActivityPaths = (
   }
   return newApIds;
 };
+const createDamage = (state: WritableDraft<State>, damage: Omit<Damage, 'id'>) => {
+  const id = ++damageId;
+  damageAdapter.addOne(state.damages, { ...damage, id });
+  return id;
+}
 const copyDamages = (state: WritableDraft<State>, damages: number[]) => {
   const newDamages = [];
   for (let did of damages) {
     let damage = state.damages.entities[did]!;
     // create a new damage entity and add it's id to newDamages
-    const id = ++damageId;
-    damageAdapter.addOne(state.damages, { ...damage, id });
+    const id = createDamage(state, damage);
     newDamages.push(id);
   }
   return newDamages;
 };
+const createEffect = (state: WritableDraft<State>, effect: Omit<Effect, 'id'>) => {
+  const id = ++effectId;
+  effectAdapter.addOne(state.effects, { ...effect, id });
+  return id;
+}
 const copyEffects = (state: WritableDraft<State>, effects: number[]) => {
   const newEffects = [];
   for (let eid of effects) {
     let effect = state.effects.entities[eid]!;
     // create a new effect entity and add it's id to newEffects
-    const id = ++effectId;
-    effectAdapter.addOne(state.effects, { ...effect, id });
+    const id = createEffect(state, effect);
     newEffects.push(id);
   }
   return newEffects;

@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "./test-utils";
+import { render, waitFor } from "./test-utils";
 
 import Export from "../Sharing/Export";
 import { fireEvent, screen } from "@testing-library/dom";
@@ -10,7 +10,7 @@ describe("Export", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("Export and Import functions work correctly", () => {
+  test("Export and Import functions work correctly", async () => {
     render(<Export />);
     expect(screen.getByRole("textbox")).toHaveValue("Import successful");
 
@@ -18,10 +18,10 @@ describe("Export", () => {
     expect(screen.getByRole("textbox")).not.toHaveValue("Import successful");
 
     fireEvent.click(screen.getByText("Import"));
-    expect(screen.getByRole("textbox")).toHaveValue("Import successful");
+    await waitFor(() => expect(screen.getByRole("textbox")).toHaveValue("Import successful"));
 
     fireEvent.click(screen.getByText("Import"));
-    expect(screen.getByRole("textbox")).toHaveValue("Import failed");
+    await waitFor(() => expect(screen.getByRole("textbox")).toHaveValue("Import failed"));
   });
 
   // Can't test 'Copy' because no navigator.clipboard

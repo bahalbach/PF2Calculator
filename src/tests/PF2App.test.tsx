@@ -12,8 +12,8 @@ describe("PF2App", () => {
     // the first list is the list of routines
     let routines = screen.getAllByRole("list")[0];
 
-    // 7 routines loaded by default
-    expect(routines.children.length).toBe(7);
+    // 6 routines loaded by default
+    expect(routines.children.length).toBe(6);
 
     //screen.debug(routines);
     // the first loaded routine is 'baseline'
