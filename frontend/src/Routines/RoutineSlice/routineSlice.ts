@@ -136,7 +136,6 @@ const loadState = () => {
     return undefined;
   } catch (err) {
     // ignore errors
-    console.log(err);
     return undefined;
   }
 };
