@@ -1,15 +1,16 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client"
 import "./index.css";
 import PF2App from "./App/PF2App";
 import store from "./App/store";
 import { Provider } from "react-redux";
-import * as serviceWorker from "./serviceWorker";
+import * as serviceWorker from "/public/serviceWorker";
 import { CssBaseline } from "@mui/material";
 import theme from "./App/theme";
 import { ThemeProvider } from "@mui/material/styles";
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root"));
+root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
@@ -17,9 +18,7 @@ ReactDOM.render(
         <PF2App />
       </ThemeProvider>
     </Provider>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );
 
-// Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.register();
