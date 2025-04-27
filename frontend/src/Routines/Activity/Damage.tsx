@@ -39,6 +39,7 @@ import {
   Select,
   Slider,
   Switch,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -58,6 +59,10 @@ import { damageTrendValues, dieTrendValues } from "../../Model/defaults";
 //   },
 // });
 export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
+  const damage = useAppSelector((state: RootState) => selectdamageById(state, id));
+  if (!damage) {
+    return null;
+  }
   const {
     damageCondition,
     damageType,
@@ -73,7 +78,10 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
     fatalDie,
     damageTrend,
     damageAdjustments,
-  } = useAppSelector((state: RootState) => selectdamageById(state, id)!);
+  } = damage
+
+  const [tempMultiplier, setTempMultiplier] = useState(multiplier.toString()); // Local state for TextField
+
   const dispatch = useAppDispatch();
 
   const [showContent, setShowContent] = useState(false);
@@ -201,21 +209,35 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           </Grid>
           <Grid container spacing={{ xs: 1, sm: 2 }}>
             <Grid item>
-              <TooltipSelect
-                title="How much the damage is multiplied by. For example: if you want to average the damage of two different attacks, add both and set the multiplier to .5"
-                value={multiplier}
-                label="Multiplier"
-                onChange={(e) =>
-                  dispatch(
-                    damageUpdated({
-                      id,
-                      changes: { multiplier: Number(e.target.value) },
-                    })
-                  )
-                }
-              >
-                {multiplierOptions}
-              </TooltipSelect>
+              <Tooltip title="How much the damage is multiplied by. For example: if you want to average the damage of two different attacks, add both and set the multiplier to .5">
+                <TextField
+                  size="small"
+                  label="Multiplier"
+                  value={tempMultiplier}
+                  onChange={(e) => {
+                    setTempMultiplier(e.target.value);
+                  }}
+                  onBlur={() => {
+                    let newVal = parseFloat(tempMultiplier);
+                    if (Number.isNaN(newVal) || newVal < 0) newVal = 0;
+                    setTempMultiplier(newVal.toString());
+                    if (newVal !== multiplier) {
+                      dispatch(
+                        damageUpdated({
+                          id,
+                          changes: { multiplier: newVal },
+                        })
+                      );
+                    }
+                  }}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    type: "number",
+                  }}
+                  sx={{width: "12ch"}}
+                />
+              </Tooltip>
             </Grid>
             <Grid item>
               <FormControl size="small">

@@ -218,7 +218,7 @@ function isDamages(damages: unknown): damages is Damage[] {
           Object.values(damageTypes).includes(damage.damageType) &&
           Object.values(materials).includes(damage.material) &&
           typeof damage.persistent === "boolean" &&
-          [0.5, 1, 2].includes(damage.multiplier)
+          typeof damage.multiplier === "number"
         )
       ) {
         return false;
