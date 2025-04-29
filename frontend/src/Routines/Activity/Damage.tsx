@@ -59,7 +59,9 @@ import { damageTrendValues, dieTrendValues } from "../../Model/defaults";
 //   },
 // });
 export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
-  const damage = useAppSelector((state: RootState) => selectdamageById(state, id));
+  const damage = useAppSelector((state: RootState) =>
+    selectdamageById(state, id)
+  );
   if (!damage) {
     return null;
   }
@@ -78,7 +80,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
     fatalDie,
     damageTrend,
     damageAdjustments,
-  } = damage
+  } = damage;
 
   const [tempMultiplier, setTempMultiplier] = useState(multiplier.toString()); // Local state for TextField
 
@@ -235,7 +237,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                     min: 0,
                     type: "number",
                   }}
-                  sx={{width: "12ch"}}
+                  sx={{ width: "12ch" }}
                 />
               </Tooltip>
             </Grid>
