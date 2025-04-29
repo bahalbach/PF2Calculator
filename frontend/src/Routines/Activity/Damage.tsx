@@ -15,7 +15,6 @@ import {
   dieTrendOptions,
   makeOptions,
   materialOptions,
-  multiplierOptions,
 } from "../../Model/options";
 import {
   DamageCond,
