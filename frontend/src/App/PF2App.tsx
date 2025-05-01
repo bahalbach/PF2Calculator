@@ -15,7 +15,7 @@ import {
   selectCreateNewActivity,
 } from "../Routines/RoutineSlice/routineSlice";
 import { Container, Box, Button } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import useMediaQuery from "@mui/material/useMediaQuery";
 // import Header from "./Header";
 import { ActivityPath } from "../Routines/Activity/ActivityPath";
@@ -47,16 +47,18 @@ function PF2App() {
               sx={{ height: "100%", overflow: "auto" }}
               size={{
                 xs: 12,
-                md: 6
-              }}>
+                md: 6,
+              }}
+            >
               <Controls />
             </Grid>
             <Grid
               sx={{ mt: 0, height: 1, overflow: "hidden auto" }}
               size={{
                 xs: 12,
-                md: 6
-              }}>
+                md: 6,
+              }}
+            >
               <Display />
             </Grid>
           </Grid>

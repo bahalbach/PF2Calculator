@@ -20,7 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { activityTypes } from "../Model/types";
 import { Box } from "@mui/material";
 import { ActivityPath } from "./Activity/ActivityPath";
@@ -59,8 +59,9 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               xs: 12,
               sm: 8,
               md: 12,
-              lg: 8
-            }}>
+              lg: 8,
+            }}
+          >
             <TextField
               fullWidth
               label="Routine Name"
@@ -81,8 +82,9 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               xs: 12,
               sm: 4,
               md: 12,
-              lg: 4
-            }}>
+              lg: 4,
+            }}
+          >
             <Typography align="center">
               Valid Levels: {startLevel} to {endLevel}
             </Typography>
@@ -150,8 +152,9 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               xs: 6,
               sm: 3,
               md: 6,
-              lg: 3
-            }}>
+              lg: 3,
+            }}
+          >
             <Button
               size="small"
               fullWidth
@@ -168,8 +171,9 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               xs: 6,
               sm: 3,
               md: 6,
-              lg: 3
-            }}>
+              lg: 3,
+            }}
+          >
             <Button
               size="small"
               fullWidth
@@ -192,8 +196,9 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               xs: 6,
               sm: 3,
               md: 6,
-              lg: 3
-            }}>
+              lg: 3,
+            }}
+          >
             <Button
               size="small"
               fullWidth
@@ -221,8 +226,9 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               xs: 6,
               sm: 3,
               md: 6,
-              lg: 3
-            }}>
+              lg: 3,
+            }}
+          >
             <Button
               size="small"
               fullWidth

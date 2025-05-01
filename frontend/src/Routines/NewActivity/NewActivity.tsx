@@ -18,7 +18,7 @@ import {
   RadioGroup,
   Radio,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { diceSizeOptions, makeOptions } from "../../Model/options";
 import {
   DieTrend,

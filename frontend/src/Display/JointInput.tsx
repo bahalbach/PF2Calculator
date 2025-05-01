@@ -13,7 +13,7 @@ import { selecttargetById, targetUpdated } from "./targetSlice";
 // import { EntityId } from "@reduxjs/toolkit";
 import { RootState } from "../App/store";
 import { TextField, FormControlLabel, Switch } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 const JointInput = () => {
   const id = 0;
@@ -33,8 +33,9 @@ const JointInput = () => {
           xs: 6,
           sm: 3,
           md: 6,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <FormControlLabel
           control={
             <Switch
@@ -57,8 +58,9 @@ const JointInput = () => {
           xs: 6,
           sm: 3,
           md: 6,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <TextField
           fullWidth
           label="Persistent Damage Multiplier"
@@ -95,8 +97,9 @@ const JointInput = () => {
           xs: 12,
           sm: 6,
           md: 12,
-          lg: 6
-        }}>
+          lg: 6,
+        }}
+      >
         <FormControlLabel
           control={
             <Switch

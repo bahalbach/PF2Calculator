@@ -13,7 +13,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { HPTrends } from "../Model/types";
 
 function ByLevelInput() {
@@ -40,8 +40,9 @@ function ByLevelInput() {
           xs: 12,
           sm: 6,
           md: 12,
-          lg: 6
-        }}>
+          lg: 6,
+        }}
+      >
         <TextField
           fullWidth
           label="Graph Name"
@@ -60,8 +61,9 @@ function ByLevelInput() {
           xs: 6,
           sm: 3,
           md: 6,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <Typography>Level Diff: {levelDiff}</Typography>
         <Slider
           value={levelDiff}
@@ -86,8 +88,9 @@ function ByLevelInput() {
           xs: 6,
           sm: 3,
           md: 6,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <FormControl fullWidth>
           <InputLabel id="AC-input">AC</InputLabel>
           <Select
@@ -110,8 +113,9 @@ function ByLevelInput() {
           xs: 3,
           sm: 3,
           md: 3,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <FormControl fullWidth>
           <InputLabel id="Fort-input">Fort</InputLabel>
           <Select
@@ -134,8 +138,9 @@ function ByLevelInput() {
           xs: 3,
           sm: 3,
           md: 3,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <FormControl fullWidth>
           <InputLabel id="Ref-input">Reflex</InputLabel>
           <Select
@@ -158,8 +163,9 @@ function ByLevelInput() {
           xs: 3,
           sm: 3,
           md: 3,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <FormControl fullWidth>
           <InputLabel id="Will-input">Will</InputLabel>
           <Select
@@ -182,8 +188,9 @@ function ByLevelInput() {
           xs: 3,
           sm: 3,
           md: 3,
-          lg: 3
-        }}>
+          lg: 3,
+        }}
+      >
         <FormControl fullWidth>
           <InputLabel id="Per-input">Perception</InputLabel>
           <Select

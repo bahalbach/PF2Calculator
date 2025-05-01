@@ -41,7 +41,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/material";

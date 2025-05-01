@@ -14,7 +14,7 @@ import {
   SelectChangeEvent,
   Tooltip,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { Box } from "@mui/material";
 import {
   selectweaknessById,
@@ -132,8 +132,9 @@ const SingleLevelInput = () => {
         <Grid
           size={{
             xs: 4,
-            sm: 2
-          }}>
+            sm: 2,
+          }}
+        >
           <TextField
             fullWidth
             label="AC"
@@ -167,8 +168,9 @@ const SingleLevelInput = () => {
         <Grid
           size={{
             xs: 4,
-            sm: 2
-          }}>
+            sm: 2,
+          }}
+        >
           <TextField
             fullWidth
             label="Fort"
@@ -202,8 +204,9 @@ const SingleLevelInput = () => {
         <Grid
           size={{
             xs: 4,
-            sm: 2
-          }}>
+            sm: 2,
+          }}
+        >
           <TextField
             fullWidth
             label="Ref"
@@ -237,8 +240,9 @@ const SingleLevelInput = () => {
         <Grid
           size={{
             xs: 4,
-            sm: 2
-          }}>
+            sm: 2,
+          }}
+        >
           <TextField
             fullWidth
             label="Will"
@@ -272,8 +276,9 @@ const SingleLevelInput = () => {
         <Grid
           size={{
             xs: 4,
-            sm: 2
-          }}>
+            sm: 2,
+          }}
+        >
           <TextField
             fullWidth
             label="Perception"

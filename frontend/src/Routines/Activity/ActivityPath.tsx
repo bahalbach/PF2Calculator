@@ -49,7 +49,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ActivityPathStub } from "../ActivityPathStub";
 import { TooltipSelect } from "../../TooltipSelect";
@@ -131,8 +131,9 @@ export const ActivityPath = ({
             <Grid
               size={{
                 xs: 12,
-                sm: 6
-              }}>
+                sm: 6,
+              }}
+            >
               <TextField
                 fullWidth
                 size="small"
@@ -154,8 +155,9 @@ export const ActivityPath = ({
               <Grid
                 size={{
                   xs: 12,
-                  sm: 6
-                }}>
+                  sm: 6,
+                }}
+              >
                 <TooltipSelect
                   title='Depending on the roll of the parent activity, should this activity happen. For example: to add another strike only when you hit with the previous one, have the second strike be a child of the first with the condition "Success or Better"'
                   value={condition}

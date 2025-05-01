@@ -12,7 +12,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 import useGenerateGraphs from "./useGenerateGraphs";
 import { makeOptions } from "../Model/options";

@@ -7,7 +7,7 @@ import {
   FormControl,
   Button,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { Box } from "@mui/material";
 import React from "react";
 
@@ -82,8 +82,9 @@ const Routines = () => {
                 xs: 12,
                 sm: 6,
                 md: 12,
-                lg: 6
-              }}>
+                lg: 6,
+              }}
+            >
               <FormControl fullWidth>
                 <InputLabel id="select-routine-label">
                   Select Routine
@@ -109,8 +110,9 @@ const Routines = () => {
               xs: 6,
               sm: 3,
               md: 6,
-              lg: 3
-            }}>
+              lg: 3,
+            }}
+          >
             <Button
               variant="contained"
               onClick={() => {
@@ -127,8 +129,9 @@ const Routines = () => {
               xs: 6,
               sm: 3,
               md: 6,
-              lg: 3
-            }}>
+              lg: 3,
+            }}
+          >
             <Button
               variant="outlined"
               onClick={() => dispatch(routineCreated({ copy: true }))}
