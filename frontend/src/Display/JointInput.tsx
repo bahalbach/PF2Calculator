@@ -45,7 +45,6 @@ const JointInput = () => {
           label="Flatfooted"
         />
       </Grid>
-
       <Grid item xs={6} sm={3} md={6} lg={3}>
         <TextField
           fullWidth
@@ -68,15 +67,16 @@ const JointInput = () => {
               })
             );
           }}
-          inputProps={{
-            step: 0.1,
-            min: 0,
-            max: 10,
-            type: "number",
+          slotProps={{
+            htmlInput: {
+              step: 0.1,
+              min: 0,
+              max: 10,
+              type: "number",
+            }
           }}
         />
       </Grid>
-
       <Grid item xs={12} sm={6} md={12} lg={6}>
         <FormControlLabel
           control={

@@ -138,11 +138,13 @@ export const LevelList = (
               })
             );
           }}
-          inputProps={{
-            step: 1,
-            min: -100,
-            max: 100,
-            type: "number",
+          slotProps={{
+            htmlInput: {
+              step: 1,
+              min: -100,
+              max: 100,
+              type: "number",
+            }
           }}
         />
         {/* <input

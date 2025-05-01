@@ -44,7 +44,7 @@ import {
 } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 import { TooltipSelect } from "../../TooltipSelect";
 import { Adjustment } from "../RoutineSlice/RoutineTypes";
 import { damageTrendValues, dieTrendValues } from "../../Model/defaults";
@@ -231,12 +231,14 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                       );
                     }
                   }}
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    type: "number",
-                  }}
                   sx={{ width: "12ch" }}
+                  slotProps={{
+                    htmlInput: {
+                      step: 0.1,
+                      min: 0,
+                      type: "number",
+                    },
+                  }}
                 />
               </Tooltip>
             </Grid>

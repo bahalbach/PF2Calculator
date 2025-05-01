@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 
 import {
   conditionOptions,
@@ -172,11 +172,13 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                       })
                     );
                   }}
-                  inputProps={{
-                    step: 1,
-                    min: 0,
-                    max: 10,
-                    type: "number",
+                  slotProps={{
+                    htmlInput: {
+                      step: 1,
+                      min: 0,
+                      max: 10,
+                      type: "number",
+                    },
                   }}
                 />
               </Grid>

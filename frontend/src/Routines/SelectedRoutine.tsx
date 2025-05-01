@@ -22,7 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import { activityTypes } from "../Model/types";
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 import { ActivityPath } from "./Activity/ActivityPath";
 import ReactGA from "react-ga4";
 ReactGA.initialize("G-JR2YK097BG");

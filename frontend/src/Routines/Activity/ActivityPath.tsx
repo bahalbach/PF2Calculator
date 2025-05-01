@@ -60,7 +60,7 @@ import {
   statTrendValues,
 } from "../../Model/defaults";
 import { Adjustment } from "../RoutineSlice/RoutineTypes";
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 import ReactGA from "react-ga4";
 ReactGA.initialize("G-JR2YK097BG");
 

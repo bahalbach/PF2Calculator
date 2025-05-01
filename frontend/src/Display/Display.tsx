@@ -16,7 +16,7 @@ import {
 
 import useGenerateGraphs from "./useGenerateGraphs";
 import { makeOptions } from "../Model/options";
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 import { SingleLevelInput } from "./SingleLevelInput";
 import { JointInput } from "./JointInput";
 import { Upload } from "../Sharing/Upload";
