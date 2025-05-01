@@ -5,9 +5,9 @@ import {
   Paper,
   Select,
   FormControl,
-  Grid,
   Button,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Box } from "@mui/material";
 import React from "react";
 
@@ -77,7 +77,13 @@ const Routines = () => {
       <Paper sx={{ my: 2, p: 1 }}>
         <Grid container spacing={1}>
           {selectedRoutine !== undefined ? (
-            <Grid item xs={12} sm={6} md={12} lg={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 12,
+                lg: 6
+              }}>
               <FormControl fullWidth>
                 <InputLabel id="select-routine-label">
                   Select Routine
@@ -97,14 +103,14 @@ const Routines = () => {
             ""
           )}
           <Grid
-            item
             container
-            xs={6}
-            sm={3}
-            md={6}
-            lg={3}
             justifyContent="center"
-          >
+            size={{
+              xs: 6,
+              sm: 3,
+              md: 6,
+              lg: 3
+            }}>
             <Button
               variant="contained"
               onClick={() => {
@@ -115,14 +121,14 @@ const Routines = () => {
             </Button>
           </Grid>
           <Grid
-            item
             container
-            xs={6}
-            sm={3}
-            md={6}
-            lg={3}
             justifyContent="center"
-          >
+            size={{
+              xs: 6,
+              sm: 3,
+              md: 6,
+              lg: 3
+            }}>
             <Button
               variant="outlined"
               onClick={() => dispatch(routineCreated({ copy: true }))}

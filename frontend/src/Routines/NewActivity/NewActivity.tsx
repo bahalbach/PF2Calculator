@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useAppDispatch } from "../../App/hooks";
 import {
   Paper,
-  Grid,
   Box,
   Typography,
   Select,
@@ -19,6 +18,7 @@ import {
   RadioGroup,
   Radio,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { diceSizeOptions, makeOptions } from "../../Model/options";
 import {
   DieTrend,
@@ -286,7 +286,7 @@ function StrikeSelection() {
         sx={{ py: 2 }}
         id="create-new-activity"
       >
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="Which class's proficiency and weapon specialization to use."
             value={strikeInfo.cClass}
@@ -300,7 +300,7 @@ function StrikeSelection() {
         </Grid>
 
         {showClassOptions() ? (
-          <Grid item>
+          <Grid>
             <TooltipSelect
               title="Which abilities are applied"
               value={strikeInfo.classOption}
@@ -316,7 +316,7 @@ function StrikeSelection() {
           ""
         )}
 
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="Which activity to use"
             value={strikeInfo.activity}
@@ -336,7 +336,7 @@ function StrikeSelection() {
           </TooltipSelect>
         </Grid>
         {showCantrip() ? (
-          <Grid item>
+          <Grid>
             <TooltipSelect
               title="Which spell to add to the strike"
               value={strikeInfo.spell}
@@ -354,7 +354,7 @@ function StrikeSelection() {
         ) : (
           ""
         )}
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="What ability score bonus progression to add to the attack roll."
             value={strikeInfo.attackScore}
@@ -369,7 +369,7 @@ function StrikeSelection() {
             {makeOptions(statTrends)}
           </TooltipSelect>
         </Grid>
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="What ability score bonus progression to add to the damage roll.
             Not applied to ranged attacks."
@@ -386,7 +386,7 @@ function StrikeSelection() {
           </TooltipSelect>
         </Grid>
         {showCantripScore() ? (
-          <Grid item>
+          <Grid>
             <TooltipSelect
               title="What ability score bonus progression to add to the damage roll."
               value={strikeInfo.cantripScore}
@@ -405,14 +405,12 @@ function StrikeSelection() {
           ""
         )}
       </Grid>
-
       <WeaponInput
         weapon={strikeInfo.weapon1}
         setWeapon={(weapon) =>
           setStrikeInfo({ ...strikeInfo, weapon1: weapon })
         }
       />
-
       {/* <Grid
         container
         columnSpacing={{ xs: 1, sm: 2 }}
@@ -444,9 +442,8 @@ function StrikeSelection() {
         ""
       )}
       {/* </Grid> */}
-
       <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ py: 2 }}>
-        <Grid item xs="auto">
+        <Grid size="auto">
           <TooltipSelect
             title="Select the number of previous attacks."
             value={strikeInfo.numPrevStrikes}
@@ -462,7 +459,7 @@ function StrikeSelection() {
           </TooltipSelect>
         </Grid>
         {strikeInfo.activity !== "Double Slice" ? (
-          <Grid item xs="auto">
+          <Grid size="auto">
             <TooltipSelect
               title="Select the number of attacks to make with the selected options."
               value={strikeInfo.numStrikes}
@@ -493,7 +490,7 @@ function StrikeSelection() {
         )}
         {strikeInfo.cClass === "Ranger" &&
         strikeInfo.classOption === "Precision Edge" ? (
-          <Grid item xs="auto">
+          <Grid size="auto">
             <TooltipSelect
               title="Select the number of previous hits."
               value={strikeInfo.previousHits}
@@ -513,7 +510,7 @@ function StrikeSelection() {
         )}
 
         {/* Add Strike button */}
-        <Grid item xs="auto">
+        <Grid size="auto">
           <Button
             variant="contained"
             onClick={() => {
@@ -528,7 +525,6 @@ function StrikeSelection() {
           </Button>
         </Grid>
       </Grid>
-
       {strikeInfo.twf && strikeInfo.activity !== "Double Slice" ? (
         <Stack spacing={{ xs: 1, sm: 2 }}>
           {strikeInfo.isStrikeSecondaryWeapon.map((isSecondary, index) => (
@@ -585,11 +581,12 @@ function WeaponInput({
       sx={{ py: 2 }}
       alignItems="center"
     >
-      <Grid item xs="auto">
-        <Typography variant="h6">{isElementalBlast ? "Blast details" : "Weapon"}</Typography>
+      <Grid size="auto">
+        <Typography variant="h6">
+          {isElementalBlast ? "Blast details" : "Weapon"}
+        </Typography>
       </Grid>
-
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Weapon damage die"
           value={weapon.dieSize}
@@ -601,25 +598,24 @@ function WeaponInput({
           {diceSizeOptions}
         </TooltipSelect>
       </Grid>
-
       {!isElementalBlast ? (
-      <Grid item>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={weapon.critSpec}
-              onChange={(e) =>
-                setWeapon({ ...weapon, critSpec: e.target.checked })
-              }
-            />
-          }
-          label="Critical Specialization"
-        />
-      </Grid>
+        <Grid>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={weapon.critSpec}
+                onChange={(e) =>
+                  setWeapon({ ...weapon, critSpec: e.target.checked })
+                }
+              />
+            }
+            label="Critical Specialization"
+          />
+        </Grid>
       ) : null}
       {/* crit spec level slider */}
       {weapon.critSpec ? (
-        <Grid item>
+        <Grid>
           <Typography align="center" id="crit-spec-level">
             At Level {weapon.critSpecLevel}
           </Typography>
@@ -638,7 +634,7 @@ function WeaponInput({
         ""
       )}
       {weapon.critSpec ? (
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="What weapon group's effect to apply on a critical hit."
             value={weapon.critSpecType}
@@ -654,7 +650,7 @@ function WeaponInput({
         ""
       )}
       {/* Weapon Traits */}
-      <Grid item>
+      <Grid>
         <Paper
           variant="outlined"
           sx={{
@@ -667,28 +663,30 @@ function WeaponInput({
           }}
           component="ul"
         >
-          {(isElementalBlast ? blastTraits : weaponTraits).map((traitName, index) => (
-            <Box component="li" key={traitName} sx={{ margin: 0.5 }}>
-              <Chip
-                label={traitName}
-                size="small"
-                color="secondary"
-                variant={weapon.traits[traitName] ? "filled" : "outlined"}
-                onClick={() => {
-                  const newTraits = {
-                    ...weapon.traits,
-                    [traitName]: !weapon.traits[traitName],
-                  };
-                  // newTraits[traitName] = !traits[traitName];
-                  setWeapon({ ...weapon, traits: newTraits });
-                }}
-              />
-            </Box>
-          ))}
+          {(isElementalBlast ? blastTraits : weaponTraits).map(
+            (traitName, index) => (
+              <Box component="li" key={traitName} sx={{ margin: 0.5 }}>
+                <Chip
+                  label={traitName}
+                  size="small"
+                  color="secondary"
+                  variant={weapon.traits[traitName] ? "filled" : "outlined"}
+                  onClick={() => {
+                    const newTraits = {
+                      ...weapon.traits,
+                      [traitName]: !weapon.traits[traitName],
+                    };
+                    // newTraits[traitName] = !traits[traitName];
+                    setWeapon({ ...weapon, traits: newTraits });
+                  }}
+                />
+              </Box>
+            )
+          )}
         </Paper>
       </Grid>
       {weapon.traits["deadly"] ? (
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="Deadly damage die."
             value={weapon.deadlySize}
@@ -704,7 +702,7 @@ function WeaponInput({
         ""
       )}
       {weapon.traits["fatal"] ? (
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="Fatal damage die."
             value={weapon.fatalSize}
@@ -719,24 +717,20 @@ function WeaponInput({
       ) : (
         ""
       )}
-
       {!isElementalBlast ? (
-        <Grid item>
-        <TooltipSelect
-          title="What levels the damages from property runes such as 'flaming' are applied."
-          value={weapon.runes}
-          label="Damage Rune Levels"
-          onChange={(e) => {
-            setWeapon({ ...weapon, runes: e.target.value as DieTrend });
-          }}
-        >
-          {makeOptions(runeTrends)}
-        </TooltipSelect>
-      </Grid>
-      ) : (
-        null
-      )}
-      
+        <Grid>
+          <TooltipSelect
+            title="What levels the damages from property runes such as 'flaming' are applied."
+            value={weapon.runes}
+            label="Damage Rune Levels"
+            onChange={(e) => {
+              setWeapon({ ...weapon, runes: e.target.value as DieTrend });
+            }}
+          >
+            {makeOptions(runeTrends)}
+          </TooltipSelect>
+        </Grid>
+      ) : null}
     </Grid>
   );
 }
@@ -762,7 +756,7 @@ function SkillSelection() {
 
   return (
     <Grid container spacing={{ xs: 1, sm: 2 }}>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which proficiency progression to apply."
           label="Proficiency"
@@ -774,7 +768,7 @@ function SkillSelection() {
           {makeOptions(skillProfTrends)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which ability score progression to apply."
           label="Ability Score"
@@ -786,7 +780,7 @@ function SkillSelection() {
           {makeOptions(statTrends)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which item bonus progression to apply."
           label="Item Bonus"
@@ -798,7 +792,7 @@ function SkillSelection() {
           {makeOptions(itemTrends)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which skill activity to use."
           label="Activity"
@@ -812,7 +806,7 @@ function SkillSelection() {
           {makeOptions(skillActivities)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <Button
           variant="contained"
           onClick={() => {
@@ -849,7 +843,7 @@ function CantripSelection() {
 
   return (
     <Grid container spacing={{ xs: 1, sm: 2 }}>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which proficiency progression to apply."
           label="Proficiency"
@@ -861,7 +855,7 @@ function CantripSelection() {
           {makeOptions(spellProfTrends)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which ability score progression to apply."
           label="Ability Score"
@@ -873,7 +867,7 @@ function CantripSelection() {
           {makeOptions(statTrends)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which cantrip to use."
           label="Cantrip"
@@ -885,7 +879,7 @@ function CantripSelection() {
           {makeOptions(cantrips)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <Button
           variant="contained"
           onClick={() => {
@@ -920,7 +914,7 @@ function SpellSelection() {
 
   return (
     <Grid container spacing={{ xs: 1, sm: 2 }}>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which proficiency progression to apply."
           label="Proficiency"
@@ -932,7 +926,7 @@ function SpellSelection() {
           {makeOptions(spellProfTrends)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which ability score progression to apply."
           label="Ability Score"
@@ -944,7 +938,7 @@ function SpellSelection() {
           {makeOptions(statTrends)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipSelect
           title="Select which spell to use."
           label="Spell"
@@ -956,7 +950,7 @@ function SpellSelection() {
           {makeOptions(spells)}
         </TooltipSelect>
       </Grid>
-      <Grid item>
+      <Grid>
         <Button
           variant="contained"
           onClick={() => {
@@ -1013,7 +1007,7 @@ function ImpulseSelection() {
   return (
     <>
       <Grid container spacing={{ xs: 1, sm: 2 }}>
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="Select which proficiency progression to apply."
             label="Proficiency"
@@ -1025,7 +1019,7 @@ function ImpulseSelection() {
             {makeOptions(impulseProfTrends)}
           </TooltipSelect>
         </Grid>
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="Select which ability score progression to apply."
             label="Ability Score"
@@ -1037,7 +1031,7 @@ function ImpulseSelection() {
             {makeOptions(statTrends)}
           </TooltipSelect>
         </Grid>
-        <Grid item>
+        <Grid>
           <TooltipSelect
             title="Select which impulse to use."
             label="Impulse"
@@ -1051,41 +1045,41 @@ function ImpulseSelection() {
         </Grid>
         {impulse === "Elemental Blast" ? (
           <>
-          <Grid item>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isTwoAction}
-                  onChange={(e) =>
-                    setIsTwoAction(e.target.checked)
-                  }
-                />
-              }
-              label="Is two action blast"
-            />
-          </Grid>
-          <Grid item>
-            <TooltipSelect
-              title="Select which ability score progression to apply."
-              label="Strength Score"
-              value={strScore}
-              onChange={(e) => {
-                setStrScore(e.target.value as StatTrend);
-              }}
-            >
-              {makeOptions(statTrends)}
-            </TooltipSelect>
-          </Grid>
+            <Grid>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isTwoAction}
+                    onChange={(e) => setIsTwoAction(e.target.checked)}
+                  />
+                }
+                label="Is two action blast"
+              />
+            </Grid>
+            <Grid>
+              <TooltipSelect
+                title="Select which ability score progression to apply."
+                label="Strength Score"
+                value={strScore}
+                onChange={(e) => {
+                  setStrScore(e.target.value as StatTrend);
+                }}
+              >
+                {makeOptions(statTrends)}
+              </TooltipSelect>
+            </Grid>
           </>
         ) : null}
       </Grid>
-
       {impulse === "Elemental Blast" ? (
-        <WeaponInput weapon={weapon} setWeapon={setWeapon} isElementalBlast={true} />
+        <WeaponInput
+          weapon={weapon}
+          setWeapon={setWeapon}
+          isElementalBlast={true}
+        />
       ) : null}
-
       <Grid>
-        <Grid item>
+        <Grid>
           <Button
             variant="contained"
             onClick={() => {

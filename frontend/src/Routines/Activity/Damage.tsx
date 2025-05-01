@@ -31,7 +31,6 @@ import {
   Collapse,
   FormControl,
   FormControlLabel,
-  Grid,
   IconButton,
   InputLabel,
   ListItemButton,
@@ -42,6 +41,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import Divider from "@mui/material/Divider";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/material";
@@ -105,7 +105,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
 
   const damageTrendList = damageTrend.map((dt, index) => {
     return (
-      <Grid item key={index}>
+      <Grid key={index}>
         <TooltipSelect
           title="Adds bonus damage that applies the appropriate amount of damage at appropriate levels. For 'Weapon' and 'Precise Strike' the bonus is the number of dice."
           label="Damage Trend"
@@ -166,7 +166,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
               <Typography>Apply damage </Typography>
             </Grid> */}
 
-            <Grid item xs>
+            <Grid size="grow">
               <TooltipSelect
                 fullWidth={true}
                 title="When this damage instance applies. For example: for extra damage on a critical hit, like with deadly or fatal weapons, use 'On Crit'. Don't forget to change when using a save instead of an attack."
@@ -184,7 +184,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                 {damageConditionOptions}
               </TooltipSelect>
             </Grid>
-            <Grid item xs>
+            <Grid size="grow">
               <FormControl size="small" fullWidth>
                 <InputLabel id="damage-when-input">When Target</InputLabel>
                 <Select
@@ -209,7 +209,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
             </Grid>
           </Grid>
           <Grid container spacing={{ xs: 1, sm: 2 }}>
-            <Grid item>
+            <Grid>
               <Tooltip title="How much the damage is multiplied by. For example: if you want to average the damage of two different attacks, add both and set the multiplier to .5">
                 <TextField
                   size="small"
@@ -242,7 +242,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                 />
               </Tooltip>
             </Grid>
-            <Grid item>
+            <Grid>
               <FormControl size="small">
                 <InputLabel id="damage-type-input">Type</InputLabel>
                 <Select
@@ -263,7 +263,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <FormControl size="small">
                 <InputLabel id="damage-material-input">Material</InputLabel>
                 <Select
@@ -284,7 +284,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <Tooltip title="If this damage is persistent. Persistent damage is multiplied by the 'Persistent Damage Multiplier' above the By Level graph.">
                 <FormControlLabel
                   control={
@@ -309,7 +309,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
             Dice
           </Divider>
           <Grid container spacing={{ xs: 1, sm: 2 }}>
-            <Grid item>
+            <Grid>
               <TooltipSelect
                 title="When dice are added to the damage. At each level in (), 1 die of the selected size is added to the damage"
                 value={dieTrend}
@@ -327,7 +327,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
               </TooltipSelect>
             </Grid>
             {dieLevelList}
-            <Grid item>
+            <Grid>
               <FormControl size="small">
                 <InputLabel id="dice-size-input">Die Size</InputLabel>
                 <Select
@@ -348,7 +348,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <Tooltip title="For Fatal. If this damage uses a different die size on a crit. For Fatal you still need to add another die with the 'On Crit' Condition.">
                 <FormControlLabel
                   control={
@@ -369,7 +369,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
               </Tooltip>
             </Grid>
             {fatal ? (
-              <Grid item>
+              <Grid>
                 <FormControl size="small">
                   <InputLabel id="fatal-size-input">Die Size</InputLabel>
                   <Select
@@ -399,7 +399,7 @@ export const Damage = ({ parentId, id }: { parentId: number; id: number }) => {
           </Divider>
           <Grid container spacing={{ xs: 1, sm: 2 }}>
             {damageTrendList}
-            <Grid item>
+            <Grid>
               <Tooltip title="Adds bonus damage that applies the appropriate amount of damage at appropriate levels. For 'Weapon' and 'Precise Strike' the bonus is the number of dice.">
                 <Button
                   onClick={() => {
@@ -492,7 +492,7 @@ const DamageDisplay = ({
 
   return (
     <Grid container alignItems="center" columnSpacing={{ xs: 2 }}>
-      <Grid item xs="auto">
+      <Grid size="auto">
         <IconButton
           color="primary"
           size="small"
@@ -503,12 +503,12 @@ const DamageDisplay = ({
           <DeleteIcon />
         </IconButton>
       </Grid>
-      <Grid item xs="auto" sx={{ ml: -2 }}>
+      <Grid sx={{ ml: -2 }} size="auto">
         <ListItemButton onClick={onClick}>
           <Typography variant="h6">{"Damage "}</Typography>
         </ListItemButton>
       </Grid>
-      <Grid item sx={{ ml: -2, mt: 1, width: 100 }}>
+      <Grid sx={{ ml: -2, mt: 1, width: 100 }}>
         <Slider
           size="small"
           value={level}
@@ -521,7 +521,7 @@ const DamageDisplay = ({
           // getAriaValueText={(v) => `${v}`}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <Typography component="span">
           {damageString + " at level " + level.toString()}
         </Typography>

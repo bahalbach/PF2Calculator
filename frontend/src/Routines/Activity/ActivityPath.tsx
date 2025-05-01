@@ -38,7 +38,6 @@ import {
   Button,
   Collapse,
   FormControl,
-  Grid,
   IconButton,
   InputLabel,
   List,
@@ -50,6 +49,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ActivityPathStub } from "../ActivityPathStub";
 import { TooltipSelect } from "../../TooltipSelect";
@@ -101,7 +101,7 @@ export const ActivityPath = ({
     <React.Fragment>
       <Paper sx={{ my: 2, p: 1, ml: level * 2 }}>
         <Grid container columnSpacing={{ xs: 1, sm: 2 }} alignItems="center">
-          <Grid item xs="auto">
+          <Grid size="auto">
             <IconButton
               color="primary"
               size="small"
@@ -112,12 +112,12 @@ export const ActivityPath = ({
               <DeleteIcon />
             </IconButton>
           </Grid>
-          <Grid item xs="auto">
+          <Grid size="auto">
             <ListItemButton onClick={() => setShowContent(!showContent)}>
               <Typography variant="h6">Activity</Typography>
             </ListItemButton>
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography>
               {parentId !== undefined ? condition + ": " : ""}
               {name}
@@ -128,7 +128,11 @@ export const ActivityPath = ({
         </Grid>
         <Collapse in={showContent} mountOnEnter>
           <Grid container spacing={2} sx={{ mt: 1, px: 1 }}>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <TextField
                 fullWidth
                 size="small"
@@ -147,7 +151,11 @@ export const ActivityPath = ({
             </Grid>
 
             {parentId !== undefined ? (
-              <Grid item xs={12} sm={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6
+                }}>
                 <TooltipSelect
                   title='Depending on the roll of the parent activity, should this activity happen. For example: to add another strike only when you hit with the previous one, have the second strike be a child of the first with the condition "Success or Better"'
                   value={condition}
@@ -206,7 +214,7 @@ export const ActivityPath = ({
           </List>
 
           <Grid container spacing={{ xs: 1 }} sx={{ my: 2, p: 1 }}>
-            <Grid item container xs={6} justifyContent="center">
+            <Grid container justifyContent="center" size={6}>
               <Button
                 variant="contained"
                 onClick={() => {
@@ -225,7 +233,7 @@ export const ActivityPath = ({
                 Continue Attack
               </Button>
             </Grid>
-            <Grid item container xs={6} justifyContent="center">
+            <Grid container justifyContent="center" size={6}>
               <Button
                 variant="outlined"
                 onClick={() => {
@@ -294,7 +302,7 @@ const Roll = ({ id }: { id: number }) => {
           }}
         >
           <Grid container spacing={{ xs: 1, sm: 2 }} sx={{}}>
-            <Grid item>
+            <Grid>
               <TooltipSelect
                 title="Advantage is rolling twice and taking the higher roll, disadvantage is taking the lower"
                 label="Roll Type"
@@ -311,7 +319,7 @@ const Roll = ({ id }: { id: number }) => {
                 {rollOptions}
               </TooltipSelect>
             </Grid>
-            <Grid item>
+            <Grid>
               <FormControl size="small">
                 <InputLabel id="activity-type-input">Activity Type</InputLabel>
                 <Select
@@ -331,7 +339,7 @@ const Roll = ({ id }: { id: number }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <TooltipSelect
                 title="An increase in proficiency (+2) is applied at each level in ()"
                 label="Proficiency"
@@ -348,7 +356,7 @@ const Roll = ({ id }: { id: number }) => {
                 {profTrendOptions}
               </TooltipSelect>
             </Grid>
-            <Grid item>
+            <Grid>
               <TooltipSelect
                 title="Bonuses from the listed ability score are applied at the appropriate levels. An ability score starts at the first value and is increased at levels 5, 10, 15, and 20 or until it reaches the second value listed. 'apex' means a bonus from an apex item is added to that score at the level in ()"
                 label="Ability Score"
@@ -365,7 +373,7 @@ const Roll = ({ id }: { id: number }) => {
                 {statTrendOptions}
               </TooltipSelect>
             </Grid>
-            <Grid item>
+            <Grid>
               <TooltipSelect
                 title="Item bonuses are applied at the levels in ()."
                 label="Item Bonus"
@@ -384,7 +392,7 @@ const Roll = ({ id }: { id: number }) => {
             </Grid>
             {bonusLevelList}
             {!isSave ? (
-              <Grid item>
+              <Grid>
                 <TooltipSelect
                   title="The multiple attack penalty that is applied to this attack."
                   label="MAP"
@@ -404,7 +412,7 @@ const Roll = ({ id }: { id: number }) => {
             ) : (
               ""
             )}
-            <Grid item>
+            <Grid>
               <TooltipSelect
                 title="What defense is targeted"
                 label="Target Defense"
@@ -459,12 +467,12 @@ const RollBonusDisplay = ({
 
   return (
     <Grid container columnSpacing={{ xs: 2 }} alignItems="center">
-      <Grid item xs="auto">
+      <Grid size="auto">
         <ListItemButton onClick={onClick}>
           <Typography variant="h6">{"Roll "}</Typography>
         </ListItemButton>
       </Grid>
-      <Grid item sx={{ ml: -2, mt: 1, width: 100 }}>
+      <Grid sx={{ ml: -2, mt: 1, width: 100 }}>
         <Slider
           size="small"
           value={level}
@@ -477,7 +485,7 @@ const RollBonusDisplay = ({
           // getAriaValueText={(v) => `${v}`}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <Typography>
           {(isSave ? "DC " : " +") +
             totalBonus.toString() +

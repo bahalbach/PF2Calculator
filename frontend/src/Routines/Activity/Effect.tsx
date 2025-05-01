@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "../../App/hooks";
 import {
   Collapse,
   FormControl,
-  Grid,
   IconButton,
   InputLabel,
   ListItemButton,
@@ -14,6 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from "@mui/material";
@@ -55,7 +55,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
   return (
     <React.Fragment>
       <Grid container columnSpacing={{ xs: 2 }} alignItems="center">
-        <Grid item xs="auto">
+        <Grid size="auto">
           <IconButton
             aria-label="delete"
             color="primary"
@@ -66,12 +66,12 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
             <DeleteIcon />
           </IconButton>
         </Grid>
-        <Grid item xs="auto" sx={{ ml: -2 }}>
+        <Grid sx={{ ml: -2 }} size="auto">
           <ListItemButton onClick={() => setShowContent(!showContent)}>
             <Typography variant="h6">Effect</Typography>
           </ListItemButton>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography>
             {effectCondition} {": "}
             {effectType} {showValue ? effectValue : ""}
@@ -87,7 +87,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
           }}
         >
           <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
-            <Grid item xs>
+            <Grid size="grow">
               <TooltipSelect
                 fullWidth={true}
                 title="When this effect applies, depending on the result of this activities roll. For example the spell 'fear' should have 'On Success' 'Frightened' '1', 'On Failure' 'Frightened' '2' etc."
@@ -105,7 +105,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
                 {conditionOptions}
               </TooltipSelect>
             </Grid>
-            <Grid item xs>
+            <Grid size="grow">
               <FormControl size="small" fullWidth>
                 <InputLabel id="damage-when-input">When Target</InputLabel>
                 <Select
@@ -130,7 +130,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
             </Grid>
           </Grid>
           <Grid container spacing={{ xs: 1, sm: 2 }}>
-            <Grid item>
+            <Grid>
               <TooltipSelect
                 title="The effect that is applied to the target when 'Condition' is met."
                 value={effectType}
@@ -149,7 +149,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
             </Grid>
 
             {showValue ? (
-              <Grid item>
+              <Grid>
                 <TextField
                   size="small"
                   label="Value"
@@ -186,7 +186,7 @@ export const Effect = ({ parentId, id }: { parentId: number; id: number }) => {
               ""
             )}
 
-            <Grid item sx={{ px: 2 }}>
+            <Grid sx={{ px: 2 }}>
               <Typography align="center">
                 Valid Levels: {startLevel} to {endLevel}
               </Typography>

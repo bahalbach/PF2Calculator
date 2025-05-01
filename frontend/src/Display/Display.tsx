@@ -6,13 +6,13 @@ import { ByLevelInput } from "./ByLevelInput";
 import {
   Collapse,
   FormControlLabel,
-  Grid,
   Paper,
   Select,
   Switch,
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 
 import useGenerateGraphs from "./useGenerateGraphs";
 import { makeOptions } from "../Model/options";
@@ -51,7 +51,7 @@ const Display = () => {
     <React.Fragment>
       <Paper sx={{ p: 1, my: 2 }}>
         <Grid container>
-          <Grid item xs>
+          <Grid size="grow">
             <FormControlLabel
               control={
                 <Switch
@@ -63,7 +63,7 @@ const Display = () => {
               // sx={{ background: "lightgrey", width: 1 }}
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <Upload byLevel={true} />
           </Grid>
         </Grid>
@@ -73,10 +73,9 @@ const Display = () => {
           <Box sx={{ height }}>{byLevelDamageChart}</Box>
         </Collapse>
       </Paper>
-
       <Paper sx={{ p: 1, my: 2 }}>
         <Grid container>
-          <Grid item xs>
+          <Grid size="grow">
             <FormControlLabel
               control={
                 <Switch
@@ -91,7 +90,7 @@ const Display = () => {
               }
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <Upload byLevel={false} />
           </Grid>
         </Grid>

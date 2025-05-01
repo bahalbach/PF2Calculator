@@ -13,7 +13,6 @@ import { ActivityPathStub } from "./ActivityPathStub";
 import { RootState } from "../App/store";
 import {
   Button,
-  Grid,
   List,
   ListSubheader,
   Paper,
@@ -21,6 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { activityTypes } from "../Model/types";
 import { Box } from "@mui/material";
 import { ActivityPath } from "./Activity/ActivityPath";
@@ -54,7 +54,13 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
     <React.Fragment>
       <Paper sx={{ my: 2, p: 1 }}>
         <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ p: 1 }}>
-          <Grid item xs={12} sm={8} md={12} lg={8}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 8,
+              md: 12,
+              lg: 8
+            }}>
             <TextField
               fullWidth
               label="Routine Name"
@@ -70,7 +76,13 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               }
             />
           </Grid>
-          <Grid item xs={12} sm={4} md={12} lg={4}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 4,
+              md: 12,
+              lg: 4
+            }}>
             <Typography align="center">
               Valid Levels: {startLevel} to {endLevel}
             </Typography>
@@ -99,7 +111,7 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
               />
             </Box>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               fullWidth
               multiline
@@ -132,14 +144,14 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
         {/* </Paper> */}
         <Grid container spacing={{ xs: 1 }} sx={{ my: 2, p: 1 }}>
           <Grid
-            item
             container
-            xs={6}
-            sm={3}
-            md={6}
-            lg={3}
             justifyContent="center"
-          >
+            size={{
+              xs: 6,
+              sm: 3,
+              md: 6,
+              lg: 3
+            }}>
             <Button
               size="small"
               fullWidth
@@ -150,14 +162,14 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
             </Button>
           </Grid>
           <Grid
-            item
             container
-            xs={6}
-            sm={3}
-            md={6}
-            lg={3}
             justifyContent="center"
-          >
+            size={{
+              xs: 6,
+              sm: 3,
+              md: 6,
+              lg: 3
+            }}>
             <Button
               size="small"
               fullWidth
@@ -174,14 +186,14 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
             </Button>
           </Grid>
           <Grid
-            item
             container
-            xs={6}
-            sm={3}
-            md={6}
-            lg={3}
             justifyContent="center"
-          >
+            size={{
+              xs: 6,
+              sm: 3,
+              md: 6,
+              lg: 3
+            }}>
             <Button
               size="small"
               fullWidth
@@ -203,14 +215,14 @@ function SelectedRoutine({ routineId }: { routineId: number }) {
             </Button>
           </Grid>
           <Grid
-            item
             container
-            xs={6}
-            sm={3}
-            md={6}
-            lg={3}
             justifyContent="center"
-          >
+            size={{
+              xs: 6,
+              sm: 3,
+              md: 6,
+              lg: 3
+            }}>
             <Button
               size="small"
               fullWidth

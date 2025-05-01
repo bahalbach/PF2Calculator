@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Grid, IconButton, Tooltip } from "@mui/material";
+import { TextField, IconButton, Tooltip } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
@@ -86,7 +87,7 @@ export const LevelList = (
 
   for (let i = 0; i < entries.length; i++) {
     levelList.push(
-      <Grid item key={i}>
+      <Grid key={i}>
         <TooltipSelect
           title="The level where this bonus is added, all later levels will have this bonus added. Please only add 1 bonus per level. Bonuses of 0 are removed."
           label="Level"
@@ -144,7 +145,7 @@ export const LevelList = (
               min: -100,
               max: 100,
               type: "number",
-            }
+            },
           }}
         />
         {/* <input
@@ -171,7 +172,7 @@ export const LevelList = (
     );
   }
   levelList.push(
-    <Grid item key="addButton">
+    <Grid key="addButton">
       <Tooltip title="Add a bonus at a specified level.">
         <IconButton
           color="primary"

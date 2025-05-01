@@ -14,7 +14,8 @@ import {
   selectSelectedActivityPath,
   selectCreateNewActivity,
 } from "../Routines/RoutineSlice/routineSlice";
-import { Container, Grid, Box, Button } from "@mui/material";
+import { Container, Box, Button } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import useMediaQuery from "@mui/material/useMediaQuery";
 // import Header from "./Header";
 import { ActivityPath } from "../Routines/Activity/ActivityPath";
@@ -43,19 +44,19 @@ function PF2App() {
           >
             <Grid
               id="container"
-              item
-              xs={12}
-              md={6}
               sx={{ height: "100%", overflow: "auto" }}
-            >
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Controls />
             </Grid>
             <Grid
-              item
-              xs={12}
-              md={6}
               sx={{ mt: 0, height: 1, overflow: "hidden auto" }}
-            >
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Display />
             </Grid>
           </Grid>
@@ -108,10 +109,10 @@ const Controls = () => {
         alignItems="center"
         spacing={2}
       >
-        <Grid item>
+        <Grid>
           <Donate />
         </Grid>
-        <Grid item>
+        <Grid>
           <Contact />
         </Grid>
       </Grid>

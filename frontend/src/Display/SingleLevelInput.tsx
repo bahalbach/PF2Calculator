@@ -8,13 +8,13 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Grid,
   TextField,
   Slider,
   Typography,
   SelectChangeEvent,
   Tooltip,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Box } from "@mui/material";
 import {
   selectweaknessById,
@@ -74,7 +74,7 @@ const SingleLevelInput = () => {
         sx={{ my: 1, p: 1 }}
         alignItems="center"
       >
-        <Grid item xs={6} container justifyContent="center">
+        <Grid container justifyContent="center" size={6}>
           <Typography id="routine-level">Level: {routineLevel}</Typography>
 
           <Box sx={{ px: 2, width: 1 }}>
@@ -103,7 +103,7 @@ const SingleLevelInput = () => {
           </Box>
         </Grid>
 
-        <Grid item xs={6} container justifyContent="center">
+        <Grid container justifyContent="center" size={6}>
           <Typography id="target-level">Target Level: {targetLevel}</Typography>
           <Box sx={{ px: 2, width: 1 }}>
             <Slider
@@ -129,7 +129,11 @@ const SingleLevelInput = () => {
         </Grid>
       </Grid>
       <Grid container spacing={{ xs: 1, sm: 2 }} justifyContent="center">
-        <Grid item xs={4} sm={2}>
+        <Grid
+          size={{
+            xs: 4,
+            sm: 2
+          }}>
           <TextField
             fullWidth
             label="AC"
@@ -160,7 +164,11 @@ const SingleLevelInput = () => {
             }}
           />
         </Grid>
-        <Grid item xs={4} sm={2}>
+        <Grid
+          size={{
+            xs: 4,
+            sm: 2
+          }}>
           <TextField
             fullWidth
             label="Fort"
@@ -191,7 +199,11 @@ const SingleLevelInput = () => {
             }}
           />
         </Grid>
-        <Grid item xs={4} sm={2}>
+        <Grid
+          size={{
+            xs: 4,
+            sm: 2
+          }}>
           <TextField
             fullWidth
             label="Ref"
@@ -222,7 +234,11 @@ const SingleLevelInput = () => {
             }}
           />
         </Grid>
-        <Grid item xs={4} sm={2}>
+        <Grid
+          size={{
+            xs: 4,
+            sm: 2
+          }}>
           <TextField
             fullWidth
             label="Will"
@@ -253,7 +269,11 @@ const SingleLevelInput = () => {
             }}
           />
         </Grid>
-        <Grid item xs={4} sm={2}>
+        <Grid
+          size={{
+            xs: 4,
+            sm: 2
+          }}>
           <TextField
             fullWidth
             label="Perception"
@@ -286,7 +306,7 @@ const SingleLevelInput = () => {
         </Grid>
       </Grid>
       <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 1, p: 1 }}>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <TextField
             fullWidth
             label="Max Hit Points"
@@ -317,7 +337,7 @@ const SingleLevelInput = () => {
             }}
           />
         </Grid>
-        <Grid item xs={6} container justifyContent="center">
+        <Grid container justifyContent="center" size={6}>
           <Typography id="current-HP">
             HP: {currentHP}/{overrideHP}
           </Typography>
@@ -346,7 +366,7 @@ const SingleLevelInput = () => {
         </Grid>
       </Grid>
       <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 1, p: 1 }}>
-        <Grid item container alignItems="center" xs="auto">
+        <Grid container alignItems="center" size="auto">
           <Typography>Resistance/Weakness: </Typography>
         </Grid>
         {weaknesses.map((weaknessId) => (
@@ -383,7 +403,7 @@ const WeaknessInput = ({ id, parentId }: { id: number; parentId: number }) => {
   };
 
   return (
-    <Grid item>
+    <Grid>
       <WeaknessSelect value={type} onChange={updateOrRemoveWeakness} />
       <Tooltip title="Positive numbers are resistances. Negative numbers are weaknesses.">
         <TextField
@@ -436,7 +456,7 @@ const AddWeakness = ({ parentId }: { parentId: number }) => {
   };
 
   return (
-    <Grid item>
+    <Grid>
       <WeaknessSelect value={damageTypes.NONE} onChange={addWeakness} />
       <Tooltip title="Positive numbers are resistances. Negative numbers are weaknesses.">
         <TextField

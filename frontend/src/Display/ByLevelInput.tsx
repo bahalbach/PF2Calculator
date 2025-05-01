@@ -8,12 +8,12 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Grid,
   TextField,
   Slider,
   Typography,
   Box,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { HPTrends } from "../Model/types";
 
 function ByLevelInput() {
@@ -35,7 +35,13 @@ function ByLevelInput() {
 
   return (
     <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ my: 0, py: 1 }}>
-      <Grid item xs={12} sm={6} md={12} lg={6}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          md: 12,
+          lg: 6
+        }}>
         <TextField
           fullWidth
           label="Graph Name"
@@ -49,7 +55,13 @@ function ByLevelInput() {
           }
         />
       </Grid>
-      <Grid item xs={6} sm={3} md={6} lg={3}>
+      <Grid
+        size={{
+          xs: 6,
+          sm: 3,
+          md: 6,
+          lg: 3
+        }}>
         <Typography>Level Diff: {levelDiff}</Typography>
         <Slider
           value={levelDiff}
@@ -69,8 +81,13 @@ function ByLevelInput() {
           }}
         />
       </Grid>
-
-      <Grid item xs={6} sm={3} md={6} lg={3}>
+      <Grid
+        size={{
+          xs: 6,
+          sm: 3,
+          md: 6,
+          lg: 3
+        }}>
         <FormControl fullWidth>
           <InputLabel id="AC-input">AC</InputLabel>
           <Select
@@ -88,7 +105,13 @@ function ByLevelInput() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3}>
+      <Grid
+        size={{
+          xs: 3,
+          sm: 3,
+          md: 3,
+          lg: 3
+        }}>
         <FormControl fullWidth>
           <InputLabel id="Fort-input">Fort</InputLabel>
           <Select
@@ -106,7 +129,13 @@ function ByLevelInput() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3}>
+      <Grid
+        size={{
+          xs: 3,
+          sm: 3,
+          md: 3,
+          lg: 3
+        }}>
         <FormControl fullWidth>
           <InputLabel id="Ref-input">Reflex</InputLabel>
           <Select
@@ -124,7 +153,13 @@ function ByLevelInput() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3}>
+      <Grid
+        size={{
+          xs: 3,
+          sm: 3,
+          md: 3,
+          lg: 3
+        }}>
         <FormControl fullWidth>
           <InputLabel id="Will-input">Will</InputLabel>
           <Select
@@ -142,7 +177,13 @@ function ByLevelInput() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3}>
+      <Grid
+        size={{
+          xs: 3,
+          sm: 3,
+          md: 3,
+          lg: 3
+        }}>
         <FormControl fullWidth>
           <InputLabel id="Per-input">Perception</InputLabel>
           <Select
@@ -160,7 +201,7 @@ function ByLevelInput() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={6}>
+      <Grid size={6}>
         <FormControl fullWidth>
           <InputLabel id="HP-input">Hit Points</InputLabel>
           <Select
@@ -178,7 +219,7 @@ function ByLevelInput() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={6} container justifyContent="center">
+      <Grid container justifyContent="center" size={6}>
         <Typography id="percent-HP">Remaining HP: {percentHP}%</Typography>
 
         <Box sx={{ px: 2, width: 1 }}>
