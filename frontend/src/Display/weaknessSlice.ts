@@ -10,8 +10,8 @@ import { RootState } from "../App/store";
 export interface Weakness {
   id: number;
   type:
-    | typeof damageTypes[keyof typeof damageTypes]
-    | typeof materials[keyof typeof materials];
+    | (typeof damageTypes)[keyof typeof damageTypes]
+    | (typeof materials)[keyof typeof materials];
   value: number;
 }
 export const weaknessAdapter = createEntityAdapter<Weakness>();

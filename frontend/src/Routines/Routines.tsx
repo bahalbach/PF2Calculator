@@ -17,13 +17,13 @@ import {
   routineCreated,
   routineRemoved,
   routineUpdated,
-  selectAllRoutines,
   selectSelectedRoutine,
   setRoutine,
 } from "./RoutineSlice/routineSlice";
+import { selectCurrentTabRoutines } from "../Display/tabSlice";
 
 const Routines = () => {
-  const routines = useAppSelector(selectAllRoutines);
+  const routines = useAppSelector(selectCurrentTabRoutines);
   const selectedRoutine = useAppSelector(selectSelectedRoutine);
   const dispatch = useAppDispatch();
 
@@ -76,7 +76,7 @@ const Routines = () => {
       </Paper>
       <Paper sx={{ my: 2, p: 1 }}>
         <Grid container spacing={1}>
-          {selectedRoutine !== undefined ? (
+          {routineOptions.length > 0 ? (
             <Grid
               size={{
                 xs: 12,

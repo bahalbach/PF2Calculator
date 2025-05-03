@@ -8,7 +8,12 @@ import Routines from "../Routines/Routines";
 import Export from "../Sharing/Export";
 
 import "./PF2App.css";
-
+import {
+  selectCurrentTab,
+  selectAllTabs,
+  setCurrentTab,
+  tabCreated,
+} from "../Display/tabSlice";
 import {
   selectSelectedRoutine,
   selectSelectedActivityPath,
@@ -16,11 +21,13 @@ import {
 } from "../Routines/RoutineSlice/routineSlice";
 import { Container, Box, Button } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import useMediaQuery from "@mui/material/useMediaQuery";
 // import Header from "./Header";
 import { ActivityPath } from "../Routines/Activity/ActivityPath";
 import NewActivity from "../Routines/NewActivity/NewActivity";
-import { useAppSelector } from "./hooks";
+import { useAppDispatch, useAppSelector } from "../App/hooks";
 
 // Initialize google analytics
 ReactGA.initialize("G-JR2YK097BG");
@@ -29,13 +36,45 @@ function PF2App() {
   const isBigEnough = useMediaQuery((theme: any) => {
     return theme.breakpoints.up("md");
   });
+  // useAppSelector()
+  const dispatch = useAppDispatch();
 
   ReactGA.send("pageview");
+  const currentTab = useAppSelector(selectCurrentTab);
+  const tabs = useAppSelector(selectAllTabs);
+
+  const addTab = () => {
+    dispatch(
+      tabCreated({
+        name: "New Tab",
+        routineIds: [],
+      })
+    );
+  };
 
   return (
     <React.Fragment>
       {/* <Header /> */}
       <Container maxWidth="xl">
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: "white",
+            backgroundColor: "white",
+          }}
+        >
+          <Tabs value={currentTab} variant="scrollable" scrollButtons="auto">
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.id}
+                label={tab.name}
+                value={tab.id}
+                onClick={() => dispatch(setCurrentTab(tab.id))}
+              />
+            ))}
+            <Tab label="+" value={"add tab"} onClick={addTab} />
+          </Tabs>
+        </Box>
         {isBigEnough ? (
           <Grid
             container

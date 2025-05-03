@@ -1,9 +1,11 @@
 import {
   createEntityAdapter,
+  createSelector,
   createSlice,
   PayloadAction,
   Update,
 } from "@reduxjs/toolkit";
+// @ts-ignore
 import { WritableDraft } from "immer/dist/internal";
 import {
   classWeaponMAP,
@@ -92,6 +94,7 @@ import {
   RoutineObject,
   State,
 } from "./RoutineTypes";
+import { tabCreated, setCurrentTab } from "../../Display/tabSlice";
 
 export const routinesAdapter = createEntityAdapter<Routine>();
 export const activityPathAdapter = createEntityAdapter<ActivityPath>();
@@ -407,9 +410,7 @@ export const routinesSlice = createSlice({
               createDamage(state, defaultStrikeDamage),
               createDamage(state, defaultStrikeRuneDamage),
             ];
-            const effects = [
-              createEffect(state, defaultStrikeEffect),
-            ];
+            const effects = [createEffect(state, defaultStrikeEffect)];
             name = "Martial - Strike - d8 Sword";
             ap = {
               ...defaultActivity,
@@ -423,9 +424,7 @@ export const routinesSlice = createSlice({
             name = "Martial - 1 Strike - d8 Sword";
           }
           if (activityType === activityTypes.SAVE) {
-            const damages = [
-              createDamage(state, defaultSaveDamage),
-            ];
+            const damages = [createDamage(state, defaultSaveDamage)];
             name = "Caster - Fireball";
             ap = {
               ...defaultActivity,
@@ -480,7 +479,8 @@ export const routinesSlice = createSlice({
     ) => {
       const { parentActivity: parentId, parentRoutine: routineId } = state;
 
-      const { strikeInfo, skillInfo, cantripInfo, spellInfo, impulseInfo } = action.payload;
+      const { strikeInfo, skillInfo, cantripInfo, spellInfo, impulseInfo } =
+        action.payload;
       let id: number = 0;
       let name = "";
       let description = "";
@@ -650,12 +650,35 @@ export const routinesSlice = createSlice({
         );
       effectAdapter.removeOne(state.effects, id);
     },
-    importRoutine: (state, action) => {
-      try {
+    importRoutine: {
+      prepare: (routineString: string) => {
+        try {
+          const routineObject = JSON.parse(routineString);
+          if (isRoutineObject(routineObject)) {
+            const id = ++routineId;
+            return {
+              payload: {
+                ...routineObject,
+                id,
+              },
+            };
+          } else {
+            return {
+              payload: null,
+            };
+          }
+        } catch (error) {
+          return {
+            payload: null,
+          };
+        }
+      },
+      reducer: (state, action: PayloadAction<null | RoutineObject>) => {
         state.importRoutine = importStates.Importing;
-        const routineObject = JSON.parse(action.payload);
-        if (isRoutineObject(routineObject)) {
-          state.selectedRoutine = insertRoutine(state, routineObject);
+        const routineObject = action.payload;
+        if (routineObject !== null) {
+          insertRoutine(state, routineObject);
+          state.selectedRoutine = routineObject.id;
           state.selectedActivityPath = undefined;
           state.parentActivity = undefined;
           state.parentRoutine = undefined;
@@ -663,10 +686,22 @@ export const routinesSlice = createSlice({
         } else {
           state.importRoutine = importStates.Failure;
         }
-      } catch (error) {
-        state.importRoutine = importStates.Failure;
-      }
+      },
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(tabCreated, (state, action) => {
+      state.selectedRoutine = undefined;
+      state.selectedActivityPath = undefined;
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
+    });
+    builder.addCase(setCurrentTab, (state, action) => {
+      state.selectedRoutine = undefined;
+      state.selectedActivityPath = undefined;
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
+    });
   },
 });
 
@@ -1662,7 +1697,10 @@ const createImpulseActivity = (
   let damages = createImpulseDamages(state, impulseInfo);
   let effects = createImpulseEffects(state, impulseInfo);
   const target = getImpulseTarget(impulseInfo);
-  const itemTrend = target.type === activityTypes.SAVE ? itemTrends.NONE : itemTrends.Gate_Attenuator;
+  const itemTrend =
+    target.type === activityTypes.SAVE
+      ? itemTrends.NONE
+      : itemTrends.Gate_Attenuator;
 
   activityPathAdapter.addOne(state.activityPaths, {
     ...defaultActivity,
@@ -1735,7 +1773,6 @@ const createImpulseEffects = (
   return newEffects;
 };
 
-
 const copyActivityPaths = (
   state: WritableDraft<State>,
   apIds: number[],
@@ -1763,11 +1800,14 @@ const copyActivityPaths = (
   }
   return newApIds;
 };
-const createDamage = (state: WritableDraft<State>, damage: Omit<Damage, 'id'>) => {
+const createDamage = (
+  state: WritableDraft<State>,
+  damage: Omit<Damage, "id">
+) => {
   const id = ++damageId;
   damageAdapter.addOne(state.damages, { ...damage, id });
   return id;
-}
+};
 const copyDamages = (state: WritableDraft<State>, damages: number[]) => {
   const newDamages = [];
   for (let did of damages) {
@@ -1778,11 +1818,14 @@ const copyDamages = (state: WritableDraft<State>, damages: number[]) => {
   }
   return newDamages;
 };
-const createEffect = (state: WritableDraft<State>, effect: Omit<Effect, 'id'>) => {
+const createEffect = (
+  state: WritableDraft<State>,
+  effect: Omit<Effect, "id">
+) => {
   const id = ++effectId;
   effectAdapter.addOne(state.effects, { ...effect, id });
   return id;
-}
+};
 const copyEffects = (state: WritableDraft<State>, effects: number[]) => {
   const newEffects = [];
   for (let eid of effects) {
@@ -1823,12 +1866,9 @@ const getEffects = (state: WritableDraft<State>, effects: number[]) => {
 };
 
 const insertRoutine = (state: WritableDraft<State>, routine: RoutineObject) => {
-  const id = ++routineId;
-
+  const id = routine.id;
   const apIds = insertActivityPaths(state, routine.apIds, undefined, id);
-
-  routinesAdapter.addOne(state.routines, { ...routine, id, apIds });
-  return id;
+  routinesAdapter.addOne(state.routines, { ...routine, apIds });
 };
 const insertActivityPaths = (
   state: WritableDraft<State>,

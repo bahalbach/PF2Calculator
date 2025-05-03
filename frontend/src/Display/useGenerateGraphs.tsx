@@ -6,7 +6,8 @@ import {
 } from "../Routines/RoutineSlice/routineSlice";
 import { Routine } from "../Routines/RoutineSlice/RoutineTypes";
 import { selectdamageEntities } from "../Routines/RoutineSlice/routineSlice";
-import { selectRoutineEntities } from "../Routines/RoutineSlice/routineSlice";
+// import { selectRoutineEntities } from "../Routines/RoutineSlice/routineSlice";
+import { selectCurrentTabRoutineEntities } from "./tabSlice";
 import { selecttargetEntities } from "./targetSlice";
 import { selectweaknessEntities } from "./weaknessSlice";
 import { graphTypes } from "../Model/types";
@@ -22,7 +23,7 @@ import { graphSaved, singleLevelGraphSaved } from "./sharingSlice";
 const Plot = createPlotlyComponent(Plotly);
 
 const useGenerateGraphs = (graphType: string) => {
-  const routines = useAppSelector(selectRoutineEntities);
+  const routines = useAppSelector(selectCurrentTabRoutineEntities);
   const activityPaths = useAppSelector(selectactivityPathEntities);
   const targets = useAppSelector(selecttargetEntities);
   const damages = useAppSelector(selectdamageEntities);
