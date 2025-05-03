@@ -146,12 +146,6 @@ export const {
 
 export default tabSlice.reducer;
 
-// export const selectTabs = (state: { tabs: TabState }) => state.tabs.tabs;
-// export const selectCurrentTab = (state: { tabs: TabState }) =>
-//   state.tabs.currentTab;
-// export const selectTabById = (state: { tabs: TabState }, id: number) =>
-//   state.tabs.tabs.find((tab) => tab.id === id);
-
 export const {
   selectById: selectTabById,
   selectIds: selectTabIds,

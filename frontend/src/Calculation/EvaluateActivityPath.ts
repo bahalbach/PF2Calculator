@@ -236,8 +236,10 @@ class ActivityPathEvaluator {
             shouldAddThisEffect = true;
             break;
           }
-          let val = targetStates[i][state];
-          if (val && val > 0) {
+          const val = targetStates[i][state];
+          const isTrue = val === true;
+          const isGreaterThanZero = typeof val === "number" && val > 0;
+          if (isTrue || isGreaterThanZero) {
             shouldAddThisEffect = true;
             break;
           }
