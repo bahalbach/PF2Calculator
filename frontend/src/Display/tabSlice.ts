@@ -7,6 +7,7 @@ import { RootState } from "../App/store";
 import {
   importRoutine,
   routineCreated,
+  routineRemoved,
 } from "../Routines/RoutineSlice/routineSlice";
 
 // export interface TabState {
@@ -119,6 +120,16 @@ export const tabSlice = createSlice({
           const routineIds = currentTab.routineIds;
           if (!routineIds.includes(id)) {
             routineIds.push(id);
+          }
+        }
+      })
+      .addCase(routineRemoved, (state, action) => {
+        const routineId = action.payload;
+        const currentTab = state.entities[state.currentTab];
+        if (currentTab) {
+          const routineIds = currentTab.routineIds;
+          if (routineIds.includes(routineId)) {
+            currentTab.routineIds = routineIds.filter((id) => id !== routineId);
           }
         }
       });

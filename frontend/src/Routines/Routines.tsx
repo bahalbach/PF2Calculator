@@ -27,6 +27,10 @@ const Routines = () => {
   const selectedRoutine = useAppSelector(selectSelectedRoutine);
   const dispatch = useAppDispatch();
 
+  const handleCopyRoutine = () => {
+    dispatch(routineCreated({ copy: true }));
+  };
+
   const routineOptions: JSX.Element[] = [];
   const routineDisplays: JSX.Element[] = [];
   routines.forEach((routine) => {
@@ -80,9 +84,9 @@ const Routines = () => {
             <Grid
               size={{
                 xs: 12,
-                sm: 6,
+                sm: 8,
                 md: 12,
-                lg: 6,
+                lg: 8,
               }}
             >
               <FormControl fullWidth>
@@ -103,7 +107,7 @@ const Routines = () => {
           ) : (
             ""
           )}
-          <Grid
+          {/* <Grid
             container
             justifyContent="center"
             size={{
@@ -121,22 +125,19 @@ const Routines = () => {
             >
               Create New Routine
             </Button>
-          </Grid>
+          </Grid> */}
           <Grid
             container
             justifyContent="center"
             size={{
-              xs: 6,
-              sm: 3,
-              md: 6,
-              lg: 3,
+              xs: 12,
+              sm: 4,
+              md: 12,
+              lg: 4,
             }}
           >
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(routineCreated({ copy: true }))}
-            >
-              Copy Selected Routine
+            <Button variant="outlined" onClick={handleCopyRoutine}>
+              Copy Selected Routine to tab
             </Button>
           </Grid>
         </Grid>
