@@ -111,19 +111,22 @@ const Routines = () => {
                 </Select>
               </FormControl>
             </Grid>
-
-            <Grid
-              container
-              justifyContent="center"
-              size={{
-                xs: 12,
-                sm: 4,
-                md: 12,
-                lg: 4,
-              }}
-            >
-              <CopyMenu />
-            </Grid>
+            {selectedRoutine !== undefined ? (
+              <Grid
+                container
+                justifyContent="center"
+                size={{
+                  xs: 12,
+                  sm: 4,
+                  md: 12,
+                  lg: 4,
+                }}
+              >
+                <CopyMenu />
+              </Grid>
+            ) : (
+              ""
+            )}
           </Grid>
         </Paper>
       ) : (
