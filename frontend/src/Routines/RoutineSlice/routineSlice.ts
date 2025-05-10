@@ -123,7 +123,7 @@ const saveState = (state: State) => {
 };
 
 const loadState = () => {
-  // console.log("Loading state from local storage");
+  console.log("Loading routine state from local storage");
   try {
     const serializedState = localStorage.getItem("routineState");
     if (serializedState !== null) {
@@ -135,7 +135,7 @@ const loadState = () => {
       effectId = Math.max(...state.effects.ids);
       return state;
     }
-    // console.log("Not loaded");
+    console.log("Routine state not loaded");
     return undefined;
   } catch (err) {
     // ignore errors

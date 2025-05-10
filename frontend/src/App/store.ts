@@ -63,35 +63,36 @@ const makeStore = () => {
 
   // default damages and effects
   try {
-    // if (localStorage.getItem("routineState") === null) {
-    // add in some example routines
-    store.dispatch(
-      routineAdded({
-        id: 0,
-        name: "Baseline",
-        display: true,
-        apIds: [],
-        levelDiff: 0,
-        description: "No damage. Just so graphs display 0 with autoscalling.",
-        startLevel: 1,
-        endLevel: 20,
-      })
-    );
-
-    store.dispatch(
-      tabCreated({
-        name: "Default",
-        routineIds: [0],
-      })
-    );
-
-    for (let r of exampleRoutines) {
-      store.dispatch(importRoutine(r));
+    if (localStorage.getItem("tabState") === null) {
+      store.dispatch(
+        tabCreated({
+          name: "Default",
+          routineIds: store.getState().routines.routines.ids,
+        })
+      );
     }
+    if (localStorage.getItem("routineState") === null) {
+      // add in some example routines
+      store.dispatch(
+        routineAdded({
+          id: 0,
+          name: "Baseline",
+          display: true,
+          apIds: [],
+          levelDiff: 0,
+          description: "No damage. Just so graphs display 0 with autoscalling.",
+          startLevel: 1,
+          endLevel: 20,
+        })
+      );
 
-    store.dispatch(setRoutine(2));
-    // set the first routine you see to be Fighter - 2 Strike - d12 Sword
-    // }
+      for (let r of exampleRoutines) {
+        store.dispatch(importRoutine(r));
+      }
+
+      store.dispatch(setRoutine(2));
+      // set the first routine you see to be Fighter - 2 Strike - d12 Sword
+    }
   } catch {
     // ignore errors
   }
