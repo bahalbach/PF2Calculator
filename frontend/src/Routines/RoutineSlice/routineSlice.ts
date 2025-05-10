@@ -798,11 +798,14 @@ export const selectSelectedRoutineObject = (state: RootState) => {
   }
   return undefined;
 };
-export const selectRoutineDescriptions = (state: RootState) => {
-  return Object.values(state.routines.routines.entities)
-    .filter((routine) => routine?.display)
-    .map((routine) => routine?.name + ": " + routine?.description);
-};
+export const selectRoutineDescriptions = createSelector(
+  (state: RootState) => state.routines.routines.entities,
+  (routines) => {
+    return Object.values(routines)
+      .filter((routine) => routine?.display)
+      .map((routine) => routine?.name + ": " + routine?.description);
+  }
+);
 
 export const selectImportState = (state: RootState) => {
   return state.routines.importRoutine;

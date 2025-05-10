@@ -3,6 +3,7 @@ import {
   PayloadAction,
   createEntityAdapter,
   createListenerMiddleware,
+  createSelector,
 } from "@reduxjs/toolkit";
 import { RootState } from "../App/store";
 import {
@@ -146,16 +147,24 @@ export const {
 export const selectCurrentTab = (state: RootState) => state.tabs.currentTab;
 export const selectCurrentTabEntity = (state: RootState) =>
   state.tabs.entities[state.tabs.currentTab];
-export const selectCurrentTabRoutines = (state: RootState) =>
-  state.tabs.entities[state.tabs.currentTab]?.routineIds
-    ?.map((id) => state.routines.routines.entities[id])
-    .filter((routine) => routine !== undefined) ?? [];
-export const selectCurrentTabRoutineEntities = (state: RootState) => {
-  const routineIds =
-    state.tabs.entities[state.tabs.currentTab]?.routineIds ?? [];
-  const routines = state.routines.routines.entities;
-  return Object.fromEntries(routineIds.map((id) => [id, routines[id]!]));
-};
+export const selectCurrentTabRoutines = createSelector(
+  (state: RootState) => state.tabs.entities[state.tabs.currentTab]?.routineIds,
+  (state: RootState) => state.routines.routines.entities,
+  (routineIds, routines) => {
+    if (!routineIds) return [];
+    return routineIds
+      .map((id) => routines[id])
+      .filter((routine) => routine !== undefined);
+  }
+);
+export const selectCurrentTabRoutineEntities = createSelector(
+  (state: RootState) => state.tabs.entities[state.tabs.currentTab]?.routineIds,
+  (state: RootState) => state.routines.routines.entities,
+  (routineIds, routines) => {
+    if (!routineIds) return {};
+    return Object.fromEntries(routineIds.map((id) => [id, routines[id]!]));
+  }
+);
 
 // const listenerMiddleware = createListenerMiddleware()
 // listenerMiddleware.startListening({
