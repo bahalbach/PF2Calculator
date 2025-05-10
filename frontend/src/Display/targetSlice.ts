@@ -1,7 +1,6 @@
 import {
   createEntityAdapter,
   createSlice,
-  EntityId,
   EntityState,
 } from "@reduxjs/toolkit";
 import { ACTrends, GraphType, HPTrends, SaveTrends } from "../Model/types";
@@ -16,16 +15,16 @@ import { defaultACs, defaultHP, defaultSaves } from "../Model/defaults";
 // interface TargetState {  }
 const id = 0;
 export interface Target {
-  id: EntityId;
+  id: number;
   name: string;
   levelDiff: number;
   persistentMultiplier: number;
-  ACTrend: typeof ACTrends[keyof typeof ACTrends];
-  FortTrend: typeof SaveTrends[keyof typeof SaveTrends];
-  RefTrend: typeof SaveTrends[keyof typeof SaveTrends];
-  WillTrend: typeof SaveTrends[keyof typeof SaveTrends];
-  PerTrend: typeof SaveTrends[keyof typeof SaveTrends];
-  HPTrend: typeof HPTrends[keyof typeof HPTrends];
+  ACTrend: (typeof ACTrends)[keyof typeof ACTrends];
+  FortTrend: (typeof SaveTrends)[keyof typeof SaveTrends];
+  RefTrend: (typeof SaveTrends)[keyof typeof SaveTrends];
+  WillTrend: (typeof SaveTrends)[keyof typeof SaveTrends];
+  PerTrend: (typeof SaveTrends)[keyof typeof SaveTrends];
+  HPTrend: (typeof HPTrends)[keyof typeof HPTrends];
   percentHP: number;
 
   flatfooted: boolean;
@@ -90,7 +89,10 @@ export const {
 export const selectRoutineLevel = (state: RootState) =>
   state.targets.entities[0]!.routineLevel;
 
-const updateTargetLevel = (state: EntityState<Target>, targetLevel: number) => {
+const updateTargetLevel = (
+  state: EntityState<Target, number>,
+  targetLevel: number
+) => {
   state.entities[id]!.overrideAC =
     defaultACs[state.entities[id]!.ACTrend][targetLevel];
   state.entities[id]!.overrideFort =

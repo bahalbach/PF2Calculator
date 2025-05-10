@@ -295,7 +295,7 @@ export const routinesSlice = createSlice({
     routineAdded: (state, action) => {
       routinesAdapter.addOne(state.routines, action);
     },
-    routineUpdated: (state, action: PayloadAction<Update<Routine>>) => {
+    routineUpdated: (state, action: PayloadAction<Update<Routine, number>>) => {
       routinesAdapter.updateOne(state.routines, action);
     },
     activityPathAdded: (state, action) => {

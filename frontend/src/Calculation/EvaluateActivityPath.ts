@@ -15,7 +15,6 @@ import {
   Effect,
   Routine,
 } from "../Routines/RoutineSlice/RoutineTypes";
-import { Dictionary } from "@reduxjs/toolkit";
 import { Target } from "../Display/targetSlice";
 import { Weakness } from "../Display/weaknessSlice";
 import { defaultHP } from "../Model/defaults";
@@ -73,18 +72,18 @@ function validateCondition(condition: Condition, degreeOfSuccess: number) {
 }
 
 class ActivityPathEvaluator {
-  activityPaths: Dictionary<ActivityPath>;
+  activityPaths: Record<number, ActivityPath>;
   target: Target;
-  damages: Dictionary<Damage>;
-  effects: Dictionary<Effect>;
-  weaknesses: Dictionary<Weakness>;
+  damages: Record<number, Damage>;
+  effects: Record<number, Effect>;
+  weaknesses: Record<number, Weakness>;
   selectedRoutine?: number;
   constructor(
-    activityPaths: Dictionary<ActivityPath>,
-    targets: Dictionary<Target>,
-    damages: Dictionary<Damage>,
-    effects: Dictionary<Effect>,
-    weaknesses: Dictionary<Weakness>,
+    activityPaths: Record<number, ActivityPath>,
+    targets: Record<number, Target>,
+    damages: Record<number, Damage>,
+    effects: Record<number, Effect>,
+    weaknesses: Record<number, Weakness>,
     selectedRoutine?: number
   ) {
     this.activityPaths = activityPaths;

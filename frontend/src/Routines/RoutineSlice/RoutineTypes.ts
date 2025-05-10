@@ -38,10 +38,10 @@ export type State = {
   selectedActivityPath: number | undefined;
   parentRoutine: number | undefined;
   parentActivity: number | undefined;
-  routines: EntityState<Routine>;
-  activityPaths: EntityState<ActivityPath>;
-  damages: EntityState<Damage>;
-  effects: EntityState<Effect>;
+  routines: EntityState<Routine, number>;
+  activityPaths: EntityState<ActivityPath, number>;
+  damages: EntityState<Damage, number>;
+  effects: EntityState<Effect, number>;
 
   importRoutine: ImportStates;
 };

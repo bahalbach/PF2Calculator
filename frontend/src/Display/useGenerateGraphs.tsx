@@ -17,7 +17,6 @@ import { ActivityPathEvaluator } from "../Calculation/EvaluateActivityPath";
 
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
-import { Dictionary } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../App/hooks";
 import { graphSaved, singleLevelGraphSaved } from "./sharingSlice";
 const Plot = createPlotlyComponent(Plotly);
@@ -167,7 +166,7 @@ const useGenerateGraphs = (graphType: string) => {
 };
 
 const evaluateByLevel = (
-  routines: Dictionary<Routine>,
+  routines: Record<number, Routine>,
   evaluator: ActivityPathEvaluator
 ) => {
   let datasets = [];
@@ -219,7 +218,7 @@ const evaluateByLevel = (
 };
 
 const evaluatePM = (
-  routines: Dictionary<Routine>,
+  routines: Record<number, Routine>,
   evaluator: ActivityPathEvaluator,
   defense = true
 ) => {
@@ -267,7 +266,7 @@ const evaluatePM = (
 };
 
 const evaluateDistribution = (
-  routines: Dictionary<Routine>,
+  routines: Record<number, Routine>,
   evaluator: ActivityPathEvaluator
 ) => {
   let datasets = [];

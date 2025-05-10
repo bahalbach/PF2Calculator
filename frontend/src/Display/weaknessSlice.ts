@@ -1,7 +1,6 @@
 import {
   createEntityAdapter,
   createSlice,
-  EntityId,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { damageTypes, materials } from "../Model/types";
@@ -43,7 +42,7 @@ export const weaknessesSlice = createSlice({
     },
     weaknessRemoved(
       state,
-      action: PayloadAction<{ parentId: EntityId; id: EntityId }>
+      action: PayloadAction<{ parentId: number; id: number }>
     ) {
       weaknessAdapter.removeOne(state, action.payload.id);
     },
