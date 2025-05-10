@@ -775,18 +775,22 @@ export const selectCreateNewActivity = (state: RootState) =>
   state.routines.selectedActivityPath === undefined &&
   (state.routines.parentRoutine !== undefined ||
     state.routines.parentActivity !== undefined);
-export const selectSelectedRoutineObject = (state: RootState) => {
-  if (state.routines.selectedRoutine !== undefined) {
-    const routine =
-      state.routines.routines.entities[state.routines.selectedRoutine]!;
-    const routineObject = {
-      ...routine,
-      apIds: getActivityPaths(state.routines, routine.apIds),
-    };
-    return routineObject;
+export const selectSelectedRoutineObject = createSelector(
+  (state: RootState) => state.routines.selectedRoutine,
+  (state: RootState) => state.routines.routines.entities,
+  (state: RootState) => state.routines.activityPaths.entities,
+  (selectedRoutine, routines, activityPaths) => {
+    if (selectedRoutine !== undefined) {
+      const routine = routines[selectedRoutine]!;
+      const routineObject = {
+        ...routine,
+        apIds: routine.apIds.map((id) => activityPaths[id]),
+      };
+      return routineObject;
+    }
+    return undefined;
   }
-  return undefined;
-};
+);
 export const selectRoutineDescriptions = createSelector(
   (state: RootState) => state.routines.routines.entities,
   (routines) => {
