@@ -114,8 +114,10 @@ export const tabSlice = createSlice({
         }
       })
       .addCase(routineCreated, (state, action) => {
-        const { id } = action.payload;
-        const currentTab = state.entities[state.currentTab];
+        const { id, tabId: selectedTabId } = action.payload;
+        const tabId = selectedTabId ?? state.currentTab;
+        state.currentTab = tabId;
+        const currentTab = state.entities[tabId];
         if (currentTab) {
           const routineIds = currentTab.routineIds;
           if (!routineIds.includes(id)) {

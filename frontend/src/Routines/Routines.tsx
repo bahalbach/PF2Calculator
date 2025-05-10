@@ -9,7 +9,9 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { Box } from "@mui/material";
+import Menu from "@mui/material/Menu";
 import React from "react";
+import { selectAllTabs } from "../Display/tabSlice";
 
 import { useAppDispatch, useAppSelector } from "../App/hooks";
 
@@ -26,10 +28,6 @@ const Routines = () => {
   const routines = useAppSelector(selectCurrentTabRoutines);
   const selectedRoutine = useAppSelector(selectSelectedRoutine);
   const dispatch = useAppDispatch();
-
-  const handleCopyRoutine = () => {
-    dispatch(routineCreated({ copy: true }));
-  };
 
   const routineOptions: JSX.Element[] = [];
   const routineDisplays: JSX.Element[] = [];
@@ -77,10 +75,19 @@ const Routines = () => {
         component="ul"
       >
         {routineDisplays}
+        <Button
+          variant="contained"
+          onClick={() => {
+            dispatch(routineCreated({ copy: false }));
+          }}
+          sx={{ float: "inline-end" } as const}
+        >
+          Create New Routine
+        </Button>
       </Paper>
-      <Paper sx={{ my: 2, p: 1 }}>
-        <Grid container spacing={1}>
-          {routineOptions.length > 0 ? (
+      {routineOptions.length > 0 ? (
+        <Paper sx={{ my: 2, p: 1 }}>
+          <Grid container spacing={1}>
             <Grid
               size={{
                 xs: 12,
@@ -96,7 +103,7 @@ const Routines = () => {
                 <Select
                   labelId="select-routine-label"
                   id="select-routine"
-                  value={selectedRoutine}
+                  value={selectedRoutine ?? ""}
                   label="Select Routine"
                   onChange={(e) => dispatch(setRoutine(e.target.value))}
                 >
@@ -104,45 +111,77 @@ const Routines = () => {
                 </Select>
               </FormControl>
             </Grid>
-          ) : (
-            ""
-          )}
-          {/* <Grid
-            container
-            justifyContent="center"
-            size={{
-              xs: 6,
-              sm: 3,
-              md: 6,
-              lg: 3,
-            }}
-          >
-            <Button
-              variant="contained"
-              onClick={() => {
-                dispatch(routineCreated({ copy: false }));
+
+            <Grid
+              container
+              justifyContent="center"
+              size={{
+                xs: 12,
+                sm: 4,
+                md: 12,
+                lg: 4,
               }}
             >
-              Create New Routine
-            </Button>
-          </Grid> */}
-          <Grid
-            container
-            justifyContent="center"
-            size={{
-              xs: 12,
-              sm: 4,
-              md: 12,
-              lg: 4,
+              <CopyMenu />
+            </Grid>
+          </Grid>
+        </Paper>
+      ) : (
+        ""
+      )}
+    </React.Fragment>
+  );
+};
+
+const CopyMenu = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const tabs = useAppSelector(selectAllTabs);
+
+  const dispatch = useAppDispatch();
+  const handleCopyRoutine = (tabId: number) => {
+    dispatch(routineCreated({ copy: true, tabId }));
+  };
+
+  return (
+    <div>
+      <Button
+        id="basic-button"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
+      >
+        Copy Routine to Tab
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        slotProps={{
+          list: { "aria-labelledby": "basic-button" },
+        }}
+      >
+        {tabs.map((tab) => (
+          <MenuItem
+            key={tab.id}
+            onClick={() => {
+              handleCopyRoutine(tab.id);
+              handleClose();
             }}
           >
-            <Button variant="outlined" onClick={handleCopyRoutine}>
-              Copy Selected Routine to tab
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-    </React.Fragment>
+            {tab.name}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
   );
 };
 

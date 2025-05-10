@@ -320,7 +320,11 @@ export const routinesSlice = createSlice({
     routineCreated: {
       reducer: (
         state,
-        action: PayloadAction<{ id: number; copy: boolean }>
+        action: PayloadAction<{
+          id: number;
+          copy: boolean;
+          tabId: number | undefined;
+        }>
       ) => {
         const { id, copy } = action.payload;
         state.parentRoutine = undefined;
@@ -351,12 +355,18 @@ export const routinesSlice = createSlice({
         state.selectedActivityPath = undefined;
         state.parentActivity = undefined;
       },
-      prepare: ({ copy = false }) => {
+      prepare: ({
+        copy = false,
+        tabId,
+      }: {
+        copy?: boolean;
+        tabId?: number;
+      }) => {
         const id = ++routineId;
-        return { payload: { id, copy } };
+        return { payload: { id, copy, tabId } };
       },
     },
-    routineRemoved: (state, action) => {
+    routineRemoved: (state, action: PayloadAction<number>) => {
       // recursively remove all children
       const routineId = action.payload;
       let childrenIds = state.routines.entities[routineId]!.apIds;
@@ -364,12 +374,7 @@ export const routinesSlice = createSlice({
 
       routinesAdapter.removeOne(state.routines, routineId);
       if (routineId === state.selectedRoutine) {
-        if (state.routines.ids.length === 0) {
-          state.selectedRoutine = undefined;
-        } else {
-          state.selectedRoutine =
-            state.routines.entities[state.routines.ids[0]]!.id;
-        }
+        state.selectedRoutine = undefined;
         state.selectedActivityPath = undefined;
         state.parentActivity = undefined;
         state.parentRoutine = undefined;
