@@ -32,16 +32,10 @@ import { useAppDispatch, useAppSelector } from "../App/hooks";
 // Initialize google analytics
 ReactGA.initialize("G-JR2YK097BG");
 
-function PF2App() {
-  const isBigEnough = useMediaQuery((theme: any) => {
-    return theme.breakpoints.up("md");
-  });
-  // useAppSelector()
+function TabSection() {
   const dispatch = useAppDispatch();
-
-  ReactGA.send("pageview");
-  const currentTab = useAppSelector(selectCurrentTab);
   const tabs = useAppSelector(selectAllTabs);
+  const currentTab = useAppSelector(selectCurrentTab);
 
   const addTab = () => {
     dispatch(
@@ -53,28 +47,40 @@ function PF2App() {
   };
 
   return (
+    <Box
+      sx={{
+        borderBottom: 1,
+        borderColor: "white",
+        backgroundColor: "white",
+      }}
+    >
+      <Tabs value={currentTab} variant="scrollable" scrollButtons="auto">
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.id}
+            label={tab.name}
+            value={tab.id}
+            onClick={() => dispatch(setCurrentTab(tab.id))}
+          />
+        ))}
+        <Tab label="+" value={"add tab"} onClick={addTab} />
+      </Tabs>
+    </Box>
+  );
+}
+
+function PF2App() {
+  const isBigEnough = useMediaQuery((theme: any) => {
+    return theme.breakpoints.up("md");
+  });
+
+  ReactGA.send("pageview");
+
+  return (
     <React.Fragment>
       {/* <Header /> */}
       <Container maxWidth="xl">
-        <Box
-          sx={{
-            borderBottom: 1,
-            borderColor: "white",
-            backgroundColor: "white",
-          }}
-        >
-          <Tabs value={currentTab} variant="scrollable" scrollButtons="auto">
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.id}
-                label={tab.name}
-                value={tab.id}
-                onClick={() => dispatch(setCurrentTab(tab.id))}
-              />
-            ))}
-            <Tab label="+" value={"add tab"} onClick={addTab} />
-          </Tabs>
-        </Box>
+        <TabSection />
         {isBigEnough ? (
           <Grid
             container
