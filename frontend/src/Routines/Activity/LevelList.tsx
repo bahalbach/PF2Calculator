@@ -4,7 +4,7 @@ import Grid from "@mui/material/Grid";
 import AddIcon from "@mui/icons-material/Add";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
-import { Dispatch } from "redux";
+import type { Dispatch } from "@reduxjs/toolkit";
 import { levelOptions } from "../../Model/options";
 import { Adjustment } from "../RoutineSlice/RoutineTypes";
 import { TooltipSelect } from "../../TooltipSelect";

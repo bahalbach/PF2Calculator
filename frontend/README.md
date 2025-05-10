@@ -2,10 +2,10 @@ This PWA calculates the expected damage for the attack routines you input for th
 
 To run locally:
 ```bash
-npm start
+pnpm start
 ```
 
 To deploy to github pages
 ```bash
-npm run deploy
+pnpm run deploy
 ```
