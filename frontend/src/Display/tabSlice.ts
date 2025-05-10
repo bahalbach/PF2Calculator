@@ -37,14 +37,14 @@ const loadState = () => {
     const serializedState = localStorage.getItem("tabState");
     if (serializedState !== null) {
       const state = JSON.parse(serializedState);
-      // console.log(state);
-      tabId = Math.max(...state.routines.ids);
+      tabId = Math.max(...state.ids);
       return state;
     }
     console.log("Tab state not loaded");
     return undefined;
   } catch (err) {
     // ignore errors
+    console.log("Error loading tab state");
     return undefined;
   }
 };

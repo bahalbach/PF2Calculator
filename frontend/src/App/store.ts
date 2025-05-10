@@ -18,15 +18,16 @@ for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
 }
 
+// TODO: persist in more situations
 startAppListening({
-  predicate: (action, currentState, previousState) => {
-    return (
-      action.type === "tabs/tabCreated" || action.type === "tabs/removeTab"
-    );
-  },
+  actionCreator: setRoutine,
   effect: (action, listenerApi) => {
-    // saveState(listenerApi.getState())
-    console.log("Saving state to local storage");
+    listenerApi.getState();
+    const state = listenerApi.getState();
+    const routineState = JSON.stringify(state.routines);
+    localStorage.setItem("routineState", routineState);
+    const tabState = JSON.stringify(state.tabs);
+    localStorage.setItem("tabState", tabState);
   },
 });
 

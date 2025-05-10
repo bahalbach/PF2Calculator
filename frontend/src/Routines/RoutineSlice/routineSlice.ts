@@ -113,15 +113,6 @@ for (let i = 1; i <= 20; i++) {
   one[i] = 1;
 }
 
-const saveState = (state: State) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem("routineState", serializedState);
-  } catch {
-    // ignore errors
-  }
-};
-
 const loadState = () => {
   console.log("Loading routine state from local storage");
   try {
@@ -279,8 +270,6 @@ export const routinesSlice = createSlice({
       state.selectedActivityPath = undefined;
       state.parentActivity = undefined;
       state.parentRoutine = undefined;
-      // also save data
-      saveState(state);
     },
     setActivityPath: (state, action) => {
       if (state.selectedActivityPath === action.payload) {
