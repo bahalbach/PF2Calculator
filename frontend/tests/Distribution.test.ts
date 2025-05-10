@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from "vitest";
 
 import {
   applyMin,
@@ -6,7 +6,7 @@ import {
   consolidateDists,
   convolve,
   multiplyDist,
-} from "../Calculation/Distribution";
+} from "../src/Calculation/Distribution";
 import { expectedValue, expectToBeCloseToArray } from "./test-utils";
 
 const vectors = [

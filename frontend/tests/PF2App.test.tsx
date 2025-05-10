@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from "vitest";
 
-import '@testing-library/jest-dom/vitest';
+import "@testing-library/jest-dom/vitest";
 import { getByText, screen } from "@testing-library/dom";
 import React from "react";
-import PF2App from "../App/PF2App";
+import PF2App from "../src/App/PF2App";
 import { render } from "./test-utils";
 
 describe("PF2App", () => {
@@ -20,9 +20,7 @@ describe("PF2App", () => {
 
     //screen.debug(routines);
     // the first loaded routine is 'baseline'
-    expect(
-      getByText(routines.children[0] as HTMLElement, "Baseline")
-    ).toBeInTheDocument();
+    expect(getByText(routines as HTMLElement, "Baseline")).toBeInTheDocument();
   });
 
   // test("renders Routines correctly", () => {

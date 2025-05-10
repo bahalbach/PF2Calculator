@@ -5,7 +5,14 @@ To run locally:
 pnpm start
 ```
 
+To test:
+```bash
+pnpm run test
+```
+
+
 To deploy to github pages
 ```bash
 pnpm run deploy
 ```
+

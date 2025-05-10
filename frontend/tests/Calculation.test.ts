@@ -1,7 +1,7 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from "vitest";
 
-import { calculateExpectedDamage } from "../Calculation/Calculation";
-import { Target } from "../Display/targetSlice";
+import { calculateExpectedDamage } from "../src/Calculation/Calculation";
+import { Target } from "../src/Display/targetSlice";
 import {
   activityTypes,
   ACTrends,
@@ -21,12 +21,12 @@ import {
   statTrends,
   TargetState,
   whenConditions,
-} from "../Model/types";
+} from "../src/Model/types";
 import {
   ActivityPath,
   Adjustment,
   Damage,
-} from "../Routines/RoutineSlice/RoutineTypes";
+} from "../src/Routines/RoutineSlice/RoutineTypes";
 
 import { expectedValue, expectToBeCloseToArray } from "./test-utils";
 
