@@ -89,6 +89,7 @@ export const tabSlice = createSlice({
     removeTab: (state, action: PayloadAction<number>) => {
       tabAdapter.removeOne(state, action.payload);
     },
+    tabUpdated: tabAdapter.updateOne,
     setCurrentTab: (state, action: PayloadAction<number>) => {
       state.currentTab = action.payload;
     },
@@ -132,7 +133,8 @@ export const tabSlice = createSlice({
   },
 });
 
-export const { tabCreated, removeTab, setCurrentTab } = tabSlice.actions;
+export const { tabCreated, removeTab, setCurrentTab, tabUpdated } =
+  tabSlice.actions;
 
 export default tabSlice.reducer;
 
@@ -144,7 +146,7 @@ export const {
   selectTotal: selectTotalTabs,
 } = tabAdapter.getSelectors((state: RootState) => state.tabs);
 
-export const selectCurrentTab = (state: RootState) => state.tabs.currentTab;
+export const selectCurrentTabId = (state: RootState) => state.tabs.currentTab;
 export const selectCurrentTabEntity = (state: RootState) =>
   state.tabs.entities[state.tabs.currentTab];
 export const selectCurrentTabRoutines = createSelector(

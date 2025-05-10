@@ -9,17 +9,19 @@ import Export from "../Sharing/Export";
 
 import "./PF2App.css";
 import {
-  selectCurrentTab,
+  selectCurrentTabId,
   selectAllTabs,
   setCurrentTab,
   tabCreated,
+  selectCurrentTabEntity,
+  tabUpdated,
 } from "../Display/tabSlice";
 import {
   selectSelectedRoutine,
   selectSelectedActivityPath,
   selectCreateNewActivity,
 } from "../Routines/RoutineSlice/routineSlice";
-import { Container, Box, Button } from "@mui/material";
+import { Container, Box, Button, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -35,13 +37,25 @@ ReactGA.initialize("G-JR2YK097BG");
 function TabSection() {
   const dispatch = useAppDispatch();
   const tabs = useAppSelector(selectAllTabs);
-  const currentTab = useAppSelector(selectCurrentTab);
+  const currentTabId = useAppSelector(selectCurrentTabId);
+  const currentTab = useAppSelector(selectCurrentTabEntity);
 
   const addTab = () => {
     dispatch(
       tabCreated({
         name: "New Tab",
         routineIds: [],
+      })
+    );
+  };
+
+  const updateCurrentTabName = (name: string) => {
+    dispatch(
+      tabUpdated({
+        id: currentTabId,
+        changes: {
+          name,
+        },
       })
     );
   };
@@ -54,7 +68,7 @@ function TabSection() {
         backgroundColor: "white",
       }}
     >
-      <Tabs value={currentTab} variant="scrollable" scrollButtons="auto">
+      <Tabs value={currentTabId} variant="scrollable" scrollButtons="auto">
         {tabs.map((tab) => (
           <Tab
             key={tab.id}
@@ -65,6 +79,12 @@ function TabSection() {
         ))}
         <Tab label="+" value={"add tab"} onClick={addTab} />
       </Tabs>
+      <TextField
+        value={currentTab.name}
+        onChange={(e) => {
+          updateCurrentTabName(e.target.value);
+        }}
+      />
     </Box>
   );
 }
