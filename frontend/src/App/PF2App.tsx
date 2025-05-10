@@ -64,27 +64,26 @@ function TabSection() {
     <Paper
       variant="outlined"
       sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        listStyle: "none",
         p: 0.5,
         my: 2,
       }}
       component="ul"
     >
-      <Tabs value={currentTabId} variant="scrollable" scrollButtons="auto">
-        {tabs.map((tab) => (
-          <Tab
-            key={tab.id}
-            label={tab.name}
-            value={tab.id}
-            onClick={() => dispatch(setCurrentTab(tab.id))}
-          />
-        ))}
-        <Tab label="+" value={"add tab"} onClick={addTab} />
-      </Tabs>
-      <Grid container>
+      <Grid container spacing={1}>
+        <Grid size={12}>
+          <Tabs value={currentTabId} variant="scrollable" scrollButtons="auto">
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.id}
+                label={tab.name}
+                value={tab.id}
+                onClick={() => dispatch(setCurrentTab(tab.id))}
+              />
+            ))}
+            <Tab label="+" value={"add tab"} onClick={addTab} />
+          </Tabs>
+        </Grid>
+
         <Grid size={12}>
           <TextField
             value={currentTab.name}
