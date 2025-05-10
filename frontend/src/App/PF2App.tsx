@@ -149,20 +149,6 @@ const Controls = () => {
         ""
       )}
       <Export />
-      <Grid
-        container
-        sx={{ mb: 2, mt: 0 }}
-        justifyContent="space-evenly"
-        alignItems="center"
-        spacing={2}
-      >
-        <Grid>
-          <Donate />
-        </Grid>
-        <Grid>
-          <Contact />
-        </Grid>
-      </Grid>
     </Box>
   );
 };
