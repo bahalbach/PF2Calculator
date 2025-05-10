@@ -21,7 +21,7 @@ import {
   selectSelectedActivityPath,
   selectCreateNewActivity,
 } from "../Routines/RoutineSlice/routineSlice";
-import { Container, Box, Button, TextField } from "@mui/material";
+import { Container, Box, Button, TextField, Paper } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -61,12 +61,17 @@ function TabSection() {
   };
 
   return (
-    <Box
+    <Paper
+      variant="outlined"
       sx={{
-        borderBottom: 1,
-        borderColor: "white",
-        backgroundColor: "white",
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        listStyle: "none",
+        p: 0.5,
+        my: 2,
       }}
+      component="ul"
     >
       <Tabs value={currentTabId} variant="scrollable" scrollButtons="auto">
         {tabs.map((tab) => (
@@ -79,13 +84,17 @@ function TabSection() {
         ))}
         <Tab label="+" value={"add tab"} onClick={addTab} />
       </Tabs>
-      <TextField
-        value={currentTab.name}
-        onChange={(e) => {
-          updateCurrentTabName(e.target.value);
-        }}
-      />
-    </Box>
+      <Grid container>
+        <Grid size={12}>
+          <TextField
+            value={currentTab.name}
+            onChange={(e) => {
+              updateCurrentTabName(e.target.value);
+            }}
+          />
+        </Grid>
+      </Grid>
+    </Paper>
   );
 }
 
@@ -100,7 +109,6 @@ function PF2App() {
     <React.Fragment>
       {/* <Header /> */}
       <Container maxWidth="xl">
-        <TabSection />
         {isBigEnough ? (
           <Grid
             container
@@ -154,7 +162,8 @@ const Controls = () => {
   }, [createNewActivity]);
 
   return (
-    <Box sx={{}}>
+    <Box>
+      <TabSection />
       <Routines />
       {selectedRoutine !== undefined ? (
         <SelectedRoutine routineId={selectedRoutine} />
