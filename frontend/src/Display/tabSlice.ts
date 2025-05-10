@@ -165,13 +165,3 @@ export const selectCurrentTabRoutineEntities = createSelector(
     return Object.fromEntries(routineIds.map((id) => [id, routines[id]!]));
   }
 );
-
-// const listenerMiddleware = createListenerMiddleware()
-// listenerMiddleware.startListening({
-//   predicate: (action, currentState, previousState) => {
-//     return action.type === "tabs/tabCreated" || action.type === "tabs/removeTab"
-//   },
-//   effect: (action, listenerApi) => {
-//     saveState(listenerApi.getState())
-//   }
-// })

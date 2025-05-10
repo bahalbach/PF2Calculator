@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
 import routineReducer, {
   importRoutine,
   routineAdded,
@@ -11,11 +11,24 @@ import { tabCreated } from "../Display/tabSlice";
 import tabReducer from "../Display/tabSlice";
 import { ACTrends, graphTypes, HPTrends, SaveTrends } from "../Model/types";
 import { exampleRoutines } from "../Model/exampleRoutines";
+import { listenerMiddleware, startAppListening } from "./listenerMiddleware";
 
 const empty: { [key: number]: number } = {};
 for (let i = 1; i <= 20; i++) {
   empty[i] = 0;
 }
+
+startAppListening({
+  predicate: (action, currentState, previousState) => {
+    return (
+      action.type === "tabs/tabCreated" || action.type === "tabs/removeTab"
+    );
+  },
+  effect: (action, listenerApi) => {
+    // saveState(listenerApi.getState())
+    console.log("Saving state to local storage");
+  },
+});
 
 const makeStore = () => {
   const store = configureStore({
@@ -26,6 +39,8 @@ const makeStore = () => {
       sharing: sharingReducer,
       tabs: tabReducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().prepend(listenerMiddleware.middleware),
   });
 
   store.dispatch(
