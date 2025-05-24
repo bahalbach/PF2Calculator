@@ -2,42 +2,27 @@ import {
   createSlice,
   PayloadAction,
   createEntityAdapter,
-  createListenerMiddleware,
   createSelector,
 } from "@reduxjs/toolkit";
 import { RootState } from "../App/store";
-import {
-  importRoutine,
-  routineCreated,
-  routineRemoved,
-} from "../Routines/RoutineSlice/routineSlice";
 
 export interface Tab {
   id: number;
   name: string;
-  routineIds: number[];
 }
 
 export const tabAdapter = createEntityAdapter<Tab>();
 
-let tabId = 0;
-
-const saveState = (state: State) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem("tabState", serializedState);
-  } catch {
-    // ignore errors
-  }
-};
+let maxUsedTabId = 0;
 
 const loadState = () => {
   console.log("Loading tab state from local storage");
+  // Uncomment the following lines to enable loading from localStorage
   try {
     const serializedState = localStorage.getItem("tabState");
     if (serializedState !== null) {
       const state = JSON.parse(serializedState);
-      tabId = Math.max(...state.ids);
+      maxUsedTabId = Math.max(...state.ids);
       return state;
     }
     console.log("Tab state not loaded");
@@ -59,12 +44,8 @@ const savedState = loadState();
 const initialState: State =
   savedState ??
   tabAdapter.getInitialState({
-    currentTab: tabId,
+    currentTab: maxUsedTabId,
   });
-export type TabState = {
-  tabs: Tab[];
-  currentTab: number;
-};
 
 export const tabSlice = createSlice({
   name: "tabs",
@@ -75,19 +56,50 @@ export const tabSlice = createSlice({
         tabAdapter.addOne(state, action.payload);
         state.currentTab = action.payload.id;
       },
-      prepare({ name, routineIds }) {
-        const id = ++tabId;
+      prepare({ name }) {
+        const id = ++maxUsedTabId;
         return {
           payload: {
             id,
             name,
-            routineIds,
           },
         };
       },
     },
     removeTab: (state, action: PayloadAction<number>) => {
-      tabAdapter.removeOne(state, action.payload);
+      if (state.ids.length === 1) {
+        console.log("Cannot remove last tab");
+        return;
+      }
+      const tabId = action.payload;
+      tabAdapter.removeOne(state, tabId);
+      state.currentTab = state.ids[0]; // Set current tab to the first tab after removal
+    },
+    cloneTab: {
+      reducer(
+        state,
+        action: PayloadAction<{ clonedTabId: number; newTabId: number }>
+      ) {
+        const { clonedTabId, newTabId } = action.payload;
+        const tab = state.entities[clonedTabId];
+        if (tab) {
+          const newTab = {
+            ...tab,
+            id: newTabId,
+            name: `${tab.name} (copy)`,
+          };
+          tabAdapter.addOne(state, newTab);
+          state.currentTab = newTabId;
+        }
+      },
+      prepare(clonedTabId: number) {
+        return {
+          payload: {
+            clonedTabId,
+            newTabId: ++maxUsedTabId,
+          },
+        };
+      },
     },
     tabUpdated: tabAdapter.updateOne,
     setCurrentTab: (state, action: PayloadAction<number>) => {
@@ -95,45 +107,11 @@ export const tabSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(importRoutine, (state, action) => {
-        if (action.payload !== null) {
-          const { id } = action.payload;
-          const currentTab = state.entities[state.currentTab];
-          if (currentTab) {
-            const routineIds = currentTab.routineIds;
-            if (!routineIds.includes(id)) {
-              routineIds.push(id);
-            }
-          }
-        }
-      })
-      .addCase(routineCreated, (state, action) => {
-        const { id, tabId: selectedTabId } = action.payload;
-        const tabId = selectedTabId ?? state.currentTab;
-        state.currentTab = tabId;
-        const currentTab = state.entities[tabId];
-        if (currentTab) {
-          const routineIds = currentTab.routineIds;
-          if (!routineIds.includes(id)) {
-            routineIds.push(id);
-          }
-        }
-      })
-      .addCase(routineRemoved, (state, action) => {
-        const routineId = action.payload;
-        const currentTab = state.entities[state.currentTab];
-        if (currentTab) {
-          const routineIds = currentTab.routineIds;
-          if (routineIds.includes(routineId)) {
-            currentTab.routineIds = routineIds.filter((id) => id !== routineId);
-          }
-        }
-      });
+    builder;
   },
 });
 
-export const { tabCreated, removeTab, setCurrentTab, tabUpdated } =
+export const { tabCreated, removeTab, cloneTab, setCurrentTab, tabUpdated } =
   tabSlice.actions;
 
 export default tabSlice.reducer;
@@ -150,20 +128,21 @@ export const selectCurrentTabId = (state: RootState) => state.tabs.currentTab;
 export const selectCurrentTabEntity = (state: RootState) =>
   state.tabs.entities[state.tabs.currentTab];
 export const selectCurrentTabRoutines = createSelector(
-  (state: RootState) => state.tabs.entities[state.tabs.currentTab]?.routineIds,
+  (state: RootState) => state.tabs.currentTab,
   (state: RootState) => state.routines.routines.entities,
-  (routineIds, routines) => {
-    if (!routineIds) return [];
-    return routineIds
-      .map((id) => routines[id])
-      .filter((routine) => routine !== undefined);
+  (currentTab, routines) => {
+    return Object.values(routines).filter(
+      (routine) => routine.tabId === currentTab
+    );
   }
 );
 export const selectCurrentTabRoutineEntities = createSelector(
-  (state: RootState) => state.tabs.entities[state.tabs.currentTab]?.routineIds,
+  (state: RootState) => state.tabs.currentTab,
   (state: RootState) => state.routines.routines.entities,
-  (routineIds, routines) => {
-    if (!routineIds) return {};
-    return Object.fromEntries(routineIds.map((id) => [id, routines[id]!]));
-  }
+  (currentTab, routines) =>
+    Object.fromEntries(
+      Object.entries(routines).filter(
+        ([id, routine]) => routine.tabId === currentTab
+      )
+    )
 );

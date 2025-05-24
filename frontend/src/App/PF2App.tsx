@@ -9,93 +9,21 @@ import Export from "../Sharing/Export";
 
 import "./PF2App.css";
 import {
-  selectCurrentTabId,
-  selectAllTabs,
-  setCurrentTab,
-  tabCreated,
-  selectCurrentTabEntity,
-  tabUpdated,
-} from "../Display/tabSlice";
-import {
   selectSelectedRoutine,
   selectSelectedActivityPath,
   selectCreateNewActivity,
 } from "../Routines/RoutineSlice/routineSlice";
-import { Container, Box, Button, TextField, Paper } from "@mui/material";
+import { Container, Box, Button } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import useMediaQuery from "@mui/material/useMediaQuery";
 // import Header from "./Header";
 import { ActivityPath } from "../Routines/Activity/ActivityPath";
 import NewActivity from "../Routines/NewActivity/NewActivity";
-import { useAppDispatch, useAppSelector } from "../App/hooks";
+import { useAppSelector } from "../App/hooks";
+import TabSection from "./TabSection";
 
 // Initialize google analytics
 ReactGA.initialize("G-JR2YK097BG");
-
-function TabSection() {
-  const dispatch = useAppDispatch();
-  const tabs = useAppSelector(selectAllTabs);
-  const currentTabId = useAppSelector(selectCurrentTabId);
-  const currentTab = useAppSelector(selectCurrentTabEntity);
-
-  const addTab = () => {
-    dispatch(
-      tabCreated({
-        name: "New Tab",
-        routineIds: [],
-      })
-    );
-  };
-
-  const updateCurrentTabName = (name: string) => {
-    dispatch(
-      tabUpdated({
-        id: currentTabId,
-        changes: {
-          name,
-        },
-      })
-    );
-  };
-
-  return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 0.5,
-        my: 2,
-      }}
-      component="ul"
-    >
-      <Grid container spacing={1}>
-        <Grid size={12}>
-          <Tabs value={currentTabId} variant="scrollable" scrollButtons="auto">
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.id}
-                label={tab.name}
-                value={tab.id}
-                onClick={() => dispatch(setCurrentTab(tab.id))}
-              />
-            ))}
-            <Tab label="+" value={"add tab"} onClick={addTab} />
-          </Tabs>
-        </Grid>
-
-        <Grid size={12}>
-          <TextField
-            value={currentTab.name}
-            onChange={(e) => {
-              updateCurrentTabName(e.target.value);
-            }}
-          />
-        </Grid>
-      </Grid>
-    </Paper>
-  );
-}
 
 function PF2App() {
   const isBigEnough = useMediaQuery((theme: any) => {

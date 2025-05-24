@@ -10,6 +10,7 @@ import {
   selectImportState,
   selectSelectedRoutineObject,
 } from "../Routines/RoutineSlice/routineSlice";
+import { selectCurrentTabId } from "../Display/tabSlice";
 // import { useSelector } from "react-redux";
 
 /* TODO: 
@@ -20,6 +21,7 @@ import {
 const ImportExport = () => {
   const routine = useAppSelector(selectSelectedRoutineObject);
   const importState = useAppSelector(selectImportState);
+  const currentTabId = useAppSelector(selectCurrentTabId);
   const [messageSeen, setMessageSeen] = useState(false);
   const [textValue, setTextValue] = useState("");
 
@@ -38,7 +40,7 @@ const ImportExport = () => {
   }, [importState, messageSeen]);
 
   const tryToAddRoutine = () => {
-    dispatch(importRoutine(textValue));
+    dispatch(importRoutine(textValue, currentTabId));
     setMessageSeen(false);
   };
   const paste = () => {

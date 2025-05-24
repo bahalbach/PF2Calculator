@@ -34,6 +34,7 @@ import {
 } from "../../Model/types";
 
 export type State = {
+  version: number;
   selectedRoutine: number | undefined;
   selectedActivityPath: number | undefined;
   parentRoutine: number | undefined;
@@ -51,6 +52,7 @@ export interface Adjustment {
 }
 export interface Routine {
   id: number;
+  tabId: number;
   name: string;
   display: boolean;
   apIds: number[];
@@ -61,6 +63,7 @@ export interface Routine {
 }
 export interface RoutineObject {
   id: number;
+  tabId: number;
   name: string;
   display: boolean;
   apIds: ActivityPathObject[];

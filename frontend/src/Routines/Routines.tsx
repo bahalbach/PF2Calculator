@@ -22,11 +22,15 @@ import {
   selectSelectedRoutine,
   setRoutine,
 } from "./RoutineSlice/routineSlice";
-import { selectCurrentTabRoutines } from "../Display/tabSlice";
+import {
+  selectCurrentTabRoutines,
+  selectCurrentTabId,
+} from "../Display/tabSlice";
 
 const Routines = () => {
   const routines = useAppSelector(selectCurrentTabRoutines);
   const selectedRoutine = useAppSelector(selectSelectedRoutine);
+  const selectedTabId = useAppSelector(selectCurrentTabId);
   const dispatch = useAppDispatch();
 
   const routineOptions: JSX.Element[] = [];
@@ -78,7 +82,7 @@ const Routines = () => {
         <Button
           variant="contained"
           onClick={() => {
-            dispatch(routineCreated({ copy: false }));
+            dispatch(routineCreated({ copy: false, tabId: selectedTabId }));
           }}
           sx={{ float: "inline-end" } as const}
         >
@@ -153,7 +157,7 @@ const CopyMenu = () => {
   };
 
   return (
-    <div>
+    <Box sx={{ display: "flex", alignItems: "center" }}>
       <Button
         id="basic-button"
         aria-controls={open ? "basic-menu" : undefined}
@@ -184,7 +188,7 @@ const CopyMenu = () => {
           </MenuItem>
         ))}
       </Menu>
-    </div>
+    </Box>
   );
 };
 

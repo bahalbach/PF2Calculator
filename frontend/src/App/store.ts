@@ -1,4 +1,4 @@
-import { configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import routineReducer, {
   importRoutine,
   routineAdded,
@@ -83,15 +83,16 @@ const makeStore = () => {
       store.dispatch(
         tabCreated({
           name: "Default",
-          routineIds: store.getState().routines.routines.ids,
         })
       );
     }
     if (localStorage.getItem("routineState") === null) {
       // add in some example routines
+      const currentTabId = store.getState().tabs.currentTab;
       store.dispatch(
         routineAdded({
           id: 0,
+          tabId: currentTabId,
           name: "Baseline",
           display: true,
           apIds: [],
@@ -101,13 +102,9 @@ const makeStore = () => {
           endLevel: 20,
         })
       );
-
       for (let r of exampleRoutines) {
-        store.dispatch(importRoutine(r));
+        store.dispatch(importRoutine(r, currentTabId));
       }
-
-      store.dispatch(setRoutine(2));
-      // set the first routine you see to be Fighter - 2 Strike - d12 Sword
     }
   } catch {
     // ignore errors

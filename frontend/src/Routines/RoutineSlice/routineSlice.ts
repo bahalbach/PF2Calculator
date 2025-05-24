@@ -94,17 +94,22 @@ import {
   RoutineObject,
   State,
 } from "./RoutineTypes";
-import { tabCreated, setCurrentTab } from "../../Display/tabSlice";
+import {
+  tabCreated,
+  setCurrentTab,
+  removeTab,
+  cloneTab,
+} from "../../Display/tabSlice";
 
 export const routinesAdapter = createEntityAdapter<Routine>();
 export const activityPathAdapter = createEntityAdapter<ActivityPath>();
 export const damageAdapter = createEntityAdapter<Damage>();
 export const effectAdapter = createEntityAdapter<Effect>();
 
-let routineId = 1;
-let activityPathId = 1;
-let damageId = 1;
-let effectId = 1;
+let maxUsedRoutineId = 1;
+let maxUsedActivityPathId = 1;
+let maxUsedDamageId = 1;
+let maxUsedEffectId = 1;
 
 const empty: { [key: number]: number } = {};
 const one: { [key: number]: number } = {};
@@ -113,17 +118,69 @@ for (let i = 1; i <= 20; i++) {
   one[i] = 1;
 }
 
+// Migrate state from old version
+function migrateState() {
+  const routineState = localStorage.getItem("routineState");
+  const tabState = localStorage.getItem("tabState");
+  if (routineState === null) {
+    console.log("No routine state to migrate");
+    return;
+  }
+  try {
+    const parsedRoutineState = JSON.parse(routineState);
+    if (parsedRoutineState.version === undefined) {
+      console.log("Migrating routine state");
+      // migrate state
+      let parsedTabState = null;
+      if (tabState !== null) {
+        try {
+          parsedTabState = JSON.parse(tabState);
+          for (let t of Object.values(parsedTabState.entities) as {
+            routineIds?: number[];
+            id: number;
+          }[]) {
+            if (t.routineIds) {
+              for (let r of t.routineIds) {
+                parsedRoutineState.routines.entities[r].tabId = t.id;
+              }
+            }
+          }
+        } catch {
+          for (let r of Object.values(parsedRoutineState.routines.entities) as {
+            id: number;
+            tabId?: number;
+          }[]) {
+            r.tabId = 1;
+          }
+        }
+      } else {
+        for (let r of Object.values(parsedRoutineState.routines.entities) as {
+          id: number;
+          tabId?: number;
+        }[]) {
+          r.tabId = 1;
+        }
+      }
+      parsedRoutineState.version = 1;
+      localStorage.setItem("routineState", JSON.stringify(parsedRoutineState));
+    }
+  } catch (err) {
+    console.log("Error parsing routine state", err);
+    return;
+  }
+}
+migrateState();
+
 const loadState = () => {
   console.log("Loading routine state from local storage");
   try {
     const serializedState = localStorage.getItem("routineState");
     if (serializedState !== null) {
-      const state = JSON.parse(serializedState);
-      // console.log(state);
-      routineId = Math.max(...state.routines.ids);
-      activityPathId = Math.max(...state.activityPaths.ids);
-      damageId = Math.max(...state.damages.ids);
-      effectId = Math.max(...state.effects.ids);
+      const state: State = JSON.parse(serializedState);
+      maxUsedRoutineId = Math.max(...state.routines.ids);
+      maxUsedActivityPathId = Math.max(...state.activityPaths.ids);
+      maxUsedDamageId = Math.max(...state.damages.ids);
+      maxUsedEffectId = Math.max(...state.effects.ids);
       return state;
     }
     console.log("Routine state not loaded");
@@ -140,6 +197,7 @@ const savedState = loadState();
 const initialState: State = savedState
   ? savedState
   : {
+      version: 1,
       selectedRoutine: 0,
       selectedActivityPath: undefined,
       parentRoutine: 0,
@@ -310,26 +368,21 @@ export const routinesSlice = createSlice({
       reducer: (
         state,
         action: PayloadAction<{
-          id: number;
+          // id: number;
           copy: boolean;
-          tabId: number | undefined;
+          tabId: number;
         }>
       ) => {
-        const { id, copy } = action.payload;
+        const { copy, tabId } = action.payload;
         state.parentRoutine = undefined;
         if (copy && state.selectedRoutine !== undefined) {
-          const routine = state.routines.entities[state.selectedRoutine]!;
-          const name = routine.name + " Copy";
-          const apIds = copyActivityPaths(state, routine.apIds, undefined, id);
-          routinesAdapter.addOne(state.routines, {
-            ...routine,
-            id,
-            name,
-            apIds,
-          });
+          const id = copyRoutine(state, state.selectedRoutine, tabId);
+          state.selectedRoutine = id;
         } else {
+          const id = ++maxUsedRoutineId;
           routinesAdapter.addOne(state.routines, {
             id,
+            tabId,
             name: "",
             display: true,
             apIds: [],
@@ -339,35 +392,20 @@ export const routinesSlice = createSlice({
             endLevel: 20,
           });
           state.parentRoutine = id;
+          state.selectedRoutine = id;
         }
-        state.selectedRoutine = id;
         state.selectedActivityPath = undefined;
         state.parentActivity = undefined;
       },
-      prepare: ({
-        copy = false,
-        tabId,
-      }: {
-        copy?: boolean;
-        tabId?: number;
-      }) => {
-        const id = ++routineId;
-        return { payload: { id, copy, tabId } };
+      prepare: ({ copy = false, tabId }: { copy?: boolean; tabId: number }) => {
+        // const id = ++routineId;
+        return { payload: { copy, tabId } };
       },
     },
     routineRemoved: (state, action: PayloadAction<number>) => {
       // recursively remove all children
       const routineId = action.payload;
-      let childrenIds = state.routines.entities[routineId]!.apIds;
-      removeActivityPaths(state, childrenIds);
-
-      routinesAdapter.removeOne(state.routines, routineId);
-      if (routineId === state.selectedRoutine) {
-        state.selectedRoutine = undefined;
-        state.selectedActivityPath = undefined;
-        state.parentActivity = undefined;
-        state.parentRoutine = undefined;
-      }
+      removeRoutine(state, routineId);
     },
     setNewActivityParent: (
       state,
@@ -451,7 +489,7 @@ export const routinesSlice = createSlice({
         routineId: number;
         activityType?: ActivityType;
       }) => {
-        const id = ++activityPathId;
+        const id = ++maxUsedActivityPathId;
         return {
           payload: {
             id,
@@ -545,7 +583,7 @@ export const routinesSlice = createSlice({
         state.selectedActivityPath = id;
       },
       prepare: ({ parentId }: { parentId: number }) => {
-        const id = ++activityPathId;
+        const id = ++maxUsedActivityPathId;
         return {
           payload: {
             id,
@@ -588,7 +626,7 @@ export const routinesSlice = createSlice({
         damageAdapter.addOne(state.damages, { id, ...defaultDamage });
       },
       prepare: ({ parentId }) => {
-        const id = ++damageId;
+        const id = ++maxUsedDamageId;
         return {
           payload: {
             id,
@@ -627,7 +665,7 @@ export const routinesSlice = createSlice({
         });
       },
       prepare: ({ parentId }) => {
-        const id = ++effectId;
+        const id = ++maxUsedEffectId;
         return {
           payload: {
             id,
@@ -645,15 +683,16 @@ export const routinesSlice = createSlice({
       effectAdapter.removeOne(state.effects, id);
     },
     importRoutine: {
-      prepare: (routineString: string) => {
+      prepare: (routineString: string, tabId: number) => {
         try {
           const routineObject = JSON.parse(routineString);
           if (isRoutineObject(routineObject)) {
-            const id = ++routineId;
+            const id = ++maxUsedRoutineId;
             return {
               payload: {
                 ...routineObject,
                 id,
+                tabId,
               },
             };
           } else {
@@ -695,6 +734,32 @@ export const routinesSlice = createSlice({
       state.selectedActivityPath = undefined;
       state.parentActivity = undefined;
       state.parentRoutine = undefined;
+    });
+    builder.addCase(removeTab, (state, action) => {
+      state.selectedRoutine = undefined;
+      state.selectedActivityPath = undefined;
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
+      const tabId = action.payload;
+      state.routines.ids.forEach((id) => {
+        const routine = state.routines.entities[id];
+        if (routine && routine.tabId === tabId) {
+          removeRoutine(state, id);
+        }
+      });
+    });
+    builder.addCase(cloneTab, (state, action) => {
+      const { clonedTabId, newTabId } = action.payload;
+      state.selectedRoutine = undefined;
+      state.selectedActivityPath = undefined;
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
+      state.routines.ids.forEach((id) => {
+        const routine = state.routines.entities[id];
+        if (routine && routine.tabId === clonedTabId) {
+          copyRoutine(state, id, newTabId);
+        }
+      });
     });
   },
 });
@@ -804,6 +869,19 @@ export const selectImportState = (state: RootState) => {
   return state.routines.importRoutine;
 };
 
+const removeRoutine = (state: WritableDraft<State>, routineId: number) => {
+  let childrenIds = state.routines.entities[routineId]!.apIds;
+  removeActivityPaths(state, childrenIds);
+
+  routinesAdapter.removeOne(state.routines, routineId);
+  if (routineId === state.selectedRoutine) {
+    state.selectedRoutine = undefined;
+    state.selectedActivityPath = undefined;
+    state.parentActivity = undefined;
+    state.parentRoutine = undefined;
+  }
+};
+
 const removeActivityPaths = (state: WritableDraft<State>, ids: number[]) => {
   let index = 0;
   while (index < ids.length) {
@@ -832,7 +910,7 @@ const createStrikeActivity = (
     else useWeapon2 = true;
   }
 
-  const id = ++activityPathId;
+  const id = ++maxUsedActivityPathId;
   let apIds: number[] = [];
   if (strikeNumber < strikeInfo.numStrikes - 1) {
     if (strikeInfo.activity === "Double Slice") {
@@ -989,7 +1067,7 @@ const createStrikeDamages = (
     // use the first weapon for this damage always
     if (doubleSliceCondition === conditions.CRIT) {
       // add all damage as if crit... always
-      let id = ++damageId;
+      let id = ++maxUsedDamageId;
       let dieTrend: DieTrend = dieTrends.WEAPON;
       if (
         strikeInfo.classOption === "Bomb Strike" ||
@@ -1025,7 +1103,7 @@ const createStrikeDamages = (
           strikeInfo.classOption !== "Normal"
         )
       ) {
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const runeDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.ALWAYS,
@@ -1042,7 +1120,7 @@ const createStrikeDamages = (
       if (hasClassPrecisionDamage(strikeInfo, previousHits)) {
         let { dieTrend, diceSize, damageWhen, damageTrend } =
           classPrecisionDamage(strikeInfo, previousHits);
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const classDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.ALWAYS,
@@ -1062,7 +1140,7 @@ const createStrikeDamages = (
         let damageAdjustments = empty;
         if (!hasFatal(strikeInfo) && hasPickCritSpec(strikeInfo))
           damageAdjustments = critSpecDamage(strikeInfo);
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const critDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.ALWAYS,
@@ -1078,7 +1156,7 @@ const createStrikeDamages = (
         let damageAdjustments = empty;
         if (hasPickCritSpec(strikeInfo))
           damageAdjustments = critSpecDamage(strikeInfo);
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const critDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.ALWAYS,
@@ -1096,7 +1174,7 @@ const createStrikeDamages = (
         hasPickCritSpec(strikeInfo)
       ) {
         let damageAdjustments = critSpecDamage(strikeInfo);
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const critDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.ALWAYS,
@@ -1109,7 +1187,7 @@ const createStrikeDamages = (
       }
       if (hasKnifeCritSpec(strikeInfo)) {
         let damageAdjustments = critSpecDamage(strikeInfo);
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const critDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.ALWAYS,
@@ -1124,7 +1202,7 @@ const createStrikeDamages = (
       }
     } else if (doubleSliceCondition === conditions.SUCC) {
       // add hit damage always, add precision damage only on miss so we don't add it twice with the second attack
-      let id = ++damageId;
+      let id = ++maxUsedDamageId;
       let dieTrend: DieTrend = dieTrends.WEAPON;
       if (
         strikeInfo.classOption === "Bomb Strike" ||
@@ -1159,7 +1237,7 @@ const createStrikeDamages = (
           strikeInfo.classOption !== "Normal"
         )
       ) {
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const runeDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.ALWAYS,
@@ -1175,7 +1253,7 @@ const createStrikeDamages = (
       if (hasClassPrecisionDamage(strikeInfo, previousHits)) {
         let { dieTrend, diceSize, damageWhen, damageTrend } =
           classPrecisionDamage(strikeInfo, previousHits);
-        id = ++damageId;
+        id = ++maxUsedDamageId;
         const classDamage: Damage = {
           ...defaultDamage,
           damageCondition: dCond.FAIL_WORSE,
@@ -1192,7 +1270,7 @@ const createStrikeDamages = (
     }
   }
 
-  let id = ++damageId;
+  let id = ++maxUsedDamageId;
   let dieTrend: DieTrend = dieTrends.WEAPON;
   if (
     strikeInfo.classOption === "Bomb Strike" ||
@@ -1223,7 +1301,7 @@ const createStrikeDamages = (
   if (
     !(strikeInfo.cClass === "Alchemist" && strikeInfo.classOption !== "Normal")
   ) {
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const runeDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1243,7 +1321,7 @@ const createStrikeDamages = (
       strikeInfo,
       previousHits
     );
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const classDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1258,7 +1336,7 @@ const createStrikeDamages = (
   }
 
   if (hasActivityDamageDice(strikeInfo)) {
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const activityDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1268,7 +1346,7 @@ const createStrikeDamages = (
     newDamages.push(id);
   }
   if (hasActivityCritDamage(strikeInfo)) {
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const activityDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1279,7 +1357,7 @@ const createStrikeDamages = (
     newDamages.push(id);
   }
   if (hasSplashDamage(strikeInfo)) {
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const splashDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1297,7 +1375,7 @@ const createStrikeDamages = (
       hasPickCritSpec(strikeInfo, useWeapon2)
     )
       damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1313,7 +1391,7 @@ const createStrikeDamages = (
     let damageAdjustments = empty;
     if (hasPickCritSpec(strikeInfo, useWeapon2))
       damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1331,7 +1409,7 @@ const createStrikeDamages = (
     hasPickCritSpec(strikeInfo, useWeapon2)
   ) {
     let damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1344,7 +1422,7 @@ const createStrikeDamages = (
   }
   if (hasKnifeCritSpec(strikeInfo, useWeapon2)) {
     let damageAdjustments = critSpecDamage(strikeInfo, useWeapon2);
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const critDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1381,7 +1459,7 @@ const createStrikeEffects = (
     if (hasSpearCritSpec(strikeInfo, useWeapon2))
       effectType = effectValueTypes.CLUMSY;
 
-    id = ++effectId;
+    id = ++maxUsedEffectId;
     const critSpecEffect: Effect = {
       ...defaultEffect,
       id,
@@ -1394,7 +1472,7 @@ const createStrikeEffects = (
     effectAdapter.addOne(state.effects, critSpecEffect);
   }
   if (hasBackswing(strikeInfo, useWeapon2)) {
-    id = ++effectId;
+    id = ++maxUsedEffectId;
     const backswingEffect: Effect = {
       ...defaultEffect,
       id,
@@ -1414,7 +1492,7 @@ const createSkillActivity = (
   routineId: number | undefined,
   skillInfo: SkillInfo
 ) => {
-  const id = ++activityPathId;
+  const id = ++maxUsedActivityPathId;
 
   let damages = createSkillDamages(state, skillInfo);
   let effects = createSkillEffects(state, skillInfo);
@@ -1444,7 +1522,7 @@ const createSkillDamages = (
   const newDamages: number[] = [];
 
   if (hasSkillDamage(skillInfo)) {
-    let id = ++damageId;
+    let id = ++maxUsedDamageId;
     const skillDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1467,7 +1545,7 @@ const createSkillEffects = (
   for (let { effectCondition, effectType, effectValue } of getSkillEffects(
     skillInfo
   )) {
-    let id = ++effectId;
+    let id = ++maxUsedEffectId;
     const skillEffect: Effect = {
       ...defaultEffect,
       id,
@@ -1487,7 +1565,7 @@ const createCantripActivity = (
   routineId: number | undefined,
   cantripInfo: CantripInfo
 ) => {
-  const id = ++activityPathId;
+  const id = ++maxUsedActivityPathId;
 
   let damages = createCantripDamages(state, cantripInfo);
 
@@ -1512,7 +1590,7 @@ const createCantripDamages = (
 ) => {
   const newDamages: number[] = [];
 
-  let id = ++damageId;
+  let id = ++maxUsedDamageId;
   const cantripDamage: Damage = {
     ...defaultDamage,
     id,
@@ -1527,7 +1605,7 @@ const createCantripDamages = (
     cantripInfo.cantrip === "Produce Flame" ||
     cantripInfo.cantrip === "Gouging Claw"
   ) {
-    let id = ++damageId;
+    let id = ++maxUsedDamageId;
     const persDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1548,7 +1626,7 @@ const createSpellActivity = (
   routineId: number | undefined,
   spellInfo: SpellInfo
 ) => {
-  const id = ++activityPathId;
+  const id = ++maxUsedActivityPathId;
 
   let damages = createSpellDamages(state, spellInfo);
   let effects = createSpellEffects(state, spellInfo);
@@ -1577,7 +1655,7 @@ const createSpellDamages = (
   const newDamages: number[] = [];
 
   if (spellInfo.spell === "Fireball") {
-    let id = ++damageId;
+    let id = ++maxUsedDamageId;
     const spellDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1597,7 +1675,7 @@ const createSpellEffects = (
   const newEffects: number[] = [];
 
   if (spellInfo.spell === "Fear") {
-    let id = ++effectId;
+    let id = ++maxUsedEffectId;
     const crfa: Effect = {
       ...defaultEffect,
       id,
@@ -1608,7 +1686,7 @@ const createSpellEffects = (
     newEffects.push(id);
     effectAdapter.addOne(state.effects, crfa);
 
-    id = ++effectId;
+    id = ++maxUsedEffectId;
     const fail: Effect = {
       ...defaultEffect,
       id,
@@ -1619,7 +1697,7 @@ const createSpellEffects = (
     newEffects.push(id);
     effectAdapter.addOne(state.effects, fail);
 
-    id = ++effectId;
+    id = ++maxUsedEffectId;
     const succ: Effect = {
       ...defaultEffect,
       id,
@@ -1630,7 +1708,7 @@ const createSpellEffects = (
     newEffects.push(id);
     effectAdapter.addOne(state.effects, succ);
   } else if (spellInfo.spell === "Heroism") {
-    let id = ++effectId;
+    let id = ++maxUsedEffectId;
     const e3: Effect = {
       ...defaultEffect,
       id,
@@ -1643,7 +1721,7 @@ const createSpellEffects = (
     newEffects.push(id);
     effectAdapter.addOne(state.effects, e3);
 
-    id = ++effectId;
+    id = ++maxUsedEffectId;
     const e6: Effect = {
       ...defaultEffect,
       id,
@@ -1656,7 +1734,7 @@ const createSpellEffects = (
     newEffects.push(id);
     effectAdapter.addOne(state.effects, e6);
 
-    id = ++effectId;
+    id = ++maxUsedEffectId;
     const e9: Effect = {
       ...defaultEffect,
       id,
@@ -1693,7 +1771,7 @@ const createImpulseActivity = (
   routineId: number | undefined,
   impulseInfo: ImpulseInfo
 ) => {
-  const id = ++activityPathId;
+  const id = ++maxUsedActivityPathId;
 
   let damages = createImpulseDamages(state, impulseInfo);
   let effects = createImpulseEffects(state, impulseInfo);
@@ -1726,7 +1804,7 @@ const createImpulseDamages = (
 ) => {
   const newDamages: number[] = [];
 
-  let id = ++damageId;
+  let id = ++maxUsedDamageId;
   const impulseDamage: Damage = {
     ...defaultDamage,
     id,
@@ -1737,7 +1815,7 @@ const createImpulseDamages = (
 
   const impulsePersistentDamage = getImpulsePersistentDamage(impulseInfo);
   if (impulsePersistentDamage) {
-    id = ++damageId;
+    id = ++maxUsedDamageId;
     const persistentDamage: Damage = {
       ...defaultDamage,
       id,
@@ -1759,7 +1837,7 @@ const createImpulseEffects = (
   for (let { effectCondition, effectType, effectValue } of getImpulseEffects(
     impulseInfo
   )) {
-    let id = ++effectId;
+    let id = ++maxUsedEffectId;
     const skillEffect: Effect = {
       ...defaultEffect,
       id,
@@ -1774,6 +1852,28 @@ const createImpulseEffects = (
   return newEffects;
 };
 
+const copyRoutine = (
+  state: WritableDraft<State>,
+  sourceRoutineId: number,
+  targetTabId: number
+) => {
+  const id = ++maxUsedRoutineId;
+  const routine = state.routines.entities[sourceRoutineId]!;
+  let name = routine.name;
+  if (routine.tabId === targetTabId) {
+    name += " Copy";
+  }
+  const apIds = copyActivityPaths(state, routine.apIds, undefined, id);
+  routinesAdapter.addOne(state.routines, {
+    ...routine,
+    id,
+    tabId: targetTabId,
+    name,
+    apIds,
+  });
+  return id;
+};
+
 const copyActivityPaths = (
   state: WritableDraft<State>,
   apIds: number[],
@@ -1782,7 +1882,7 @@ const copyActivityPaths = (
 ) => {
   let newApIds = [];
   for (let apId of apIds) {
-    const id = ++activityPathId;
+    const id = ++maxUsedActivityPathId;
     const ap = state.activityPaths.entities[apId]!;
     const apIds = copyActivityPaths(state, ap.apIds, id);
     const damages = copyDamages(state, ap.damages);
@@ -1805,7 +1905,7 @@ const createDamage = (
   state: WritableDraft<State>,
   damage: Omit<Damage, "id">
 ) => {
-  const id = ++damageId;
+  const id = ++maxUsedDamageId;
   damageAdapter.addOne(state.damages, { ...damage, id });
   return id;
 };
@@ -1823,7 +1923,7 @@ const createEffect = (
   state: WritableDraft<State>,
   effect: Omit<Effect, "id">
 ) => {
-  const id = ++effectId;
+  const id = ++maxUsedEffectId;
   effectAdapter.addOne(state.effects, { ...effect, id });
   return id;
 };
@@ -1879,7 +1979,7 @@ const insertActivityPaths = (
 ) => {
   let newApIds = [];
   for (let ap of aps) {
-    const id = ++activityPathId;
+    const id = ++maxUsedActivityPathId;
     const apIds = insertActivityPaths(state, ap.apIds, id);
     const damages = insertDamages(state, ap.damages);
     const effects = insertEffects(state, ap.effects);
@@ -1902,7 +2002,7 @@ const insertDamages = (state: WritableDraft<State>, damages: Damage[]) => {
   const newDamages = [];
   for (let damage of damages) {
     // create a new damage entity and add it's id to newDamages
-    const id = ++damageId;
+    const id = ++maxUsedDamageId;
     damageAdapter.addOne(state.damages, { ...defaultDamage, ...damage, id });
     newDamages.push(id);
   }
@@ -1912,7 +2012,7 @@ const insertEffects = (state: WritableDraft<State>, effects: Effect[]) => {
   const newEffects = [];
   for (let effect of effects) {
     // create a new effect entity and add it's id to newEffects
-    const id = ++effectId;
+    const id = ++maxUsedEffectId;
     effectAdapter.addOne(state.effects, { ...defaultEffect, ...effect, id });
     newEffects.push(id);
   }
