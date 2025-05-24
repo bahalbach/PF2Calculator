@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useDeferredValue, useMemo } from "react";
 
 import {
   selectactivityPathEntities,
@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from "../App/hooks";
 import { graphSaved, singleLevelGraphSaved } from "./sharingSlice";
 const Plot = createPlotlyComponent(Plotly);
 
-const useGenerateGraphs = (graphType: string) => {
+const useDeferredGraphData = () => {
   const routines = useAppSelector(selectCurrentTabRoutineEntities);
   const activityPaths = useAppSelector(selectactivityPathEntities);
   const targets = useAppSelector(selecttargetEntities);
@@ -29,6 +29,41 @@ const useGenerateGraphs = (graphType: string) => {
   const effects = useAppSelector(selecteffectEntities);
   const weaknesses = useAppSelector(selectweaknessEntities);
   const selectedRoutine = useAppSelector(selectSelectedRoutine);
+
+  const graphData = useMemo(() => {
+    return {
+      routines,
+      activityPaths,
+      targets,
+      damages,
+      effects,
+      weaknesses,
+      selectedRoutine,
+    };
+  }, [
+    routines,
+    activityPaths,
+    targets,
+    damages,
+    effects,
+    weaknesses,
+    selectedRoutine,
+  ]);
+
+  return useDeferredValue(graphData);
+};
+
+const useGenerateGraphs = (graphType: string) => {
+  const deferredGraphData = useDeferredGraphData();
+  const {
+    routines,
+    activityPaths,
+    targets,
+    damages,
+    effects,
+    weaknesses,
+    selectedRoutine,
+  } = deferredGraphData;
 
   const dispatch = useAppDispatch();
 
