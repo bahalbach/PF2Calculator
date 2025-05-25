@@ -1,7 +1,6 @@
 import { Button, useMediaQuery } from "@mui/material";
 import React from "react";
 import ShareIcon from "@mui/icons-material/Share";
-import useShareWithImgur from "./useShareWithImgur";
 import useExportCsv from "./useExportCsv";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,7 +18,6 @@ export const ShareExport = ({ byLevel = true }: { byLevel?: boolean }) => {
   const isBigEnough = useMediaQuery((theme: any) => {
     return theme.breakpoints.up("sm");
   });
-  // const shareWithImgur = useShareWithImgur(byLevel);
   const exportCsv = useExportCsv();
 
   return (
