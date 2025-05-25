@@ -1,9 +1,12 @@
 import { useCallback } from "react";
 import { useGenerateGraphData } from "../Display/useGenerateGraphs";
 import { graphTypes } from "../Model/types";
+import { useAppSelector } from "../App/hooks";
+import { selectCurrentTabEntity } from "../Display/tabSlice";
 
 const useExportCsv = () => {
   const { byLeveldatasets } = useGenerateGraphData(graphTypes.DISTRIBUTION);
+  const currentTab = useAppSelector(selectCurrentTabEntity);
   // const routineDescriptions = useAppSelector(selectRoutineDescriptions);
   return useCallback(() => {
     const rows: string[] = [];
@@ -24,7 +27,7 @@ const useExportCsv = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "routines.csv");
+    link.setAttribute("download", `${currentTab.name}_routines.csv`);
     document.body.appendChild(link); // Required for FF
     link.click();
     document.body.removeChild(link); // Clean up
