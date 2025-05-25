@@ -14,12 +14,12 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
-import useGenerateGraphs from "./useGenerateGraphs";
+import { useGenerateGraphs } from "./useGenerateGraphs";
 import { makeOptions } from "../Model/options";
 import { Box } from "@mui/material";
 import { SingleLevelInput } from "./SingleLevelInput";
 import { JointInput } from "./JointInput";
-import { Upload } from "../Sharing/Upload";
+import { ShareExport } from "../Sharing/Upload";
 
 const Display = () => {
   // evaluates routines and displays appropriate graphs
@@ -64,7 +64,7 @@ const Display = () => {
             />
           </Grid>
           <Grid>
-            <Upload byLevel={true} />
+            <ShareExport byLevel={true} />
           </Grid>
         </Grid>
         <Collapse in={showByLevel}>
@@ -91,7 +91,7 @@ const Display = () => {
             />
           </Grid>
           <Grid>
-            <Upload byLevel={false} />
+            <ShareExport byLevel={false} />
           </Grid>
         </Grid>
         <Collapse in={showSingleLevel}>

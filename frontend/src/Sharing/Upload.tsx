@@ -1,83 +1,67 @@
 import { Button, useMediaQuery } from "@mui/material";
 import React from "react";
-
 import ShareIcon from "@mui/icons-material/Share";
-import { saveImgLink, selectGraphUrl } from "../Display/sharingSlice";
-import { useAppDispatch, useAppSelector } from "../App/hooks";
-import { selectRoutineDescriptions } from "../Routines/RoutineSlice/routineSlice";
-import { RootState } from "../App/store";
-import ReactGA from "react-ga4";
-ReactGA.initialize("G-JR2YK097BG");
+import useShareWithImgur from "./useShareWithImgur";
+import useExportCsv from "./useExportCsv";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
-const url = "https://api.imgur.com/3/image";
-const auth = "Client-ID 9f68ffe6050491a";
-
-export const Upload = ({ byLevel = true }: { byLevel?: boolean }) => {
-  const graphUrl = useAppSelector((state: RootState) =>
-    selectGraphUrl(state, byLevel)
-  ).split(";base64,")[1];
-  const routineDescriptions = useAppSelector(selectRoutineDescriptions);
-  const dispatch = useAppDispatch();
-
+export const ShareExport = ({ byLevel = true }: { byLevel?: boolean }) => {
+  const id = `share-export-${byLevel ? "by-level" : "single-level"}`;
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const isBigEnough = useMediaQuery((theme: any) => {
     return theme.breakpoints.up("sm");
   });
+  // const shareWithImgur = useShareWithImgur(byLevel);
+  const exportCsv = useExportCsv();
 
-  const title = "Graph from https://bahalbach.github.io/PF2Calculator/";
-  let description = "";
-  // "Graph made with https://bahalbach.github.io/PF2Calculator/ ";
-  for (let rd of routineDescriptions) {
-    description += rd + " \r\n";
-  }
-  description +=
-    "\n Graph made with https://bahalbach.github.io/PF2Calculator/ ";
-  const fd = new FormData();
-  fd.append("image", graphUrl);
-  fd.append("title", title);
-  fd.append("description", description);
-  const requestOptions: RequestInit = {
-    method: "POST",
-    headers: { Authorization: auth },
-    body: fd,
-  };
-
-  const uploadImage = () => {
-    // console.log(description);
-    // console.log(routineDescriptions);
-    ReactGA.event("share");
-
-    const tab = window.open("about:blank");
-    fetch(url, requestOptions)
-      .then((response) => {
-        // console.log(response);
-        // if (response.ok) {
-        //   alert("Image uploaded to album");
-        // }
-        return response.json();
-      })
-      .then((json) => {
-        console.log(`description is ${json.data.description}`);
-        dispatch(saveImgLink(json.data.link));
-        if (tab !== null) {
-          tab.location = json.data.link;
-          tab.focus();
-        }
-        // window.open(url, "_blank").focus();
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("Upload failed: " + error);
-        tab?.close();
-      });
-  };
   return (
-    <Button
-      onClick={uploadImage}
-      variant="contained"
-      color="secondary"
-      endIcon={<ShareIcon />}
-    >
-      {isBigEnough ? "Share with IMGUR" : "Share"}
-    </Button>
+    <>
+      <Button
+        id={id}
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
+        variant="contained"
+        color="secondary"
+        endIcon={<ShareIcon />}
+      >
+        {isBigEnough ? "Share/Export" : "Share"}
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        slotProps={{
+          list: { "aria-labelledby": id },
+        }}
+      >
+        {/* <MenuItem
+          onClick={() => {
+            shareWithImgur();
+            handleClose();
+          }}
+        >
+          Share with Imgur
+        </MenuItem> */}
+        <MenuItem
+          onClick={() => {
+            exportCsv();
+            handleClose();
+          }}
+        >
+          Export to CSV
+        </MenuItem>
+      </Menu>
+    </>
   );
 };

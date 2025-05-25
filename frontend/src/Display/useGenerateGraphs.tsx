@@ -1,4 +1,4 @@
-import React, { useDeferredValue, useMemo } from "react";
+import React, { useDeferredValue, useEffect, useMemo } from "react";
 
 import {
   selectactivityPathEntities,
@@ -53,7 +53,7 @@ const useDeferredGraphData = () => {
   return useDeferredValue(graphData);
 };
 
-const useGenerateGraphs = (graphType: string) => {
+const useGenerateGraphData = (graphType: string) => {
   const deferredGraphData = useDeferredGraphData();
   const {
     routines,
@@ -65,6 +65,45 @@ const useGenerateGraphs = (graphType: string) => {
     selectedRoutine,
   } = deferredGraphData;
 
+  const evaluator = new ActivityPathEvaluator(
+    activityPaths,
+    targets,
+    damages,
+    effects,
+    weaknesses,
+    selectedRoutine
+  );
+
+  let datasets: Plotly.Data[] = [];
+  let expectedDamages;
+
+  switch (graphType) {
+    case graphTypes.DISTRIBUTION:
+      ({ expectedDamages, datasets } = evaluateDistribution(
+        routines,
+        evaluator
+      ));
+      break;
+    case graphTypes.PMDEFENSE:
+      ({ expectedDamages, datasets } = evaluatePM(routines, evaluator, true));
+      break;
+    case graphTypes.PMRES:
+    default:
+      ({ expectedDamages, datasets } = evaluatePM(routines, evaluator, false));
+      break;
+  }
+  let { datasets: byLeveldatasets } = evaluateByLevel(routines, evaluator);
+  return {
+    expectedDamages,
+    datasets,
+    byLeveldatasets,
+  };
+};
+
+const useGenerateGraphs = (graphType: string) => {
+  const { expectedDamages, datasets, byLeveldatasets } =
+    useGenerateGraphData(graphType);
+  const { targets } = useDeferredGraphData();
   const dispatch = useAppDispatch();
 
   const saveGraph = (_figure: any, graphDiv: Plotly.Root) => {
@@ -86,15 +125,6 @@ const useGenerateGraphs = (graphType: string) => {
     });
   };
 
-  const evaluator = new ActivityPathEvaluator(
-    activityPaths,
-    targets,
-    damages,
-    effects,
-    weaknesses,
-    selectedRoutine
-  );
-
   const currentTarget = targets[0]!;
   let title = "@" + currentTarget.routineLevel;
   let byLevelTile = currentTarget.name;
@@ -106,26 +136,6 @@ const useGenerateGraphs = (graphType: string) => {
   title += " R: " + currentTarget.overrideRef; //+ defaultSaves[currentTarget.RefTrend][displayLevel];
   title += " W: " + currentTarget.overrideWill; //+ defaultSaves[currentTarget.WillTrend][displayLevel];
   title += " P: " + currentTarget.overridePer; //+ defaultSaves[currentTarget.PerTrend][displayLevel];
-
-  let datasets: Plotly.Data[] = [];
-  let expectedDamages;
-
-  switch (graphType) {
-    case graphTypes.DISTRIBUTION:
-      ({ expectedDamages, datasets } = evaluateDistribution(
-        routines,
-        evaluator
-      ));
-      break;
-    case graphTypes.PMDEFENSE:
-      ({ expectedDamages, datasets } = evaluatePM(routines, evaluator, true));
-      break;
-    case graphTypes.PMRES:
-    default:
-      ({ expectedDamages, datasets } = evaluatePM(routines, evaluator, false));
-      break;
-  }
-  let { datasets: byLeveldatasets } = evaluateByLevel(routines, evaluator);
 
   let xtitle;
   let ytitle;
@@ -340,4 +350,6 @@ const evaluateDistribution = (
   return { expectedDamages, datasets };
 };
 
-export default useGenerateGraphs;
+export { useGenerateGraphData, useGenerateGraphs };
+
+// export default useGenerateGraphs;
