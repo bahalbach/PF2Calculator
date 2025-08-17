@@ -3,6 +3,7 @@ import {
   PayloadAction,
   createEntityAdapter,
   createSelector,
+  createAsyncThunk,
 } from "@reduxjs/toolkit";
 import { RootState } from "../App/store";
 import {
@@ -14,6 +15,37 @@ import {
   RoutineObject,
 } from "../Routines/RoutineSlice/RoutineTypes";
 import { getNewRoutineId } from "../Routines/RoutineSlice/routineSlice";
+
+const SHARE_TAB_URL = "https://r2-worker.bahalbach.workers.dev/tab";
+
+// First, create the thunk
+export const importTabFromCode = createAsyncThunk(
+  "tabs/ImportTabFromCode",
+  async (code: string, thunkAPI) => {
+    const response = await fetch(`${SHARE_TAB_URL}/${code}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to import routine");
+    }
+    const { tab, routines }: { tab: Tab; routines: RoutineObject[] } =
+      await response.json();
+    const newTabId = ++maxUsedTabId;
+    const newRoutines = routines.map((routine) => ({
+      ...routine,
+      id: getNewRoutineId(),
+      tabId: newTabId, // Assign new tab ID to routines
+    }));
+    return {
+      tab,
+      routines: newRoutines,
+      newTabId: newTabId,
+    };
+  }
+);
 
 export interface Tab {
   id: number;
@@ -47,6 +79,8 @@ const loadState = () => {
 type State = ReturnType<
   typeof tabAdapter.getInitialState<{
     currentTab: number;
+    importingTab?: boolean;
+    importError?: string;
   }>
 >;
 const savedState = loadState();
@@ -54,6 +88,7 @@ const initialState: State =
   savedState ??
   tabAdapter.getInitialState({
     currentTab: maxUsedTabId,
+    importingTab: false,
   });
 
 export const tabSlice = createSlice({
@@ -110,29 +145,34 @@ export const tabSlice = createSlice({
         };
       },
     },
-    importTab: {
-      prepare({ tab, routines }: { tab: Tab; routines: RoutineObject[] }) {
-        const newTabId = ++maxUsedTabId;
-        const newRoutines = routines.map((routine) => ({
-          ...routine,
-          id: getNewRoutineId(),
-          tabId: newTabId, // Assign new tab ID to routines
-        }));
-        return {
-          payload: {
-            tab,
-            routines: newRoutines,
-            newTabId: newTabId,
-          },
-        };
-      },
-      reducer(
-        state,
-        action: PayloadAction<{
-          tab: Tab;
-          newTabId: number;
-        }>
-      ) {
+    //   importTab: {
+    //     prepare({ tab, routines }: { tab: Tab; routines: RoutineObject[] }) {
+
+    //     },
+    //     reducer(
+    //       state,
+    //       action: PayloadAction<{
+    //         tab: Tab;
+    //         newTabId: number;
+    //       }>
+    //     ) {
+    //       const { newTabId, tab } = action.payload;
+    //       const tabWithNewId = {
+    //         ...tab,
+    //         id: newTabId,
+    //       };
+    //       tabAdapter.addOne(state, tabWithNewId);
+    //       state.currentTab = newTabId;
+    //     },
+    //   },
+    tabUpdated: tabAdapter.updateOne,
+    setCurrentTab: (state, action: PayloadAction<number>) => {
+      state.currentTab = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(importTabFromCode.fulfilled, (state, action) => {
         const { newTabId, tab } = action.payload;
         const tabWithNewId = {
           ...tab,
@@ -140,26 +180,22 @@ export const tabSlice = createSlice({
         };
         tabAdapter.addOne(state, tabWithNewId);
         state.currentTab = newTabId;
-      },
-    },
-    tabUpdated: tabAdapter.updateOne,
-    setCurrentTab: (state, action: PayloadAction<number>) => {
-      state.currentTab = action.payload;
-    },
-  },
-  extraReducers: (builder) => {
-    builder;
+        state.importingTab = false;
+        state.importError = undefined;
+      })
+      .addCase(importTabFromCode.rejected, (state, action) => {
+        state.importingTab = false;
+        state.importError = action.error.message || "Failed to import tab";
+      })
+      .addCase(importTabFromCode.pending, (state) => {
+        state.importingTab = true;
+        state.importError = undefined;
+      });
   },
 });
 
-export const {
-  tabCreated,
-  removeTab,
-  cloneTab,
-  importTab,
-  setCurrentTab,
-  tabUpdated,
-} = tabSlice.actions;
+export const { tabCreated, removeTab, cloneTab, setCurrentTab, tabUpdated } =
+  tabSlice.actions;
 
 export default tabSlice.reducer;
 
@@ -171,6 +207,10 @@ export const {
   selectTotal: selectTotalTabs,
 } = tabAdapter.getSelectors((state: RootState) => state.tabs);
 
+export const selectIsImportingTab = (state: RootState) =>
+  state.tabs.importingTab ?? false;
+export const selectImportError = (state: RootState) =>
+  state.tabs.importError ?? undefined;
 export const selectCurrentTabId = (state: RootState) => state.tabs.currentTab;
 export const selectCurrentTabEntity = (state: RootState) =>
   state.tabs.entities[state.tabs.currentTab];

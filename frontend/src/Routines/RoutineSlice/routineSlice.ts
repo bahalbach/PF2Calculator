@@ -99,7 +99,7 @@ import {
   setCurrentTab,
   removeTab,
   cloneTab,
-  importTab,
+  importTabFromCode,
 } from "../../Display/tabSlice";
 
 export const routinesAdapter = createEntityAdapter<Routine>();
@@ -765,7 +765,7 @@ export const routinesSlice = createSlice({
         }
       });
     });
-    builder.addCase(importTab, (state, action) => {
+    builder.addCase(importTabFromCode.fulfilled, (state, action) => {
       const { routines } = action.payload;
       state.selectedRoutine = undefined;
       state.selectedActivityPath = undefined;
