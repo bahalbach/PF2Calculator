@@ -9,6 +9,7 @@ import sharingReducer from "../Display/sharingSlice";
 import weaknessReducer from "../Display/weaknessSlice";
 import { tabCreated } from "../Display/tabSlice";
 import tabReducer from "../Display/tabSlice";
+import { importTabFromCode } from "../Display/tabSlice";
 import { ACTrends, graphTypes, HPTrends, SaveTrends } from "../Model/types";
 import { exampleRoutines } from "../Model/exampleRoutines";
 import { listenerMiddleware, startAppListening } from "./listenerMiddleware";
@@ -108,6 +109,13 @@ const makeStore = () => {
     }
   } catch {
     // ignore errors
+  }
+  // Check for code query parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get("code");
+  if (code) {
+    // If code is present, dispatch importTabFromCode with the code
+    store.dispatch(importTabFromCode(code));
   }
   return store;
 };

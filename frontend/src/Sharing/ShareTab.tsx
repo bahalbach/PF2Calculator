@@ -50,7 +50,15 @@ const ShareTab = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Tab shared successfully:", data);
-        setTextValue(`Tab shared successfully with ID: ${data.tabId}`);
+        const { tabId: code } = data;
+        const currentUrl = new URL(window.location.href);
+        // Update the URL with the new code
+        currentUrl.searchParams.set("code", code);
+        const shareUrl = currentUrl.toString();
+        console.log("Share URL:", shareUrl);
+        setTextValue(
+          `Tab shared successfully! Use this URL to import: ${shareUrl}`
+        );
       })
       .catch((error) => {
         console.error("Error sharing tab:", error);
@@ -95,14 +103,14 @@ const ShareTab = () => {
         <Grid>
           <Button onClick={shareTab}>Share Current Tab</Button>
         </Grid>
-        <Grid>
+        {/* <Grid>
           <Button
             disabled={isImportingTab || textValue.trim() === ""}
             onClick={() => dispatch(importTabFromCode(textValue))}
           >
             Import Tab from Code
           </Button>
-        </Grid>
+        </Grid> */}
         {/* <Grid>
           <Button onClick={paste}>Export</Button>
         </Grid>
