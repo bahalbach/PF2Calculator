@@ -5,7 +5,8 @@ import ReactGA from "react-ga4";
 import Display from "../Display/Display";
 import SelectedRoutine from "../Routines/SelectedRoutine";
 import Routines from "../Routines/Routines";
-import Export from "../Sharing/Export";
+// import Export from "../Sharing/Export";
+import ShareTab from "../Sharing/ShareTab";
 
 import "./PF2App.css";
 import {
@@ -104,7 +105,7 @@ const Controls = () => {
       ) : (
         ""
       )}
-      <Export />
+      <ShareTab />
     </Box>
   );
 };
