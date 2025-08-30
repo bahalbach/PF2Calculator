@@ -596,6 +596,44 @@ export const routinesSlice = createSlice({
         };
       },
     },
+    activityPathDuplicated: {
+      reducer: (
+        state,
+        action: PayloadAction<{
+          id: number;
+          sourceId: number;
+        }>
+      ) => {
+        const { id, sourceId } = action.payload;
+        const ap = state.activityPaths.entities[sourceId]!;
+        if (ap.parentId !== undefined) {
+          state.activityPaths.entities[ap.parentId]!.apIds.push(id);
+        } else if (ap.routineId !== undefined) {
+          state.routines.entities[ap.routineId]!.apIds.push(id);
+        }
+        const apIds = copyActivityPaths(state, ap.apIds, id);
+        const damages = copyDamages(state, ap.damages);
+        const effects = copyEffects(state, ap.effects);
+
+        activityPathAdapter.addOne(state.activityPaths, {
+          ...ap,
+          id,
+          damages,
+          effects,
+          apIds,
+        });
+        state.selectedActivityPath = id;
+      },
+      prepare: ({ sourceId }: { sourceId: number }) => {
+        const id = ++maxUsedActivityPathId;
+        return {
+          payload: {
+            id,
+            sourceId,
+          },
+        };
+      },
+    },
     activityPathRemoved: (state, action) => {
       const { id, parentId, routineId } = action.payload;
 
@@ -797,6 +835,7 @@ export const {
   emptyActivityPathCreated,
   activityPathCreated,
   activityPathContinued,
+  activityPathDuplicated,
   activityPathRemoved,
 
   damageAdded,

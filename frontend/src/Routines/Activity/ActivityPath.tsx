@@ -4,11 +4,6 @@ import { useAppDispatch, useAppSelector } from "../../App/hooks";
 
 import { LevelList } from "./LevelList";
 import {
-  activityPathContinued,
-  damageCreated,
-  setNewActivityParent,
-} from "../RoutineSlice/routineSlice";
-import {
   activityTypeOptions,
   profTrendOptions,
   conditionOptions,
@@ -19,8 +14,12 @@ import {
   itemBTrendOptions,
 } from "../../Model/options";
 import {
+  activityPathContinued,
+  damageCreated,
+  setNewActivityParent,
   activityPathRemoved,
   activityPathUpdated,
+  activityPathDuplicated,
   selectactivityPathById,
 } from "../RoutineSlice/routineSlice";
 import {
@@ -216,7 +215,26 @@ export const ActivityPath = ({
           </List>
 
           <Grid container spacing={{ xs: 1 }} sx={{ my: 2, p: 1 }}>
-            <Grid container justifyContent="center" size={6}>
+            <Grid container justifyContent="center" size={4}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  window.location.href = "#routine-activity-list";
+                  ReactGA.event("select_content", {
+                    content_type: "new-activity",
+                    item_id: "duplicate-activity",
+                  });
+                  dispatch(
+                    activityPathDuplicated({
+                      sourceId: id,
+                    })
+                  );
+                }}
+              >
+                Duplicate Activity
+              </Button>
+            </Grid>
+            <Grid container justifyContent="center" size={4}>
               <Button
                 variant="contained"
                 onClick={() => {
@@ -235,7 +253,7 @@ export const ActivityPath = ({
                 Continue Attack
               </Button>
             </Grid>
-            <Grid container justifyContent="center" size={6}>
+            <Grid container justifyContent="center" size={4}>
               <Button
                 variant="outlined"
                 onClick={() => {
