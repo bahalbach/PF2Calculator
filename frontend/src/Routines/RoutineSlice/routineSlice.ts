@@ -99,6 +99,7 @@ import {
   setCurrentTab,
   removeTab,
   cloneTab,
+  importTabFromCode,
 } from "../../Display/tabSlice";
 
 export const routinesAdapter = createEntityAdapter<Routine>();
@@ -107,6 +108,9 @@ export const damageAdapter = createEntityAdapter<Damage>();
 export const effectAdapter = createEntityAdapter<Effect>();
 
 let maxUsedRoutineId = 1;
+export function getNewRoutineId(): number {
+  return ++maxUsedRoutineId;
+}
 let maxUsedActivityPathId = 1;
 let maxUsedDamageId = 1;
 let maxUsedEffectId = 1;
@@ -592,6 +596,44 @@ export const routinesSlice = createSlice({
         };
       },
     },
+    activityPathDuplicated: {
+      reducer: (
+        state,
+        action: PayloadAction<{
+          id: number;
+          sourceId: number;
+        }>
+      ) => {
+        const { id, sourceId } = action.payload;
+        const ap = state.activityPaths.entities[sourceId]!;
+        if (ap.parentId !== undefined) {
+          state.activityPaths.entities[ap.parentId]!.apIds.push(id);
+        } else if (ap.routineId !== undefined) {
+          state.routines.entities[ap.routineId]!.apIds.push(id);
+        }
+        const apIds = copyActivityPaths(state, ap.apIds, id);
+        const damages = copyDamages(state, ap.damages);
+        const effects = copyEffects(state, ap.effects);
+
+        activityPathAdapter.addOne(state.activityPaths, {
+          ...ap,
+          id,
+          damages,
+          effects,
+          apIds,
+        });
+        state.selectedActivityPath = id;
+      },
+      prepare: ({ sourceId }: { sourceId: number }) => {
+        const id = ++maxUsedActivityPathId;
+        return {
+          payload: {
+            id,
+            sourceId,
+          },
+        };
+      },
+    },
     activityPathRemoved: (state, action) => {
       const { id, parentId, routineId } = action.payload;
 
@@ -761,6 +803,20 @@ export const routinesSlice = createSlice({
         }
       });
     });
+    builder.addCase(importTabFromCode.fulfilled, (state, action) => {
+      const { routines } = action.payload;
+      state.selectedRoutine = undefined;
+      state.selectedActivityPath = undefined;
+      state.parentActivity = undefined;
+      state.parentRoutine = undefined;
+      routines.forEach((routineObject) => {
+        insertRoutine(state, routineObject);
+        state.selectedRoutine = routineObject.id;
+        state.selectedActivityPath = undefined;
+        state.parentActivity = undefined;
+        state.parentRoutine = undefined;
+      });
+    });
   },
 });
 
@@ -779,6 +835,7 @@ export const {
   emptyActivityPathCreated,
   activityPathCreated,
   activityPathContinued,
+  activityPathDuplicated,
   activityPathRemoved,
 
   damageAdded,
@@ -1968,6 +2025,7 @@ const getEffects = (state: WritableDraft<State>, effects: number[]) => {
 
 const insertRoutine = (state: WritableDraft<State>, routine: RoutineObject) => {
   const id = routine.id;
+  console.log("Inserting routine", routine.name);
   const apIds = insertActivityPaths(state, routine.apIds, undefined, id);
   routinesAdapter.addOne(state.routines, { ...routine, apIds });
 };
@@ -1980,6 +2038,7 @@ const insertActivityPaths = (
   let newApIds = [];
   for (let ap of aps) {
     const id = ++maxUsedActivityPathId;
+    console.log("Inserting activity path", ap.name, "with id", id);
     const apIds = insertActivityPaths(state, ap.apIds, id);
     const damages = insertDamages(state, ap.damages);
     const effects = insertEffects(state, ap.effects);
