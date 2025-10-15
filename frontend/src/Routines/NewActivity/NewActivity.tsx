@@ -62,10 +62,10 @@ ReactGA.initialize("G-JR2YK097BG");
 /*
   get activity type: strike, skill, cantrip, spell
 
-  if type is strike 
+  if type is strike
     choose class
     choose activity
-    attak score, damage score, cantrip score for ea/magus
+    attack score, damage score, cantrip score for ea/magus
     choose weapon die and traits
     choose number of attacks
 
