@@ -141,7 +141,7 @@ let targetState: TargetState = {
   Frightened: 0,
   Clumsy: 0,
   Prone: false,
-  "Cicumstance Bonus to next attack": 0,
+  "Circumstance Bonus to next attack": 0,
   "Status Bonus to all attacks": 0,
   persistentDamages: {},
 };
