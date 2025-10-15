@@ -299,12 +299,12 @@ class ActivityPathEvaluator {
             case effectTypes.BONUSC1:
               if (
                 effectValue &&
-                targetStates[i]["Cicumstance Bonus to next attack"] <
+                targetStates[i]["Circumstance Bonus to next attack"] <
                   effectValue
               )
                 targetStates[i] = {
                   ...targetStates[i],
-                  "Cicumstance Bonus to next attack": effectValue,
+                  "Circumstance Bonus to next attack": effectValue,
                 };
 
               break;
