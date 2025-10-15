@@ -358,7 +358,7 @@ function StrikeSelection() {
           <TooltipSelect
             title="What ability score bonus progression to add to the attack roll."
             value={strikeInfo.attackScore}
-            label="Attack Abilitiy Score"
+            label="Attack Ability Score"
             onChange={(e) => {
               setStrikeInfo({
                 ...strikeInfo,
@@ -374,7 +374,7 @@ function StrikeSelection() {
             title="What ability score bonus progression to add to the damage roll.
             Not applied to ranged attacks."
             value={strikeInfo.damageScore}
-            label="Damage Abilitiy Score"
+            label="Damage Ability Score"
             onChange={(e) => {
               setStrikeInfo({
                 ...strikeInfo,
@@ -390,7 +390,7 @@ function StrikeSelection() {
             <TooltipSelect
               title="What ability score bonus progression to add to the damage roll."
               value={strikeInfo.cantripScore}
-              label="Mental Abilitiy Score"
+              label="Mental Ability Score"
               onChange={(e) => {
                 setStrikeInfo({
                   ...strikeInfo,
